@@ -1,0 +1,4 @@
+sample_sql_files/
+*/**.egg-info
+config.yaml
+.idea/*
