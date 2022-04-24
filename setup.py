@@ -19,8 +19,13 @@ setup(
         'psycopg2',
         'typer[all]',
         'pyyaml',
-        'pytest==6.2.4',
     ],
+    extras_require={
+            'dev': [
+                'pytest',
+                'sphinx',
+            ]
+    },
     entry_points='''
     [console_scripts]
     dvc=dvc.app.cli:app
