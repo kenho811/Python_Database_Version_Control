@@ -8,7 +8,7 @@ setup(
     name='database_version_control',
     version='0.1.1',
     license='proprietary',
-    python_requires='==3.7.*',
+    python_requires='>=3.7.*',
     description='A library for doing database version control',
     author='Ken Ho',
     author_email='kenho811@gmail.com',
