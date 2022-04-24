@@ -23,6 +23,6 @@ setup(
     ],
     entry_points='''
     [console_scripts]
-    ken=dvc.app.cli:app
+    dvc=dvc.app.cli:app
     '''
 )
