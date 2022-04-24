@@ -1,20 +1,18 @@
-with max_id (max_id) as(
+with max_version_id (max_version_id) as(
 select
-		max(id)
+		max(version_id)
 from
-		dvc.dvc_revision_history
+		dvc.database_version_history
 )
 select
-	id,
-	sql_file_name_applied ,
-	sql_file_content_hash ,
-	operation ,
-	created_at
+	current_version_number ,
+	'RV'||((substring(current_version_number, 2)::integer) + 1)::text as next_upgrade_revision_version,
+	'RV'||((substring(current_version_number, 2)::integer) - 1)::text as next_downgrade_revision_version
 from
-	dvc.database_revision_history srh
+	dvc.database_version_history dvh
 where
-	id = (
+	version_id = (
 	select
-		max_id
+		max_version_id
 	from
-		max_id)
+		max_version_id)
