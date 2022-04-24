@@ -1,23 +1,16 @@
-"""
-Define the main commands of the CLI
-"""
 import logging
 import traceback
 from typing import List
 from pathlib import Path
 import typer
 
-from dvc.app.backend import get_target_database_revision_sql_files
-from dvc.core.database.postgres import SQLFileExecutor
-from dvc.core.config import write_default_config_file, get_postgres_connection
 from dvc.core.struct import DatabaseRevision, Operation, DatabaseVersion
+from dvc.core.database.postgres import SQLFileExecutor
+from dvc.core.config import get_postgres_connection
 
-# Set default logging to INFO
-logging.root.setLevel(logging.INFO)
+from dvc.app.backend import get_target_database_revision_sql_files
 
 app = typer.Typer()
-
-SQL_FILE_FOLDER_PATH: Path = Path("sample_revision_sql_files")
 
 
 @app.command()
@@ -25,15 +18,10 @@ def init():
     """
     Generate configuration template & Initialise database
     """
-    # Step 1: Generate config file
-    write_default_config_file()
-
     # Step 2: Set up metadata schema and tables
     conn = get_postgres_connection()
     sql_file_executor = SQLFileExecutor(conn=conn)
     sql_file_executor.set_up_database_revision_control_tables()
-
-
 
 
 @app.command()
@@ -77,7 +65,6 @@ def upgrade():
         sql_file_executor.execute_database_revision(database_revision=revision)
     else:
         typer.Abort()
-
 
 
 @app.command()
@@ -147,4 +134,3 @@ def ping():
         typer.echo("Something is wrong with the database connection!")
     else:
         typer.echo("Database connection looks good!")
-

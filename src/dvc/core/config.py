@@ -46,6 +46,7 @@ def get_postgres_connection(config_file_path: Path = Default.CONFIG_FILE_PATH,) 
     password = user_config['credentials']['password']
     port = user_config['credentials']['port']
     host = user_config['credentials']['host']
+
     conn = psycopg2.connect(dbname=dbname, user=user, password=password, port=port, host=host)
     return conn
 
