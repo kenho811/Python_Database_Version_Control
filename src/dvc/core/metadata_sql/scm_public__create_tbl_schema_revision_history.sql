@@ -1,5 +1,5 @@
 create schema if not exists public;
-create table if not exists public.schema_version_history(
+create table if not exists public.schema_revision_history(
 	id serial primary key,
 	sql_file_name_applied varchar(255) not null,
 	sql_file_content_hash varchar(255) not null,
