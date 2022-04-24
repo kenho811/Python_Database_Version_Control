@@ -30,11 +30,12 @@ begin
     insert
 	into
 	dvc.database_version_history (
---	"current_version_number",
+	"current_version_number",
 	"revision_id_applied" ,
 	"created_at"
 	)
 values(
+CASE NEW."operation" WHEN 'Upgrade' then 'V'||SUBSTRING(NEW.REVISION_APPLIED,3):: integer +1 else 'V'||SUBSTRING(NEW.REVISION_APPLIED,3):: integer -1 end,
 NEW."revision_id",
 now() at time zone 'utc');
 return new;

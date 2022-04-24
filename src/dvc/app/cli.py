@@ -40,10 +40,10 @@ def upgrade(sql_file_name: str):
 @app.command()
 def downgrade(sql_file_name: str):
     conn = get_postgres_connection()
-    sql_file_path = SQL_FILE_FOLDER_PATH.joinpath("RV1__create_scm_fundamentals_and_tbls.upgrade.sql")
+    sql_file_path = SQL_FILE_FOLDER_PATH.joinpath("RV1__create_scm_fundamentals_and_tbls.downgrade.sql")
     revision = SchemaRevision(
         executed_sql_file_path_applied=sql_file_path,
-        operation=Operation.Upgrade
+        operation=Operation.Downgrade
     )
     sql_file_executor = SQLFileExecutor(conn=conn)
     sql_file_executor.execute_revision(schema_revision=revision)
