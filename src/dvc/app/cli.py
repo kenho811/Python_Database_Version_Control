@@ -9,7 +9,7 @@ import typer
 
 from dvc.app.backend import get_target_database_revision_sql_files
 from dvc.core.database.postgres import SQLFileExecutor
-from dvc.core.config import generate_default_config_file, get_postgres_connection
+from dvc.core.config import write_default_config_file, get_postgres_connection
 from dvc.core.struct import DatabaseRevision, Operation, DatabaseVersion
 
 # Set default logging to INFO
@@ -26,7 +26,7 @@ def init():
     Generate configuration template & Initialise database
     """
     # Step 1: Generate config file
-    generate_default_config_file()
+    write_default_config_file()
 
     # Step 2: Set up metadata schema and tables
     conn = get_postgres_connection()
@@ -147,3 +147,4 @@ def ping():
         typer.echo("Something is wrong with the database connection!")
     else:
         typer.echo("Database connection looks good!")
+
