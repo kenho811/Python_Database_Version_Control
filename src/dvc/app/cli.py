@@ -2,10 +2,12 @@
 Define the main commands of the CLI
 """
 import logging
+import traceback
+from typing import List
 from pathlib import Path
-
-import psycopg2
 import typer
+
+from dvc.app.backend import get_target_database_revision_sql_files
 from dvc.core.database.postgres import SQLFileExecutor
 from dvc.core.config import generate_default_config_file, get_postgres_connection
 from dvc.core.struct import DatabaseRevision, Operation, DatabaseVersion
@@ -16,8 +18,6 @@ logging.root.setLevel(logging.INFO)
 app = typer.Typer()
 
 SQL_FILE_FOLDER_PATH: Path = Path("sample_revision_sql_files")
-
-
 
 
 @app.command()
@@ -31,14 +31,43 @@ def upgrade():
     Upgrade the Current Database Version by applying a corresponding Upgrade Revision Version
     :return:
     """
+    # Step 1: Check latest database version
+    operation_type = Operation.Upgrade
     conn = get_postgres_connection()
-    sql_file_path = SQL_FILE_FOLDER_PATH.joinpath("RV1__create_scm_fundamentals_and_tbls.upgrade.sql")
-    revision = DatabaseRevision(
-        executed_sql_file_path_applied=sql_file_path,
-        operation=Operation.Upgrade
-    )
     sql_file_executor = SQLFileExecutor(conn=conn)
-    sql_file_executor.execute_revision(schema_revision=revision)
+    latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
+
+    typer.echo(f"Current Database Version is {latest_database_version.current_version}")
+    typer.echo(f"Next Upgrade Revision Version will be {latest_database_version.next_upgrade_revision_version}")
+
+    # Step 2: Loop through existing revision SQL files
+    target_upgrade_revision_files: List[Path] = get_target_database_revision_sql_files(
+        operation_type=operation_type,
+        target_revision_version=latest_database_version.next_upgrade_revision_version
+    )
+
+    if len(target_upgrade_revision_files) > 1:
+        typer.echo("More than 1 target upgrade revision files found! As follows:")
+        typer.echo(target_upgrade_revision_files)
+        raise typer.Abort()
+    elif len(target_upgrade_revision_files) == 0:
+        typer.echo("No target upgrade revision files are found!")
+        raise typer.Abort()
+
+    # Step 3: Confirmation
+    sql_file_path = target_upgrade_revision_files[0]
+    apply = typer.confirm(f"Are you sure you want to apply the revision file at {sql_file_path}?")
+
+    if apply:
+        revision = DatabaseRevision(
+            executed_sql_file_path_applied=sql_file_path,
+            operation=operation_type
+        )
+        sql_file_executor = SQLFileExecutor(conn=conn)
+        sql_file_executor.execute_revision(schema_revision=revision)
+    else:
+        typer.Abort()
+
 
 
 @app.command()
@@ -47,14 +76,42 @@ def downgrade():
     Downgrade the Current Database Version by applying a corresponding Downgrade Revision Version
     :return:
     """
+    # Step 1: Check latest database version
+    operation_type = Operation.Downgrade
     conn = get_postgres_connection()
-    sql_file_path = SQL_FILE_FOLDER_PATH.joinpath("RV1__create_scm_fundamentals_and_tbls.downgrade.sql")
-    revision = DatabaseRevision(
-        executed_sql_file_path_applied=sql_file_path,
-        operation=Operation.Downgrade
-    )
     sql_file_executor = SQLFileExecutor(conn=conn)
-    sql_file_executor.execute_revision(schema_revision=revision)
+    latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
+
+    typer.echo(f"Current Database Version is {latest_database_version.current_version}")
+    typer.echo(f"Next Downgrade Revision Version will be {latest_database_version.next_downgrade_revision_version}")
+
+    # Step 2: Loop through existing revision SQL files
+    target_downgrade_revision_files: List[Path] = get_target_database_revision_sql_files(
+        operation_type=operation_type,
+        target_revision_version=latest_database_version.next_downgrade_revision_version
+    )
+
+    if len(target_downgrade_revision_files) > 1:
+        typer.echo("More than 1 target downgrade revision files found! As follows:")
+        typer.echo(target_downgrade_revision_files)
+        raise typer.Abort()
+    elif len(target_downgrade_revision_files) == 0:
+        typer.echo("No target downgrade revision files are found!")
+        raise typer.Abort()
+
+    sql_file_path = target_downgrade_revision_files[0]
+    apply = typer.confirm(f"Are you sure you want to apply the revision file at {sql_file_path}?")
+
+    if apply:
+        revision = DatabaseRevision(
+            executed_sql_file_path_applied=sql_file_path,
+            operation=operation_type
+        )
+        sql_file_executor = SQLFileExecutor(conn=conn)
+        sql_file_executor.execute_revision(schema_revision=revision)
+    else:
+        typer.Abort()
+
 
 @app.command()
 def current():
@@ -66,3 +123,18 @@ def current():
     sql_file_executor = SQLFileExecutor(conn=conn)
     latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
     typer.echo(latest_database_version)
+
+
+@app.command()
+def ping():
+    """
+    Ping the current database connection
+    :return:
+    """
+    try:
+        get_postgres_connection()
+    except Exception as e:
+        logging.error(traceback.format_exc())
+        typer.echo("Something is wrong with the database connection!")
+    else:
+        typer.echo("Everything looks good!")
