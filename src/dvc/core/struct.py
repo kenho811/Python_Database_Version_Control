@@ -12,6 +12,13 @@ class Operation(Enum):
 
 
 @dataclass
-class SchemaRevision:
+class DatabaseRevision:
     executed_sql_file_path_applied: Path
     operation: Operation
+
+
+@dataclass
+class DatabaseVersion:
+    current_version: str
+    next_upgrade_revision_version: str
+    next_downgrade_revision_version: str

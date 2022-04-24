@@ -8,7 +8,7 @@ import psycopg2
 import typer
 from dvc.core.database.postgres import SQLFileExecutor
 from dvc.core.config import generate_default_config_file, get_postgres_connection
-from dvc.core.struct import SchemaRevision, Operation
+from dvc.core.struct import DatabaseRevision, Operation
 from dvc.core import METADATA_SQL_FOLDER_PATH
 
 # Set default logging to INFO
@@ -34,7 +34,7 @@ def upgrade():
     """
     conn = get_postgres_connection()
     sql_file_path = SQL_FILE_FOLDER_PATH.joinpath("RV1__create_scm_fundamentals_and_tbls.upgrade.sql")
-    revision = SchemaRevision(
+    revision = DatabaseRevision(
         executed_sql_file_path_applied=sql_file_path,
         operation=Operation.Upgrade
     )
@@ -50,7 +50,7 @@ def downgrade():
     """
     conn = get_postgres_connection()
     sql_file_path = SQL_FILE_FOLDER_PATH.joinpath("RV1__create_scm_fundamentals_and_tbls.downgrade.sql")
-    revision = SchemaRevision(
+    revision = DatabaseRevision(
         executed_sql_file_path_applied=sql_file_path,
         operation=Operation.Downgrade
     )
@@ -58,16 +58,12 @@ def downgrade():
     sql_file_executor.execute_revision(schema_revision=revision)
 
 @app.command()
-def check():
+def current():
     """
     Check the current Database Version
     :return:
     """
     conn = get_postgres_connection()
-    sql_file_path = METADATA_SQL_FOLDER_PATH.joinpath("RV1__create_scm_fundamentals_and_tbls.downgrade.sql")
-    revision = SchemaRevision(
-        executed_sql_file_path_applied=sql_file_path,
-        operation=Operation.Downgrade
-    )
     sql_file_executor = SQLFileExecutor(conn=conn)
-    sql_file_executor.execute_revision(schema_revision=revision)
+    latest_database_version = sql_file_executor.get_latest_database_version()
+    typer.echo(latest_database_version)
