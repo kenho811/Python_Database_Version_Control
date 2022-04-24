@@ -60,4 +60,5 @@ def get_database_revision_sql_files() -> List[Path]:
     for file_or_dir in Path(database_revision_sql_files_folder).glob('**/*'):
         if file_or_dir.is_file() and file_or_dir.suffix == '.sql':
             sql_files.append(file_or_dir)
+
     return sql_files
