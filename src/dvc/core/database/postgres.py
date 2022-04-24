@@ -43,7 +43,7 @@ class SQLFileExecutor:
             self.conn.commit()
 
     def _create_audit_table(self):
-        with open(METADATA_SQL_FOLDER_PATH.joinpath("scm_dvc__create_tbl_database_revision_history.sql"),
+        with open(METADATA_SQL_FOLDER_PATH.joinpath("scm_dvc__create_scm_and_tbls.sql"),
                   'r') as create_sql_file:
             create_sql = create_sql_file.read()
             self.cur.execute(query=create_sql)

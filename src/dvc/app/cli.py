@@ -15,7 +15,7 @@ logging.root.setLevel(logging.INFO)
 
 app = typer.Typer()
 
-SQL_FILE_FOLDER_PATH: Path = Path("sample_sql_files")
+SQL_FILE_FOLDER_PATH: Path = Path("sample_revision_sql_files")
 
 
 
