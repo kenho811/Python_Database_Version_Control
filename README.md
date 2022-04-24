@@ -1,15 +1,19 @@
 Library to do database version control.
 
-## Database supported
+## Demonstration
+
+
+## Details
+### Database supported
 - Postgres Database
 
 
-## Database instructions format supported
+### Database instructions format supported
 
 - SQL files 
 
 
-### SQL files naming convention
+#### SQL files naming convention
 
 - All SQL files are considered `revision files`
 - They must follow the pattern `RV[0-9]*__.*\.(upgrade|downgrade)\.sql`. In words, it means
@@ -29,16 +33,17 @@ Library to do database version control.
 
 - Schema dvc will be created
   - Table dvc.database_revision_history will be created.
-  - Table dvc.database_version_history will be created. Insertion is triggered 
-  - 
+  - Table dvc.database_version_history will be created.
+  
 ### User Interface
 
 - CLI
   - Made with Python `Typer` Library
     - Entrypoint is `dvc`
     - Sample commands are
-      - `dvc init` --> Generate configuration files
-      - `dvc upgrade` ---> Apply Database Upgrade Revision
-      - `dvc downgrade` ---> Apply Database Downgrade Revision
-      - `dvc current` ---> Current Database Version
-      - `dvc ping` --> Ping database connection
+      - `dvc cfg init` --> Generate configuration files
+      - `dvc db init` --> Initialise the database with metadata schema and tables
+      - `dvc db upgrade` ---> Apply Database Upgrade Revision
+      - `dvc db downgrade` ---> Apply Database Downgrade Revision
+      - `dvc db current` ---> Current Database Version
+      - `dvc db ping` --> Ping database connection
