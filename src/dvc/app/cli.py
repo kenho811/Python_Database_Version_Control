@@ -22,6 +22,9 @@ SQL_FILE_FOLDER_PATH: Path = Path("sample_revision_sql_files")
 
 @app.command()
 def init():
+    """
+    Generate templates
+    """
     generate_default_config_file()
 
 
@@ -29,7 +32,6 @@ def init():
 def upgrade():
     """
     Upgrade the Current Database Version by applying a corresponding Upgrade Revision Version
-    :return:
     """
     # Step 1: Check latest database version
     operation_type = Operation.Upgrade
@@ -129,7 +131,6 @@ def current():
 def ping():
     """
     Ping the current database connection
-    :return:
     """
     try:
         get_postgres_connection()
