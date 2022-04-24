@@ -15,6 +15,9 @@ setup(
     url='N/A',
     packages=(find_packages(where="src")),
     package_dir={"": "src"},
+    # Include SQL files (seen as data by setup tools)
+    package_data={'': ['*.sql']},
+    include_package_data=True,
     install_requires=[
         'psycopg2',
         'typer[all]',
@@ -29,5 +32,5 @@ setup(
     entry_points='''
     [console_scripts]
     dvc=dvc.app.cli:app
-    '''
+    ''',
 )

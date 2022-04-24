@@ -23,9 +23,17 @@ SQL_FILE_FOLDER_PATH: Path = Path("sample_revision_sql_files")
 @app.command()
 def init():
     """
-    Generate templates
+    Generate configuration template & Initialise database
     """
+    # Step 1: Generate config file
     generate_default_config_file()
+
+    # Step 2: Set up metadata schema and tables
+    conn = get_postgres_connection()
+    sql_file_executor = SQLFileExecutor(conn=conn)
+    sql_file_executor.set_up_database_revision_control_tables()
+
+
 
 
 @app.command()
@@ -66,7 +74,7 @@ def upgrade():
             operation=operation_type
         )
         sql_file_executor = SQLFileExecutor(conn=conn)
-        sql_file_executor.execute_revision(schema_revision=revision)
+        sql_file_executor.execute_database_revision(database_revision=revision)
     else:
         typer.Abort()
 
@@ -110,7 +118,7 @@ def downgrade():
             operation=operation_type
         )
         sql_file_executor = SQLFileExecutor(conn=conn)
-        sql_file_executor.execute_revision(schema_revision=revision)
+        sql_file_executor.execute_database_revision(database_revision=revision)
     else:
         typer.Abort()
 
@@ -138,4 +146,4 @@ def ping():
         logging.error(traceback.format_exc())
         typer.echo("Something is wrong with the database connection!")
     else:
-        typer.echo("Everything looks good!")
+        typer.echo("Database connection looks good!")
