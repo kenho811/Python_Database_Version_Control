@@ -37,6 +37,8 @@ Library to do database version control.
   - Made with Python `Typer` Library
     - Entrypoint is `dvc`
     - Sample commands are
-      - `dvc init`
-      - `dvc upgrade`
-      - `dvc downgrade`
+      - `dvc init` --> Generate configuration files
+      - `dvc upgrade` ---> Apply Database Upgrade Revision
+      - `dvc downgrade` ---> Apply Database Downgrade Revision
+      - `dvc current` ---> Current Database Version
+      - `dvc ping` --> Ping database connection
