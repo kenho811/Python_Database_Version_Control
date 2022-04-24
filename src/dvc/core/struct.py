@@ -22,3 +22,4 @@ class DatabaseVersion:
     current_version: str
     next_upgrade_revision_version: str
     next_downgrade_revision_version: str
+    created_at: datetime.datetime

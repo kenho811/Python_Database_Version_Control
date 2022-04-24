@@ -35,7 +35,7 @@ begin
 	"created_at"
 	)
 values(
-CASE NEW."operation" WHEN 'Upgrade' then 'V'||SUBSTRING(NEW.REVISION_APPLIED,3):: integer +1 else 'V'||SUBSTRING(NEW.REVISION_APPLIED,3):: integer -1 end,
+CASE NEW."operation" WHEN 'Upgrade' then 'V'||SUBSTRING(NEW.REVISION_APPLIED,3):: integer else 'V'||SUBSTRING(NEW.REVISION_APPLIED,3):: integer -1 end,
 NEW."revision_id",
 now() at time zone 'utc');
 return new;

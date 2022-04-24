@@ -8,8 +8,7 @@ import psycopg2
 import typer
 from dvc.core.database.postgres import SQLFileExecutor
 from dvc.core.config import generate_default_config_file, get_postgres_connection
-from dvc.core.struct import DatabaseRevision, Operation
-from dvc.core import METADATA_SQL_FOLDER_PATH
+from dvc.core.struct import DatabaseRevision, Operation, DatabaseVersion
 
 # Set default logging to INFO
 logging.root.setLevel(logging.INFO)
@@ -65,5 +64,5 @@ def current():
     """
     conn = get_postgres_connection()
     sql_file_executor = SQLFileExecutor(conn=conn)
-    latest_database_version = sql_file_executor.get_latest_database_version()
+    latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
     typer.echo(latest_database_version)

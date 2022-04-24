@@ -23,12 +23,13 @@ class SQLFileExecutor:
 
             self.cur.execute(query=select_latest_database_version_sql)
 
-            current_version, next_upgrade_revision_version, next_downgrade_revision_version = self.cur.fetchone()
+            current_version, next_upgrade_revision_version, next_downgrade_revision_version, created_at = self.cur.fetchone()
 
             latest_database_version: DatabaseVersion = DatabaseVersion(
                 current_version=current_version,
                 next_upgrade_revision_version=next_upgrade_revision_version,
-                next_downgrade_revision_version=next_downgrade_revision_version
+                next_downgrade_revision_version=next_downgrade_revision_version,
+                created_at = created_at
             )
 
         return latest_database_version
