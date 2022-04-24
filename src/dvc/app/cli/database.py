@@ -1,3 +1,7 @@
+"""
+database subcommand
+"""
+
 import logging
 import traceback
 from typing import List

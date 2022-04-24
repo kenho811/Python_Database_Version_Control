@@ -18,8 +18,8 @@ from dvc.app.cli import config, database
 logging.root.setLevel(logging.INFO)
 
 app = typer.Typer()
-app.add_typer(config.app, name='config')
-app.add_typer(database.app, name='db')
+app.add_typer(config.app, name='cfg', help="Config related subcommands")
+app.add_typer(database.app, name='db', help="Database related subcommands")
 
 
 
