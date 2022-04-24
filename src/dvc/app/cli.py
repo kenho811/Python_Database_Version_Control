@@ -2,6 +2,7 @@
 Define the main commands of the CLI
 """
 import logging
+import traceback
 from pathlib import Path
 
 import psycopg2
@@ -66,3 +67,17 @@ def current():
     sql_file_executor = SQLFileExecutor(conn=conn)
     latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
     typer.echo(latest_database_version)
+
+@app.command()
+def ping():
+    """
+    Ping the current database connection
+    :return:
+    """
+    try:
+        get_postgres_connection()
+    except Exception as e:
+        logging.error(traceback.format_exc())
+        typer.echo("Something is wrong with the database connection!")
+    else:
+        typer.echo("Everything looks good!")
