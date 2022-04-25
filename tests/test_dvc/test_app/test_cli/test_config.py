@@ -1,16 +1,26 @@
 from typer.testing import CliRunner
 from dvc.app.cli.config import app
 
+import dvc.core.config
 from dvc.core.config import write_default_config_file
-
+from dvc.app.cli.config import init
 
 runner = CliRunner()
 
 
-def test__cmd_init__call__func_write_default_config_file_once():
-    from dvc.app.cli.config import init
-    # mock_write_default_config_file = mocker.patch.object(write_default_config_file, 'do_time_consuming_task', autospec=True)  # Alt. B
+def test__init__call_func_write_default_config_file_once(monkeypatch):
+    counter = 0
 
+    def mock_write_default_config_file():
+        nonlocal counter
+        counter += 1
+
+    # Arrange
+    monkeypatch.setattr(dvc.app.cli.config, 'write_default_config_file', mock_write_default_config_file)
+
+    # Act
     init()
 
-    # mock_write_default_config_file.assert_has_calls([mocker.call(100), mocker.call(50)])
+    # Assert
+    assert counter == 1
+

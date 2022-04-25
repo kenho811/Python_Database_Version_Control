@@ -37,8 +37,14 @@ def test__read_config_file__return_expected_user_config(monkeypatch, user_config
     def mock_load(*args, **kwargs) -> Dict:
         return user_configuration_dict
 
+    # Arrange
     monkeypatch.setattr(yaml, "load", mock_load)
-    assert read_config_file() == {
+
+    # Action
+    user_config = read_config_file()
+
+    # Assert
+    assert user_config == {
         "database_revision_sql_files_folder": "sample_revision_sql_files",
         "credentials": {
             "user": "peter_parker",
@@ -61,6 +67,7 @@ def test__get_postgres_connection__pass_user_credentials_to_connect_as_kwargs(mo
         return user_configuration_dict
 
     def mock_connect(*args, **kwargs):
+        # Assert
         assert kwargs == {
             "user": "peter_parker",
             "password": "1234",
@@ -69,7 +76,9 @@ def test__get_postgres_connection__pass_user_credentials_to_connect_as_kwargs(mo
             "dbname": "superman_db",
         }
 
+    # Arrange
     monkeypatch.setattr(dvc.core.config, "read_config_file", mock_load)
     monkeypatch.setattr(psycopg2, "connect", mock_connect)
 
+    # Action
     get_postgres_connection()
