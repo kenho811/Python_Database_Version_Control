@@ -4,7 +4,7 @@ config subcommand
 
 import typer
 
-from dvc.core.config import write_default_config_file, get_postgres_connection
+from dvc.core.config import write_default_config_file
 
 app = typer.Typer()
 
