@@ -26,7 +26,7 @@ setup(
     extras_require={
             'dev': [
                 'pytest',
-                'pytest-mock',
+                # 'pytest-mock',
                 'sphinx',
             ]
     },
