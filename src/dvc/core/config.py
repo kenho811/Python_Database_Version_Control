@@ -45,7 +45,7 @@ def generate_database_revision_sql_folder(config_file_path: Path) -> None:
 
 
 def read_config_file(config_file_path: Path = Default.CONFIG_FILE_PATH, ) -> Dict:
-    with open(config_file_path, 'r') as config_file:
+    with open(config_file_path, 'r', encoding='utf-8') as config_file:
         user_config: Dict = yaml.load(config_file, Loader=yaml.FullLoader)
     return user_config
 

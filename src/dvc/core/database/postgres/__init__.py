@@ -21,8 +21,8 @@ class SQLFileExecutor:
         Create all database revision control schema and tables
         :return:
         """
-        with open(self.__class__.METADATA_SQL_FOLDER_PATH.joinpath("scm_dvc__create_scm_and_tbls.sql"),
-                  'r') as create_sql_file:
+        with open(self.__class__.METADATA_SQL_FOLDER_PATH.joinpath("scm_dvc__create_scm_and_tbls.sql"), 'r',
+                  encoding='utf-8') as create_sql_file:
             create_sql = create_sql_file.read()
             self.cur.execute(query=create_sql)
             self.conn.commit()
@@ -33,8 +33,7 @@ class SQLFileExecutor:
         :return:
         """
         sql_file_path = self.__class__.METADATA_SQL_FOLDER_PATH.joinpath("scm_dvc__select_latest_database_version.sql")
-        with open(sql_file_path,
-                  'r') as select_latest_database_version_sql_file:
+        with open(sql_file_path, 'r', encoding='utf-8') as select_latest_database_version_sql_file:
             select_latest_database_version_sql = select_latest_database_version_sql_file.read()
 
             self.cur.execute(query=select_latest_database_version_sql)
@@ -68,7 +67,7 @@ class SQLFileExecutor:
         :param database_revision:
         :return:
         """
-        with open(database_revision.executed_sql_file_path_applied, 'r') as sql_file:
+        with open(database_revision.executed_sql_file_path_applied, 'r', encoding='utf-8', ) as sql_file:
             sql = sql_file.read()
             self.cur.execute(sql)
             self.conn.commit()
@@ -90,7 +89,7 @@ class SQLFileExecutor:
             executed_sql_file_content = executed_sql_file.read()
 
         with open(self.__class__.METADATA_SQL_FOLDER_PATH.joinpath("scm_dvc__insert_tbl_database_revision_history.sql"),
-                  'r') as insert_sql_file:
+                  'r', encoding='utf-8') as insert_sql_file:
             insert_sql = insert_sql_file.read()
 
             self.cur.execute(query=insert_sql,
