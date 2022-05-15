@@ -11,7 +11,7 @@ def get_target_database_revision_sql_files(
         operation_type: Operation,
         target_revision_version: str,
 ) -> List[Path]:
-    file_name_regex = f"{target_revision_version}.*\.{operation_type.value}\.sql"
+    file_name_regex = f"{target_revision_version}__.*\.{operation_type.value}\.sql"
 
     # Get path of Database Revision SQL files
     user_config = read_config_file(Default.CONFIG_FILE_PATH)
