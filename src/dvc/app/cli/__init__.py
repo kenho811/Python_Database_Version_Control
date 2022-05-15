@@ -19,4 +19,7 @@ app.add_typer(sql.app, name='sql', help="SQL files related subcommands")
 
 @app.command()
 def version():
+    """
+    Show CLI version
+    """
     typer.echo(__version__)

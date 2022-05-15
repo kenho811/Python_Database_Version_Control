@@ -59,6 +59,7 @@ See: https://www.youtube.com/watch?v=9l3m7zBxN4Y
   - Made with Python `Typer` Library
     - Entrypoint is `dvc`
     - Sample commands are
+      - `dvc version` --> Show version
       - `dvc cfg` --> Configuration related commands
         - `dvc cfg init` --> Generate configuration files
       - `dvc db` --> Database related commands
