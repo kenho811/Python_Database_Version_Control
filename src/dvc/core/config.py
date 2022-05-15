@@ -32,11 +32,24 @@ def write_default_config_file():
     else:
         logging.info(f"{Default.CONFIG_FILE_PATH} already exists! Do nothing.")
 
+def generate_database_revision_sql_folder(config_file_path: Path) -> None:
+    config: Dict = read_config_file(config_file_path)
+    database_revision_sql_folder = config['database_revision_sql_files_folder']
+    database_revision_sql_folder_path = Path(database_revision_sql_folder)
+
+    if database_revision_sql_folder_path.exists():
+        logging.info(f"{database_revision_sql_folder_path} already exists. Do nothing")
+    else:
+        logging.info("Generating database revision folder")
+        database_revision_sql_folder_path.mkdir(parents=True)
+
 
 def read_config_file(config_file_path: Path = Default.CONFIG_FILE_PATH, ) -> Dict:
     with open(config_file_path, 'r') as config_file:
         user_config: Dict = yaml.load(config_file, Loader=yaml.FullLoader)
     return user_config
+
+
 
 
 def get_postgres_connection(config_file_path: Path = Default.CONFIG_FILE_PATH, ) -> connection:

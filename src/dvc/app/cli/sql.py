@@ -39,8 +39,13 @@ def generate(from_sql_folder: str = typer.Option(...,
         folder_path=to_sql_folder_path,
         file_name_regex=existing_rv_file_name_regex
     )
-    existing_rv_files.sort(key=lambda sql_path: get_revision_number_from_database_revision_file(sql_path), reverse=True)
-    latest_database_revision_number = get_revision_number_from_database_revision_file(existing_rv_files[0])
+
+    if len(existing_rv_files) == 0:
+        latest_database_revision_number = 0
+    else:
+        existing_rv_files.sort(key=lambda sql_path: get_revision_number_from_database_revision_file(sql_path), reverse=True)
+        latest_database_revision_number = get_revision_number_from_database_revision_file(existing_rv_files[0])
+
     logging.info(f"Latest database revision is {latest_database_revision_number}")
 
     # Step 4: Generate new RV files
