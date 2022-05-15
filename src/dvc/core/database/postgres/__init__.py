@@ -5,10 +5,10 @@ from typing import Optional, Tuple
 
 from dvc.core.struct import DatabaseRevision, DatabaseVersion
 from dvc.core.hash import md5
-from dvc.core import METADATA_SQL_FOLDER_PATH
 
 
 class SQLFileExecutor:
+    METADATA_SQL_FOLDER_PATH = Path(__file__).parent
 
     def __init__(self,
                  conn: connection
@@ -21,7 +21,7 @@ class SQLFileExecutor:
         Create all database revision control schema and tables
         :return:
         """
-        with open(METADATA_SQL_FOLDER_PATH.joinpath("scm_dvc__create_scm_and_tbls.sql"),
+        with open(self.__class__.METADATA_SQL_FOLDER_PATH.joinpath("scm_dvc__create_scm_and_tbls.sql"),
                   'r') as create_sql_file:
             create_sql = create_sql_file.read()
             self.cur.execute(query=create_sql)
@@ -32,7 +32,7 @@ class SQLFileExecutor:
         Get the latest database version
         :return:
         """
-        sql_file_path = METADATA_SQL_FOLDER_PATH.joinpath("scm_dvc__select_latest_database_version.sql")
+        sql_file_path = self.__class__.METADATA_SQL_FOLDER_PATH.joinpath("scm_dvc__select_latest_database_version.sql")
         with open(sql_file_path,
                   'r') as select_latest_database_version_sql_file:
             select_latest_database_version_sql = select_latest_database_version_sql_file.read()
@@ -87,7 +87,7 @@ class SQLFileExecutor:
         executed_sql_file_name = str(revision.executed_sql_file_path_applied.name)
         executed_sql_file_content_hash = md5(revision.executed_sql_file_path_applied)
 
-        with open(METADATA_SQL_FOLDER_PATH.joinpath("scm_dvc__insert_tbl_database_revision_history.sql"),
+        with open(self.__class__.METADATA_SQL_FOLDER_PATH.joinpath("scm_dvc__insert_tbl_database_revision_history.sql"),
                   'r') as insert_sql_file:
             insert_sql = insert_sql_file.read()
 
