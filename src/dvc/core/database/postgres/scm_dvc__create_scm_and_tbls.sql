@@ -7,6 +7,7 @@ create table if not exists dvc.database_revision_history(
 	-- SQL File Name must follow a certain pattern
 	executed_sql_file_name varchar(255) not null check (executed_sql_file_name ~ 'RV[0-9]*__.*\.(upgrade|downgrade)\.sql'),
 	executed_sql_file_content_hash varchar(255) not null,
+	executed_sql_file_content text not null,
 	-- Operation must be either Upgrade or Downgrade
 	operation varchar(20) not null check (operation ~ '(Upgrade|Downgrade)'),
 	-- Revision applied must be the first part of the file name
