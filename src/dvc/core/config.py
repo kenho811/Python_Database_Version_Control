@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Dict, List
 import logging
 from psycopg2._psycopg import connection
+import re
 
 
 class Default:
@@ -51,18 +52,21 @@ def get_postgres_connection(config_file_path: Path = Default.CONFIG_FILE_PATH,) 
     return conn
 
 
-def get_database_revision_sql_files(config_file_path: Path = Default.CONFIG_FILE_PATH) -> List[Path]:
+def get_matched_files_in_folder_by_regex(folder_path: Path,
+                                         file_name_regex:str,
+                                         ) -> List[Path]:
     """
-    Loop recursively for all files in folder
+    Loop recursively for all files in a given folder.
+    Return those files whose name satisfy the regex.
     :return:
     """
-    sql_files: List[Path] = []
+    matched_files_paths: List[Path] = []
+    logging.info(f"Looking for the files with regex: {file_name_regex} in folder {folder_path}")
+    prog = re.compile(file_name_regex)
 
-    user_config = read_config_file(config_file_path)
+    for file_or_dir in folder_path.glob('**/*'):
+        file_or_dir: Path = file_or_dir
+        if file_or_dir.is_file() and prog.match(file_or_dir.name):
+            matched_files_paths.append(file_or_dir)
 
-    database_revision_sql_files_folder = user_config['database_revision_sql_files_folder']
-    for file_or_dir in Path(database_revision_sql_files_folder).glob('**/*'):
-        if file_or_dir.is_file() and file_or_dir.suffix == '.sql':
-            sql_files.append(file_or_dir)
-
-    return sql_files
+    return matched_files_paths
