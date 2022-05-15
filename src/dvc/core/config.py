@@ -87,5 +87,5 @@ def get_matched_files_in_folder_by_regex(folder_path: Path,
 def get_revision_number_from_database_revision_file(database_revision_file_path: Path) -> int:
     """
     """
-    revision_number = int(database_revision_file_path.name.split('__')[0][2])
+    revision_number = int(database_revision_file_path.name.split('__')[0][2:])
     return revision_number
