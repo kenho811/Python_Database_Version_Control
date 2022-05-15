@@ -4,15 +4,21 @@ from typing import List, Dict
 from setuptools import find_packages, setup
 
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+
 setup(
     name='database_version_control',
     version='0.1.1',
     license='proprietary',
     python_requires='>=3.7.*',
     description='A library for doing database version control',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author='Ken Ho',
     author_email='kenho811@gmail.com',
-    url='N/A',
+    url='https://github.com/kenho811/Python_Database_Version_Control',
     packages=(find_packages(where="src")),
     package_dir={"": "src"},
     # Include SQL files (seen as data by setup tools)
@@ -26,7 +32,6 @@ setup(
     extras_require={
             'dev': [
                 'pytest',
-                # 'pytest-mock',
                 'sphinx',
             ]
     },
@@ -34,4 +39,9 @@ setup(
     [console_scripts]
     dvc=dvc.app.cli:app
     ''',
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
 )
