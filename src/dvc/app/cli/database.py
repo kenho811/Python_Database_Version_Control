@@ -29,7 +29,7 @@ def init():
 
 
 @app.command()
-def upgrade():
+def upgrade(mark_only: bool = typer.Option(False, help='Only mark the SQL file to metadata table without applying')):
     """
     Upgrade the Current Database Version by applying a corresponding Upgrade Revision Version
     """
@@ -60,19 +60,29 @@ def upgrade():
     sql_file_path = target_upgrade_revision_files[0]
     apply = typer.confirm(f"Are you sure you want to apply the revision file at {sql_file_path}?")
 
-    if apply:
-        revision = DatabaseRevision(
+    if apply and not mark_only:
+        logging.info(f"Now applying {sql_file_path} and marking to metadata table")
+        database_revision = DatabaseRevision(
             executed_sql_file_path_applied=sql_file_path,
             operation=operation_type
         )
         sql_file_executor = SQLFileExecutor(conn=conn)
-        sql_file_executor.execute_database_revision(database_revision=revision)
+        sql_file_executor.execute_database_revision(database_revision=database_revision)
+    elif apply and mark_only:
+        logging.info(f"Now only marking {sql_file_path} to metadata table")
+        database_revision = DatabaseRevision(
+            executed_sql_file_path_applied=sql_file_path,
+            operation=operation_type
+        )
+        sql_file_executor = SQLFileExecutor(conn=conn)
+        sql_file_executor._write_database_revision_metadata(database_revision=database_revision)
     else:
+        logging.info(f"Do nothing...")
         typer.Abort()
 
 
 @app.command()
-def downgrade():
+def downgrade(mark_only: bool = typer.Option(False, help='Only mark the SQL file to metadata table without applying')):
     """
     Downgrade the Current Database Version by applying a corresponding Downgrade Revision Version
     :return:
@@ -103,14 +113,24 @@ def downgrade():
     sql_file_path = target_downgrade_revision_files[0]
     apply = typer.confirm(f"Are you sure you want to apply the revision file at {sql_file_path}?")
 
-    if apply:
-        revision = DatabaseRevision(
+    if apply and not mark_only:
+        logging.info(f"Now applying {sql_file_path} and marking to metadata table")
+        database_revision = DatabaseRevision(
             executed_sql_file_path_applied=sql_file_path,
             operation=operation_type
         )
         sql_file_executor = SQLFileExecutor(conn=conn)
-        sql_file_executor.execute_database_revision(database_revision=revision)
+        sql_file_executor.execute_database_revision(database_revision=database_revision)
+    elif apply and mark_only:
+        logging.info(f"Now only marking {sql_file_path} to metadata table")
+        database_revision = DatabaseRevision(
+            executed_sql_file_path_applied=sql_file_path,
+            operation=operation_type
+        )
+        sql_file_executor = SQLFileExecutor(conn=conn)
+        sql_file_executor._write_database_revision_metadata(database_revision=database_revision)
     else:
+        logging.info(f"Do nothing...")
         typer.Abort()
 
 

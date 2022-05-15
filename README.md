@@ -1,5 +1,9 @@
 Python library to do database version control.
 
+## PyPi
+
+See: https://pypi.org/project/database-version-control/
+
 ## Demonstration
 
 See: https://www.youtube.com/watch?v=9l3m7zBxN4Y
@@ -57,7 +61,9 @@ See: https://www.youtube.com/watch?v=9l3m7zBxN4Y
     - Sample commands are
       - `dvc cfg init` --> Generate configuration files
       - `dvc db init` --> Initialise the database with metadata schema and tables
-      - `dvc db upgrade` ---> Apply Database Upgrade Revision
+      - `dvc db upgrade` ---> Apply Database Upgrade Revision and mark to metadata tables
+        - `dvc db upgrade --mark-only` ---> Only mark to metadata tables 
       - `dvc db downgrade` ---> Apply Database Downgrade Revision
+        - `dvc db downgrade --mark-only` ---> Only mark to metadata tables 
       - `dvc db current` ---> Current Database Version
       - `dvc db ping` --> Ping database connection
