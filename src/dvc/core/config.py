@@ -24,7 +24,6 @@ CONFIG_FILE_TEMPLATE: Dict = {
 }
 
 
-
 def write_default_config_file():
     if not Default.CONFIG_FILE_PATH.exists():
         logging.info(f"Now generating default config file {Default.CONFIG_FILE_PATH}")
@@ -40,7 +39,7 @@ def read_config_file(config_file_path: Path = Default.CONFIG_FILE_PATH, ) -> Dic
     return user_config
 
 
-def get_postgres_connection(config_file_path: Path = Default.CONFIG_FILE_PATH,) -> connection:
+def get_postgres_connection(config_file_path: Path = Default.CONFIG_FILE_PATH, ) -> connection:
     user_config = read_config_file(config_file_path)
     dbname = user_config['credentials']['dbname']
     user = user_config['credentials']['user']
@@ -53,7 +52,7 @@ def get_postgres_connection(config_file_path: Path = Default.CONFIG_FILE_PATH,) 
 
 
 def get_matched_files_in_folder_by_regex(folder_path: Path,
-                                         file_name_regex:str,
+                                         file_name_regex: str,
                                          ) -> List[Path]:
     """
     Loop recursively for all files in a given folder.
@@ -70,3 +69,10 @@ def get_matched_files_in_folder_by_regex(folder_path: Path,
             matched_files_paths.append(file_or_dir)
 
     return matched_files_paths
+
+
+def get_revision_number_from_database_revision_file(database_revision_file_path: Path) -> int:
+    """
+    """
+    revision_number = int(database_revision_file_path.name.split('__')[0][2])
+    return revision_number

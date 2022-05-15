@@ -59,11 +59,15 @@ See: https://www.youtube.com/watch?v=9l3m7zBxN4Y
   - Made with Python `Typer` Library
     - Entrypoint is `dvc`
     - Sample commands are
-      - `dvc cfg init` --> Generate configuration files
-      - `dvc db init` --> Initialise the database with metadata schema and tables
-      - `dvc db upgrade` ---> Apply Database Upgrade Revision and mark to metadata tables
-        - `dvc db upgrade --mark-only` ---> Only mark to metadata tables 
-      - `dvc db downgrade` ---> Apply Database Downgrade Revision
-        - `dvc db downgrade --mark-only` ---> Only mark to metadata tables 
-      - `dvc db current` ---> Current Database Version
-      - `dvc db ping` --> Ping database connection
+      - `dvc cfg` --> Configuration related commands
+        - `dvc cfg init` --> Generate configuration files
+      - `dvc db` --> Database related commands
+        - `dvc db init` --> Initialise the database with metadata schema and tables
+        - `dvc db upgrade` ---> Apply Database Upgrade Revision and mark to metadata tables
+          - `dvc db upgrade --mark-only` ---> Only mark to metadata tables 
+        - `dvc db downgrade` ---> Apply Database Downgrade Revision
+          - `dvc db downgrade --mark-only` ---> Only mark to metadata tables 
+        - `dvc db current` ---> Current Database Version
+        - `dvc db ping` --> Ping database connection
+      - `dvc sql` --> SQL related commands
+        - `dvc sql generate --from-sql-folder` --> Generate RV files from all SQL files in a given folder
