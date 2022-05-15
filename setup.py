@@ -10,7 +10,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='database_version_control',
-    version='0.1.1',
+    version='0.1.2',
     license='proprietary',
     python_requires='>=3.7.*',
     description='A library for doing database version control',
