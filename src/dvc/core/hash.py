@@ -4,7 +4,7 @@ from pathlib import Path
 
 def md5(file_path: Path):
     hash_md5 = hashlib.md5()
-    with open(file_path, "rb", encoding='utf-8') as f:
+    with open(file_path, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
