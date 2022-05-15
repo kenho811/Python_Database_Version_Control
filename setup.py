@@ -1,6 +1,6 @@
 """Minimal setup file for tasks project."""
 
-from typing import List, Dict
+from dvc import __version__
 from setuptools import find_packages, setup
 
 
@@ -10,7 +10,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='database_version_control',
-    version='0.1.4',
+    version=__version__,
     license='proprietary',
     python_requires='>=3.7.*',
     description='A library for doing database version control',
