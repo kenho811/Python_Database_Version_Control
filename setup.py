@@ -1,7 +1,12 @@
 """Minimal setup file for tasks project."""
 
-from dvc import __version__
 from setuptools import find_packages, setup
+from distutils.util import convert_path
+
+main_ns = {}
+ver_path = convert_path('src/dvc/version.py')
+with open(ver_path) as ver_file:
+    exec(ver_file.read(), main_ns)
 
 
 with open("README.md", "r") as fh:
@@ -10,7 +15,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='database_version_control',
-    version=__version__,
+    version=main_ns['__version__'],
     license='proprietary',
     python_requires='>=3.7.*',
     description='A library for doing database version control',
