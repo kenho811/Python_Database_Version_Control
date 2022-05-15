@@ -86,7 +86,7 @@ class SQLFileExecutor:
         executed_sql_file_folder = str(database_revision.executed_sql_file_path_applied.parent)
         executed_sql_file_name = str(database_revision.executed_sql_file_path_applied.name)
         executed_sql_file_content_hash = md5(database_revision.executed_sql_file_path_applied)
-        with open(database_revision.executed_sql_file_path_applied, 'r') as executed_sql_file:
+        with open(database_revision.executed_sql_file_path_applied, 'r', encoding='utf-8') as executed_sql_file:
             executed_sql_file_content = executed_sql_file.read()
 
         with open(self.__class__.METADATA_SQL_FOLDER_PATH.joinpath("scm_dvc__insert_tbl_database_revision_history.sql"),
