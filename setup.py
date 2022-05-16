@@ -33,6 +33,7 @@ setup(
             'dev': [
                 'pytest',
                 'sphinx',
+                'furo',
             ]
     },
     entry_points='''
