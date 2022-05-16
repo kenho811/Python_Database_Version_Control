@@ -28,12 +28,14 @@ setup(
         'psycopg2',
         'typer[all]',
         'pyyaml',
+
+        # Sphinx Theme. ReadTheDoc
+        'furo',
     ],
     extras_require={
             'dev': [
                 'pytest',
                 'sphinx',
-                'furo',
             ]
     },
     entry_points='''
