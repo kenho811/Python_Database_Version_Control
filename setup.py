@@ -33,11 +33,14 @@ setup(
         'psycopg2',
         'typer[all]',
         'pyyaml',
+
     ],
     extras_require={
             'dev': [
                 'pytest',
                 'sphinx',
+                # Sphinx Theme
+                'furo',
             ]
     },
     entry_points='''
