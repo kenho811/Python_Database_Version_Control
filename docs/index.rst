@@ -13,7 +13,7 @@ Welcome to Database Version Control's documentation!
 Database Version Contrl (DVC) is a CLI utility which adds metadata of all changes made to your database done via SQL scripts.
 
 * `Code on GitHub <https://github.com/kenho811/Python_Database_Version_Control/tree/release>`_
-* `Youtube Demo <https://www.youtube.com/watch?v=8l3m7zBxN4>`_
+* `Youtube Demo <https://www.youtube.com/watch?v=9l3m7zBxN4Y>`_
 
 
 .. warning::
