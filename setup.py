@@ -29,13 +29,13 @@ setup(
         'typer[all]',
         'pyyaml',
 
-        # Sphinx Theme. ReadTheDoc
-        'furo',
     ],
     extras_require={
             'dev': [
                 'pytest',
                 'sphinx',
+                # Sphinx Theme
+                'furo',
             ]
     },
     entry_points='''
