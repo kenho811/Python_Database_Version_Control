@@ -6,7 +6,7 @@ from psycopg2._psycopg import connection, _connect
 
 import dvc.core.config
 
-from dvc.core.config import read_config_file, DatabaseConnectionFactory, Default
+from dvc.core.config import DatabaseConnectionFactory, Default, ConfigFileWriter, ConfigFileReader
 
 
 @pytest.fixture
@@ -27,7 +27,7 @@ def user_configuration_dict() -> Dict:
     return USER_CONFIG_FILE
 
 
-def test__read_config_file__return_expected_user_config(monkeypatch, user_configuration_dict: Dict):
+def test__ConfigFileReader__return_expected_user_config(monkeypatch, user_configuration_dict: Dict):
     """
     GIVEN a monkeypatched version of yaml.load
     WHEN read_config_file is called
@@ -41,13 +41,13 @@ def test__read_config_file__return_expected_user_config(monkeypatch, user_config
     monkeypatch.setattr(yaml, "load", mock_load)
 
     # Action
-    user_config = read_config_file()
+    user_config = ConfigFileReader(Default.CONFIG_FILE_PATH).user_config
 
     # Assert
     assert user_config == user_configuration_dict
 
 
-def test__get_postgres_connection__pass_user_credentials_to_connect_as_kwargs(monkeypatch, user_configuration_dict: Dict):
+def test__DatabaseConnectionFactory__pass_user_credentials_to_connect_as_kwargs(monkeypatch, user_configuration_dict: Dict):
     """
     GIVEN a monkeypatched version of yaml.load
     WHEN read_config_file is called
@@ -68,7 +68,7 @@ def test__get_postgres_connection__pass_user_credentials_to_connect_as_kwargs(mo
         }
 
     # Arrange
-    monkeypatch.setattr(dvc.core.config, "read_config_file", mock_load)
+    monkeypatch.setattr(dvc.core.config.ConfigFileReader, "user_config", mock_load())
     monkeypatch.setattr(psycopg2, "connect", mock_connect)
 
     # Action

@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Dict, List
 import logging
 from psycopg2._psycopg import connection
-import re
 
 from dvc.core.regex import get_matched_files_in_folder_by_regex
 
@@ -52,7 +51,10 @@ class ConfigFileReader:
                  config_file_path: Path = Default.CONFIG_FILE_PATH,
                  ):
         self.config_file_path = config_file_path
-        self.user_config: Dict = self._read_from_yaml()
+
+    @property
+    def user_config(self) -> Dict:
+        return self._read_from_yaml()
 
     def _read_from_yaml(self) -> Dict:
         with open(self.config_file_path, 'r', encoding='utf-8') as config_file:
@@ -60,19 +62,19 @@ class ConfigFileReader:
         return user_config
 
 
-class DatabaseRevisionFilesManager(ConfigFileReader):
+class DatabaseRevisionFilesManager:
     """
     Manager all Database Revision Files
     """
 
     def __init__(self,
-                 config_file_path: Path = Default.CONFIG_FILE_PATH,
+                 config_file_reader: ConfigFileReader,
                  ):
-        super(DatabaseRevisionFilesManager, self).__init__(config_file_path)
+        self.config_file_reader = config_file_reader
 
     @property
     def database_revision_files_folder(self) -> Path:
-        return Path(self.user_config['database_revision_sql_files_folder'])
+        return Path(self.config_file_reader.user_config['database_revision_sql_files_folder'])
 
     def create_database_revision_files_folder(self):
         """
@@ -103,26 +105,26 @@ class DatabaseRevisionFilesManager(ConfigFileReader):
         return files
 
 
-class DatabaseConnectionFactory(ConfigFileReader):
+class DatabaseConnectionFactory:
     """
     Return connections for various databases
     """
 
     def __init__(self,
-                 config_file_path: Path = Default.CONFIG_FILE_PATH,
+                 config_file_reader: ConfigFileReader,
                  ):
-        super(DatabaseConnectionFactory, self).__init__(config_file_path)
+        self.config_file_reader = config_file_reader
 
     @property
     def pgconn(self) -> connection:
         """
         Return Postgres Database Connection
         """
-        dbname = self.user_config['credentials']['dbname']
-        user = self.user_config['credentials']['user']
-        password = self.user_config['credentials']['password']
-        port = self.user_config['credentials']['port']
-        host = self.user_config['credentials']['host']
+        dbname = self.config_file_reader.user_config['credentials']['dbname']
+        user = self.config_file_reader.user_config['credentials']['user']
+        password = self.config_file_reader.user_config['credentials']['password']
+        port = self.config_file_reader.user_config['credentials']['port']
+        host = self.config_file_reader.user_config['credentials']['host']
 
         conn = psycopg2.connect(dbname=dbname, user=user, password=password, port=port, host=host)
         return conn
