@@ -10,7 +10,7 @@ import typer
 
 from dvc.core.struct import DatabaseRevision, Operation, DatabaseVersion
 from dvc.core.database.postgres import SQLFileExecutor
-from dvc.core.config import get_postgres_connection
+from dvc.core.config import DatabaseConnectionFactory, Default
 
 from dvc.app.backend import get_target_database_revision_sql_files
 
@@ -23,7 +23,7 @@ def init():
     Generate configuration template & Initialise database
     """
     # Step 2: Set up metadata schema and tables
-    conn = get_postgres_connection()
+    conn = DatabaseConnectionFactory(Default.CONFIG_FILE_PATH).pgconn
     sql_file_executor = SQLFileExecutor(conn=conn)
     sql_file_executor.set_up_database_revision_control_tables()
 
@@ -39,7 +39,7 @@ def upgrade(mark_only: bool = typer.Option(False, help='Only mark the SQL file t
     """
     # Step 1: Check latest database version
     operation_type = Operation.Upgrade
-    conn = get_postgres_connection()
+    conn = DatabaseConnectionFactory(Default.CONFIG_FILE_PATH).pgconn
     sql_file_executor = SQLFileExecutor(conn=conn)
     latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
 
@@ -93,7 +93,7 @@ def downgrade(mark_only: bool = typer.Option(False, help='Only mark the SQL file
     """
     # Step 1: Check latest database version
     operation_type = Operation.Downgrade
-    conn = get_postgres_connection()
+    conn = DatabaseConnectionFactory(Default.CONFIG_FILE_PATH).pgconn
     sql_file_executor = SQLFileExecutor(conn=conn)
     latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
 
@@ -144,7 +144,58 @@ def current():
     Check the current Database Version
     :return:
     """
-    conn = get_postgres_connection()
+    conn = DatabaseConnectionFactory(Default.CONFIG_FILE_PATH).pgconn
+    sql_file_executor = SQLFileExecutor(conn=conn)
+    latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
+
+    typer.echo(f"Current Database Version is {latest_database_version.current_version}")
+    typer.echo(f"Next Downgrade Revision Version will be {latest_database_version.next_downgrade_revision_version}")
+
+    # Step 2: Loop through existing revision SQL files
+    target_downgrade_revision_files: List[Path] = get_target_database_revision_sql_files(
+        operation_type=operation_type,
+        target_revision_version=latest_database_version.next_downgrade_revision_version
+    )
+
+    if len(target_downgrade_revision_files) > 1:
+        typer.echo("More than 1 target downgrade revision files found! As follows:")
+        typer.echo(target_downgrade_revision_files)
+        raise typer.Abort()
+    elif len(target_downgrade_revision_files) == 0:
+        typer.echo("No target downgrade revision files are found!")
+        raise typer.Abort()
+
+    sql_file_path = target_downgrade_revision_files[0]
+    apply = typer.confirm(f"Are you sure you want to apply the revision file at {sql_file_path}?")
+
+    if apply and not mark_only:
+        logging.info(f"Now applying {sql_file_path} and marking to metadata table")
+        database_revision = DatabaseRevision(
+            executed_sql_file_path_applied=sql_file_path,
+            operation=operation_type
+        )
+        sql_file_executor = SQLFileExecutor(conn=conn)
+        sql_file_executor.execute_database_revision(database_revision=database_revision)
+    elif apply and mark_only:
+        logging.info(f"Now only marking {sql_file_path} to metadata table")
+        database_revision = DatabaseRevision(
+            executed_sql_file_path_applied=sql_file_path,
+            operation=operation_type
+        )
+        sql_file_executor = SQLFileExecutor(conn=conn)
+        sql_file_executor._write_database_revision_metadata(database_revision=database_revision)
+    else:
+        logging.info(f"Do nothing...")
+        typer.Abort()
+
+
+@app.command()
+def current():
+    """
+    Check the current Database Version
+    :return:
+    """
+    conn = DatabaseConnectionFactory(Default.CONFIG_FILE_PATH).pgconn
     sql_file_executor = SQLFileExecutor(conn=conn)
     latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
     typer.echo(f"Database: {conn.info.dbname}")
@@ -158,7 +209,7 @@ def ping():
     Ping the current database connection
     """
     try:
-        conn = get_postgres_connection()
+        conn = DatabaseConnectionFactory(Default.CONFIG_FILE_PATH).pgconn
     except Exception as e:
         logging.error(traceback.format_exc())
         typer.echo("Something is wrong with the database connection!")

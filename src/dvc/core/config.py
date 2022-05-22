@@ -32,6 +32,7 @@ def write_default_config_file():
     else:
         logging.info(f"{Default.CONFIG_FILE_PATH} already exists! Do nothing.")
 
+
 def generate_database_revision_sql_folder(config_file_path: Path) -> None:
     config: Dict = read_config_file(config_file_path)
     database_revision_sql_folder = config['database_revision_sql_files_folder']
@@ -44,24 +45,41 @@ def generate_database_revision_sql_folder(config_file_path: Path) -> None:
         database_revision_sql_folder_path.mkdir(parents=True)
 
 
+class DatabaseConnectionFactory:
+    """
+    Return connections for various databases
+    """
+    def __init__(self,
+                 config_file_path: Path = Default.CONFIG_FILE_PATH,
+                 ):
+        self.config_file_path = config_file_path
+        self.user_config: Dict = self._read_config_file()
+
+    def _read_config_file(self) -> Dict:
+        with open(self.config_file_path, 'r', encoding='utf-8') as config_file:
+            user_config: Dict = yaml.load(config_file, Loader=yaml.FullLoader)
+        return user_config
+
+    @property
+    def pgconn(self) -> connection:
+        """
+        Return Postgres Database Connection
+        """
+        dbname = self.user_config['credentials']['dbname']
+        user = self.user_config['credentials']['user']
+        password = self.user_config['credentials']['password']
+        port = self.user_config['credentials']['port']
+        host = self.user_config['credentials']['host']
+
+        conn = psycopg2.connect(dbname=dbname, user=user, password=password, port=port, host=host)
+        return conn
+
+
 def read_config_file(config_file_path: Path = Default.CONFIG_FILE_PATH, ) -> Dict:
     with open(config_file_path, 'r', encoding='utf-8') as config_file:
         user_config: Dict = yaml.load(config_file, Loader=yaml.FullLoader)
     return user_config
 
-
-
-
-def get_postgres_connection(config_file_path: Path = Default.CONFIG_FILE_PATH, ) -> connection:
-    user_config = read_config_file(config_file_path)
-    dbname = user_config['credentials']['dbname']
-    user = user_config['credentials']['user']
-    password = user_config['credentials']['password']
-    port = user_config['credentials']['port']
-    host = user_config['credentials']['host']
-
-    conn = psycopg2.connect(dbname=dbname, user=user, password=password, port=port, host=host)
-    return conn
 
 
 def get_matched_files_in_folder_by_regex(folder_path: Path,

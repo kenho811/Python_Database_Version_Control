@@ -6,7 +6,7 @@ from psycopg2._psycopg import connection, _connect
 
 import dvc.core.config
 
-from dvc.core.config import read_config_file, get_postgres_connection
+from dvc.core.config import read_config_file, DatabaseConnectionFactory, Default
 
 
 @pytest.fixture
@@ -27,7 +27,7 @@ def user_configuration_dict() -> Dict:
     return USER_CONFIG_FILE
 
 
-def test__read_config_file__return_expected_user_config(monkeypatch, user_configuration_dict):
+def test__read_config_file__return_expected_user_config(monkeypatch, user_configuration_dict: Dict):
     """
     GIVEN a monkeypatched version of yaml.load
     WHEN read_config_file is called
@@ -44,19 +44,10 @@ def test__read_config_file__return_expected_user_config(monkeypatch, user_config
     user_config = read_config_file()
 
     # Assert
-    assert user_config == {
-        "database_revision_sql_files_folder": "sample_revision_sql_files",
-        "credentials": {
-            "user": "peter_parker",
-            "password": "1234",
-            "host": "localhost",
-            "port": 5432,
-            "dbname": "superman_db",
-        }
-    }
+    assert user_config == user_configuration_dict
 
 
-def test__get_postgres_connection__pass_user_credentials_to_connect_as_kwargs(monkeypatch, user_configuration_dict):
+def test__get_postgres_connection__pass_user_credentials_to_connect_as_kwargs(monkeypatch, user_configuration_dict: Dict):
     """
     GIVEN a monkeypatched version of yaml.load
     WHEN read_config_file is called
@@ -81,4 +72,8 @@ def test__get_postgres_connection__pass_user_credentials_to_connect_as_kwargs(mo
     monkeypatch.setattr(psycopg2, "connect", mock_connect)
 
     # Action
-    get_postgres_connection()
+    conn = DatabaseConnectionFactory(config_file_path=Default.CONFIG_FILE_PATH).pgconn
+    print(conn)
+
+    # Assert
+    assert conn.info.dbname == 'superman_db'
