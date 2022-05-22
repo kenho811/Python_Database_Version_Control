@@ -5,11 +5,12 @@ from typing import Optional, Tuple
 
 from dvc.core.database import SQLFileExecutorTemplate
 from dvc.core.struct import DatabaseRevision, DatabaseVersion
-from dvc.core.hash import md5
+from dvc.core.hash import FileHasher
 
 
 class SQLFileExecutor(SQLFileExecutorTemplate):
     METADATA_SQL_FOLDER_PATH = Path(__file__).parent
+    FILE_HASHER = FileHasher()
 
     def __init__(self,
                  conn: connection
@@ -85,7 +86,7 @@ class SQLFileExecutor(SQLFileExecutorTemplate):
         """
         executed_sql_file_folder = str(database_revision.executed_sql_file_path_applied.parent)
         executed_sql_file_name = str(database_revision.executed_sql_file_path_applied.name)
-        executed_sql_file_content_hash = md5(database_revision.executed_sql_file_path_applied)
+        executed_sql_file_content_hash = self.__class__.FILE_HASHER.md5(database_revision.executed_sql_file_path_applied)
         with open(database_revision.executed_sql_file_path_applied, 'r', encoding='utf-8') as executed_sql_file:
             executed_sql_file_content = executed_sql_file.read()
 

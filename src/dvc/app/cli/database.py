@@ -28,6 +28,8 @@ def init():
     sql_file_executor.set_up_database_revision_control_tables()
 
     typer.echo("Database init successful!")
+    typer.echo(f"Database: {conn.info.dbname}")
+    typer.echo(f"Host: {conn.info.host}")
 
 
 @app.command()
@@ -156,9 +158,11 @@ def ping():
     Ping the current database connection
     """
     try:
-        get_postgres_connection()
+        conn = get_postgres_connection()
     except Exception as e:
         logging.error(traceback.format_exc())
         typer.echo("Something is wrong with the database connection!")
     else:
         typer.echo("Database connection looks good!")
+        typer.echo(f"Database: {conn.info.dbname}")
+        typer.echo(f"Host: {conn.info.host}")
