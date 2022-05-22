@@ -27,6 +27,8 @@ def init():
     sql_file_executor = SQLFileExecutor(conn=conn)
     sql_file_executor.set_up_database_revision_control_tables()
 
+    typer.echo("Database init successful!")
+
 
 @app.command()
 def upgrade(mark_only: bool = typer.Option(False, help='Only mark the SQL file to metadata table without applying')):
@@ -143,6 +145,7 @@ def current():
     conn = get_postgres_connection()
     sql_file_executor = SQLFileExecutor(conn=conn)
     latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
+
     typer.echo(latest_database_version)
 
 

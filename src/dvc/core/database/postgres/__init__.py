@@ -3,11 +3,12 @@ from psycopg2._psycopg import connection
 from pathlib import Path
 from typing import Optional, Tuple
 
+from dvc.core.database import SQLFileExecutorTemplate
 from dvc.core.struct import DatabaseRevision, DatabaseVersion
 from dvc.core.hash import md5
 
 
-class SQLFileExecutor:
+class SQLFileExecutor(SQLFileExecutorTemplate):
     METADATA_SQL_FOLDER_PATH = Path(__file__).parent
 
     def __init__(self,
