@@ -4,7 +4,7 @@ import re
 import logging
 
 from dvc.core.struct import Operation
-from dvc.core.config import get_matched_files_in_folder_by_regex, read_config_file, Default
+from dvc.core.config import Default, DatabaseRevisionFilesManager
 
 
 def get_target_database_revision_sql_files(
@@ -14,11 +14,7 @@ def get_target_database_revision_sql_files(
     file_name_regex = f"{target_revision_version}__.*\.{operation_type.value}\.sql"
 
     # Get path of Database Revision SQL files
-    user_config = read_config_file(Default.CONFIG_FILE_PATH)
-    database_revision_sql_files_folder_path = Path(user_config['database_revision_sql_files_folder'])
-    matched_paths: List[Path] = get_matched_files_in_folder_by_regex(
-        folder_path=database_revision_sql_files_folder_path,
-        file_name_regex=file_name_regex
-    )
 
+    db_rv_files_man = DatabaseRevisionFilesManager(Default.CONFIG_FILE_PATH)
+    matched_paths = db_rv_files_man.get_database_revision_files_by_regex(file_name_regex=file_name_regex)
     return matched_paths

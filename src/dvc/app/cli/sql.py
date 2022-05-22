@@ -11,7 +11,7 @@ import shutil
 from dvc.core.config import get_matched_files_in_folder_by_regex, \
     read_config_file, \
     Default, \
-    get_revision_number_from_database_revision_file
+    get_revision_number_from_database_revision_file, DatabaseRevisionFilesManager
 from dvc.core.struct import Operation
 
 app = typer.Typer()
@@ -28,17 +28,13 @@ def generate(from_sql_folder: str = typer.Option(...,
     logging.info(f"Sourcing from SQL folder: {from_sql_folder_path}")
 
     # Step 2: Get path of Database Revision SQL files
-    user_config = read_config_file(Default.CONFIG_FILE_PATH)
-    to_sql_folder_path = Path(user_config['database_revision_sql_files_folder'])
+    db_rv_files_man = DatabaseRevisionFilesManager(Default.CONFIG_FILE_PATH)
+    to_sql_folder_path = db_rv_files_man.database_revision_files_folder
     logging.info(f"Dumping to from database revision folder: {to_sql_folder_path}")
 
     # Step 3: Get latest RV
     existing_rv_file_name_regex = f".*\.{Operation.Upgrade.value}\.sql"
-
-    existing_rv_files: List[Path] = get_matched_files_in_folder_by_regex(
-        folder_path=to_sql_folder_path,
-        file_name_regex=existing_rv_file_name_regex
-    )
+    existing_rv_files = db_rv_files_man.get_database_revision_files_by_regex(existing_rv_file_name_regex)
 
     if len(existing_rv_files) == 0:
         latest_database_revision_number = 0
