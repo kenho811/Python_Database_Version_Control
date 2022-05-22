@@ -162,8 +162,9 @@ def ping():
     """
     Ping the current database connection
     """
+    config_file_reader = ConfigFileReader(Default.CONFIG_FILE_PATH)
     try:
-        conn = DatabaseConnectionFactory(Default.CONFIG_FILE_PATH).pgconn
+        conn = DatabaseConnectionFactory(config_file_reader).pgconn
     except Exception as e:
         logging.error(traceback.format_exc())
         typer.echo("Something is wrong with the database connection!")
