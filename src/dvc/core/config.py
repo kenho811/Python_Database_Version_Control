@@ -54,9 +54,9 @@ class ConfigFileReader:
 
     @property
     def user_config(self) -> Dict:
-        return self._read_from_yaml()
+        return self.read_from_yaml()
 
-    def _read_from_yaml(self) -> Dict:
+    def read_from_yaml(self) -> Dict:
         with open(self.config_file_path, 'r', encoding='utf-8') as config_file:
             user_config: Dict = yaml.load(config_file, Loader=yaml.FullLoader)
         return user_config

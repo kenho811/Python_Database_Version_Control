@@ -1,8 +1,9 @@
+from unittest import mock
+from unittest.mock import Mock
 import yaml
 from typing import Dict
 import pytest
-import psycopg2._psycopg
-from psycopg2._psycopg import connection, _connect
+import psycopg2
 
 import dvc.core.config
 
@@ -47,33 +48,23 @@ def test__ConfigFileReader__return_expected_user_config(monkeypatch, user_config
     assert user_config == user_configuration_dict
 
 
-def test__DatabaseConnectionFactory__pass_user_credentials_to_connect_as_kwargs(monkeypatch, user_configuration_dict: Dict):
+def test__DatabaseConnectionFactory__pass_user_credentials_to_connect_as_kwargs(
+        monkeypatch,
+        user_configuration_dict: Dict,
+):
     """
     GIVEN a monkeypatched version of yaml.load
     WHEN read_config_file is called
     THEN check read_config_file returns the python dict from yaml.load
     """
 
-    def mock_load(*args, **kwargs) -> Dict:
-        return user_configuration_dict
-
-    def mock_connect(*args, **kwargs):
-        # Assert
-        assert kwargs == {
-            "user": "peter_parker",
-            "password": "1234",
-            "host": "localhost",
-            "port": 5432,
-            "dbname": "superman_db",
-        }
-
     # Arrange
-    monkeypatch.setattr(dvc.core.config.ConfigFileReader, "user_config", mock_load())
-    monkeypatch.setattr(psycopg2, "connect", mock_connect)
+    mock_config_file_reader = Mock()
+    mock_config_file_reader.user_config = user_configuration_dict
 
-    # Action
-    conn = DatabaseConnectionFactory(config_file_path=Default.CONFIG_FILE_PATH).pgconn
-    print(conn)
+    with mock.patch('psycopg2.connect') as mock_connect:
+        print(mock_connect)
+        stuff = DatabaseConnectionFactory(config_file_reader=mock_config_file_reader).pgconn
+        mock_connect.assert_called_once()
+        mock_connect.assert_called_with(dbname='superman_db', user='peter_parker', password='1234', port=5432, host='localhost')
 
-    # Assert
-    assert conn.info.dbname == 'superman_db'
