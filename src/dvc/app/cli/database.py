@@ -145,8 +145,9 @@ def current():
     conn = get_postgres_connection()
     sql_file_executor = SQLFileExecutor(conn=conn)
     latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
-
-    typer.echo(latest_database_version)
+    typer.echo(f"Database: {conn.info.dbname}")
+    typer.echo(f"Host: {conn.info.host}")
+    typer.echo(f"Database Current Version: {latest_database_version.current_version}")
 
 
 @app.command()
