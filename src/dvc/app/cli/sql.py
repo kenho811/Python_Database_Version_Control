@@ -8,9 +8,7 @@ from typing import List
 import logging
 import shutil
 
-from dvc.core.config import get_matched_files_in_folder_by_regex, \
-    read_config_file, \
-    Default, \
+from dvc.core.config import get_matched_files_in_folder_by_regex, Default, \
     get_revision_number_from_database_revision_file, DatabaseRevisionFilesManager
 from dvc.core.struct import Operation
 

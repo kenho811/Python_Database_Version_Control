@@ -14,37 +14,33 @@ class Default:
     CONFIG_FILE_PATH = Path(CONFIG_FilE_NAME)
 
 
-CONFIG_FILE_TEMPLATE: Dict = {
-    "database_revision_sql_files_folder": "sample_revision_sql_files",
-    "credentials": {
-        "user": "",
-        "password": "",
-        "host": "",
-        "port": 5432,
-        "dbname": "",
+class ConfigFileWriter:
+    """
+    Read Config Files (in different formats) to Python Dictionary
+    """
+    CONFIG_FILE_TEMPLATE: Dict = {
+        "database_revision_sql_files_folder": "sample_revision_sql_files",
+        "credentials": {
+            "user": "",
+            "password": "",
+            "host": "",
+            "port": 5432,
+            "dbname": "",
+        }
     }
-}
 
+    def __init__(self,
+                 config_file_path: Path = Default.CONFIG_FILE_PATH,
+                 ):
+        self.config_file_path = config_file_path
 
-def write_default_config_file():
-    if not Default.CONFIG_FILE_PATH.exists():
-        logging.info(f"Now generating default config file {Default.CONFIG_FILE_PATH}")
-        with open(Default.CONFIG_FILE_PATH, 'w') as default_config_file:
-            yaml.dump(CONFIG_FILE_TEMPLATE, default_config_file, default_flow_style=False)
-    else:
-        logging.info(f"{Default.CONFIG_FILE_PATH} already exists! Do nothing.")
-
-
-def generate_database_revision_sql_folder(config_file_path: Path) -> None:
-    config: Dict = read_config_file(config_file_path)
-    database_revision_sql_folder = config['database_revision_sql_files_folder']
-    database_revision_sql_folder_path = Path(database_revision_sql_folder)
-
-    if database_revision_sql_folder_path.exists():
-        logging.info(f"{database_revision_sql_folder_path} already exists. Do nothing")
-    else:
-        logging.info("Generating database revision folder")
-        database_revision_sql_folder_path.mkdir(parents=True)
+    def write_to_yaml(self) -> None:
+        if not self.config_file_path.exists():
+            logging.info(f"Now generating default config file {self.config_file_path}")
+            with open(self.config_file_path, 'w') as default_config_file:
+                yaml.dump(self.__class__.CONFIG_FILE_TEMPLATE, default_config_file, default_flow_style=False)
+        else:
+            logging.info(f"{self.config_file_path} already exists! Do nothing.")
 
 
 class ConfigFileReader:
@@ -77,6 +73,19 @@ class DatabaseRevisionFilesManager(ConfigFileReader):
     @property
     def database_revision_files_folder(self) -> Path:
         return Path(self.user_config['database_revision_sql_files_folder'])
+
+    def create_database_revision_files_folder(self):
+        """
+        Safely create the database revision files folder.
+        """
+        database_revision_sql_folder = self.database_revision_files_folder
+        database_revision_sql_folder_path = Path(database_revision_sql_folder)
+
+        if database_revision_sql_folder_path.exists():
+            logging.info(f"{database_revision_sql_folder_path} already exists. Do nothing")
+        else:
+            logging.info("Generating database revision folder")
+            database_revision_sql_folder_path.mkdir(parents=True)
 
     def get_database_revision_files_by_regex(self,
                                              file_name_regex: str,
@@ -117,12 +126,6 @@ class DatabaseConnectionFactory(ConfigFileReader):
 
         conn = psycopg2.connect(dbname=dbname, user=user, password=password, port=port, host=host)
         return conn
-
-
-def read_config_file(config_file_path: Path = Default.CONFIG_FILE_PATH, ) -> Dict:
-    with open(config_file_path, 'r', encoding='utf-8') as config_file:
-        user_config: Dict = yaml.load(config_file, Loader=yaml.FullLoader)
-    return user_config
 
 
 def get_revision_number_from_database_revision_file(database_revision_file_path: Path) -> int:
