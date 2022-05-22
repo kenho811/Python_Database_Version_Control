@@ -1,10 +1,11 @@
 import psycopg2
 import yaml
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Any, Optional
 import logging
 from psycopg2._psycopg import connection
 
+from dvc.core.database import SupportedDatabaseFlavour
 from dvc.core.regex import get_matched_files_in_folder_by_regex
 
 
@@ -25,6 +26,8 @@ class ConfigFileWriter:
             "host": "",
             "port": 5432,
             "dbname": "",
+            "dbflavour": "postgres"
+
         }
     }
 
@@ -109,11 +112,28 @@ class DatabaseConnectionFactory:
     """
     Return connections for various databases
     """
-
     def __init__(self,
                  config_file_reader: ConfigFileReader,
                  ):
         self.config_file_reader = config_file_reader
+
+    @property
+    def supported_user_database_flavour(self) -> SupportedDatabaseFlavour:
+        user_db_flavour: str = self.config_file_reader.user_config['credentials']['dbflavour']
+        supported_user_db_flavour = SupportedDatabaseFlavour(user_db_flavour)
+
+        return supported_user_db_flavour
+
+    @property
+    def conn(self) -> Any:
+        """
+        Generic getter for any database connection
+        """
+        supported_user_database_flavour = self.supported_user_database_flavour
+        if supported_user_database_flavour == SupportedDatabaseFlavour.Postgres:
+            return self.pgconn
+        else:
+            raise ValueError(f"Not supported database flavour {supported_user_database_flavour}")
 
     @property
     def pgconn(self) -> connection:

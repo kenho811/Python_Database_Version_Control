@@ -14,6 +14,7 @@ def user_configuration_dict() -> Dict:
             "host": "localhost",
             "port": 5432,
             "dbname": "superman_db",
+            "dbflavour": "postgres"
         }
     }
     return USER_CONFIG_FILE

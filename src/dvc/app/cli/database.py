@@ -24,7 +24,7 @@ def init():
     """
     # Step 2: Set up metadata schema and tables
     config_file_reader = ConfigFileReader(Default.CONFIG_FILE_PATH)
-    conn = DatabaseConnectionFactory(config_file_reader=config_file_reader).pgconn
+    conn = DatabaseConnectionFactory(config_file_reader=config_file_reader).conn
     sql_file_executor = SQLFileExecutor(conn=conn)
     sql_file_executor.set_up_database_revision_control_tables()
 
@@ -41,7 +41,7 @@ def upgrade(mark_only: bool = typer.Option(False, help='Only mark the SQL file t
     # Step 1: Check latest database version
     operation_type = Operation.Upgrade
     config_file_reader = ConfigFileReader(Default.CONFIG_FILE_PATH)
-    conn = DatabaseConnectionFactory(config_file_reader).pgconn
+    conn = DatabaseConnectionFactory(config_file_reader=config_file_reader).conn
     sql_file_executor = SQLFileExecutor(conn=conn)
     latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
 
@@ -96,7 +96,7 @@ def downgrade(mark_only: bool = typer.Option(False, help='Only mark the SQL file
     # Step 1: Check latest database version
     operation_type = Operation.Downgrade
     config_file_reader = ConfigFileReader(Default.CONFIG_FILE_PATH)
-    conn = DatabaseConnectionFactory(config_file_reader).pgconn
+    conn = DatabaseConnectionFactory(config_file_reader=config_file_reader).conn
     sql_file_executor = SQLFileExecutor(conn=conn)
     latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
 
@@ -149,7 +149,7 @@ def current():
     :return:
     """
     config_file_reader = ConfigFileReader(Default.CONFIG_FILE_PATH)
-    conn = DatabaseConnectionFactory(config_file_reader).pgconn
+    conn = DatabaseConnectionFactory(config_file_reader=config_file_reader).conn
     sql_file_executor = SQLFileExecutor(conn=conn)
     latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
     typer.echo(f"Database: {conn.info.dbname}")
@@ -164,7 +164,7 @@ def ping():
     """
     config_file_reader = ConfigFileReader(Default.CONFIG_FILE_PATH)
     try:
-        conn = DatabaseConnectionFactory(config_file_reader).pgconn
+        conn = DatabaseConnectionFactory(config_file_reader=config_file_reader).conn
     except Exception as e:
         logging.error(traceback.format_exc())
         typer.echo("Something is wrong with the database connection!")

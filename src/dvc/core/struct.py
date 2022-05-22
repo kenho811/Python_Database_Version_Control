@@ -5,7 +5,6 @@ from enum import Enum
 from typing import Optional
 
 
-@dataclass
 class Operation(Enum):
     Upgrade = "upgrade"
     Downgrade = "downgrade"

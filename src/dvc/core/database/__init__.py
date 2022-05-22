@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from enum import Enum
 
 from dvc.core.struct import DatabaseRevision, DatabaseVersion
 
@@ -17,3 +18,7 @@ class SQLFileExecutorTemplate(ABC):
                                   database_revision: DatabaseRevision
                                   ):
         pass
+
+
+class SupportedDatabaseFlavour(Enum):
+    Postgres = 'postgres'
