@@ -120,7 +120,12 @@ class DatabaseConnectionFactory:
     @property
     def supported_user_database_flavour(self) -> SupportedDatabaseFlavour:
         user_db_flavour: str = self.config_file_reader.user_config['credentials']['dbflavour']
-        supported_user_db_flavour = SupportedDatabaseFlavour(user_db_flavour)
+        try:
+            supported_user_db_flavour = SupportedDatabaseFlavour(user_db_flavour)
+        except Exception as e:
+            logging.error(f"Supported Database Flavours are :")
+            logging.error([e.name for e in SupportedDatabaseFlavour])
+            raise
 
         return supported_user_db_flavour
 

@@ -21,4 +21,7 @@ class SQLFileExecutorTemplate(ABC):
 
 
 class SupportedDatabaseFlavour(Enum):
+    """
+    List of database flavours supported in the programme
+    """
     Postgres = 'postgres'

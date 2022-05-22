@@ -9,7 +9,7 @@ import logging
 import shutil
 
 from dvc.core.config import get_matched_files_in_folder_by_regex, Default, \
-    get_revision_number_from_database_revision_file, DatabaseRevisionFilesManager
+    get_revision_number_from_database_revision_file, DatabaseRevisionFilesManager, ConfigFileReader
 from dvc.core.struct import Operation
 
 app = typer.Typer()
@@ -26,7 +26,8 @@ def generate(from_sql_folder: str = typer.Option(...,
     logging.info(f"Sourcing from SQL folder: {from_sql_folder_path}")
 
     # Step 2: Get path of Database Revision SQL files
-    db_rv_files_man = DatabaseRevisionFilesManager(Default.CONFIG_FILE_PATH)
+    config_file_reader = ConfigFileReader(Default.CONFIG_FILE_PATH)
+    db_rv_files_man = DatabaseRevisionFilesManager(config_file_reader)
     to_sql_folder_path = db_rv_files_man.database_revision_files_folder
     logging.info(f"Dumping to from database revision folder: {to_sql_folder_path}")
 
