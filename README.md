@@ -4,6 +4,10 @@ Python library to do database version control.
 
 See: https://pypi.org/project/database-version-control/
 
+## Documentation
+
+https://python-database-version-control.readthedocs.io/en/release/
+
 ## Demonstration
 
 See: https://www.youtube.com/watch?v=9l3m7zBxN4Y
