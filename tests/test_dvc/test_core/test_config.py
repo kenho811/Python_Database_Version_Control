@@ -10,24 +10,6 @@ import dvc.core.config
 from dvc.core.config import DatabaseConnectionFactory, Default, ConfigFileWriter, ConfigFileReader
 
 
-@pytest.fixture
-def user_configuration_dict() -> Dict:
-    """
-    Fixture of User Configruration
-    """
-    USER_CONFIG_FILE: Dict = {
-        "database_revision_sql_files_folder": "sample_revision_sql_files",
-        "credentials": {
-            "user": "peter_parker",
-            "password": "1234",
-            "host": "localhost",
-            "port": 5432,
-            "dbname": "superman_db",
-        }
-    }
-    return USER_CONFIG_FILE
-
-
 def test__ConfigFileReader__return_expected_user_config(monkeypatch, user_configuration_dict: Dict):
     """
     GIVEN a monkeypatched version of yaml.load
@@ -63,8 +45,7 @@ def test__DatabaseConnectionFactory__pass_user_credentials_to_connect_as_kwargs(
     mock_config_file_reader.user_config = user_configuration_dict
 
     with mock.patch('psycopg2.connect') as mock_connect:
-        print(mock_connect)
-        stuff = DatabaseConnectionFactory(config_file_reader=mock_config_file_reader).pgconn
+        conn = DatabaseConnectionFactory(config_file_reader=mock_config_file_reader).pgconn
         mock_connect.assert_called_once()
         mock_connect.assert_called_with(dbname='superman_db', user='peter_parker', password='1234', port=5432, host='localhost')
 

@@ -1,5 +1,7 @@
+import pytest
+from typing import Dict
 from typer.testing import CliRunner
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import dvc.core.config
 from dvc.app.cli.config import init
@@ -8,26 +10,16 @@ from dvc.app.cli.config import app
 runner = CliRunner()
 
 
-def test__init__call_func_write_default_config_file_once(monkeypatch):
+def test__init__call_func_write_default_config_file_once(monkeypatch,
+                                                         user_configuration_dict,
+                                                         ):
     """
     Test Behaviour of init() func
     """
-    counter = 0
 
-    mock_write_default_config_file = Mock()
-    mock_generate_database_revision_sql_folder = Mock()
-
-    # Arrange
-    monkeypatch.setattr(dvc.app.cli.config, 'write_default_config_file', mock_write_default_config_file)
-    monkeypatch.setattr(dvc.app.cli.config, 'generate_database_revision_sql_folder',
-                        mock_generate_database_revision_sql_folder)
-
-    # Act
-    init()
-
-    # Assert
-    mock_write_default_config_file.assert_called_once()
-    mock_generate_database_revision_sql_folder.assert_called_once()
+    with patch("dvc.app.cli.config.ConfigFileWriter") as mock_config_file_writer:
+        init()
+        mock_config_file_writer.assert_called_once()
 
 
 def test__init__no_error_when_called_twice():
