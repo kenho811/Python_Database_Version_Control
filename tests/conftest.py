@@ -29,7 +29,7 @@ def dummy_config_file_path(tmp_path) -> Path:
     return tmp_path.joinpath('dummy_config_file_path.yaml')
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def init_dummy_config_file_path(
         dummy_config_file_path,
         dummy_user_configuration_postgres_dict):
