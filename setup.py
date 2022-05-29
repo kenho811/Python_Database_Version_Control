@@ -38,6 +38,7 @@ setup(
     extras_require={
             'dev': [
                 'pytest',
+                'pytest-cov',
                 'sphinx',
                 # Sphinx Theme
                 'furo',
