@@ -38,6 +38,7 @@ def init_dummy_config_file_path(
     """
     # Set up
     with open(dummy_config_file_path, 'w') as dummy_config_file:
+        logging.info(f"creating file {dummy_config_file_path}")
         yaml.dump(dummy_user_configuration_postgres_dict, dummy_config_file, default_flow_style=False)
         yield
 
