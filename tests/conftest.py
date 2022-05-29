@@ -5,7 +5,7 @@ import yaml
 
 
 @pytest.fixture
-def dummy_user_configuration_dict() -> Dict:
+def dummy_user_configuration_postgres_dict() -> Dict:
     """
     Fixture of User Configruration
     """
@@ -32,9 +32,9 @@ def dummy_config_file_path(tmp_path) -> Path:
 def init_dummy_config_file_path(
         monkeypatch,
         dummy_config_file_path,
-        dummy_user_configuration_dict):
+        dummy_user_configuration_postgres_dict):
     """
     Create a dummy config file with dummy configs
     """
     with open(dummy_config_file_path, 'w') as dummy_config_file:
-        yaml.dump(dummy_user_configuration_dict, dummy_config_file, default_flow_style=False)
+        yaml.dump(dummy_user_configuration_postgres_dict, dummy_config_file, default_flow_style=False)
