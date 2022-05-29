@@ -4,7 +4,6 @@ Define the main commands of the CLI
 import logging
 import typer
 
-from dvc.app.backend import get_target_database_revision_sql_files
 from dvc.version import __version__
 from dvc.app.cli import config, database, sql
 

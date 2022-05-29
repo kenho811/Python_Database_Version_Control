@@ -1,10 +1,16 @@
 from abc import ABC, abstractmethod
 from enum import Enum
+from typing import Any
 
 from dvc.core.struct import DatabaseRevision, DatabaseVersion
 
 
 class SQLFileExecutorTemplate(ABC):
+    def __init__(self,
+                 conn: Any
+                 ):
+        self.conn = conn
+
     @abstractmethod
     def set_up_database_revision_control_tables(self):
         pass

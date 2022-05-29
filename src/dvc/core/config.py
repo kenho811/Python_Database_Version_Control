@@ -62,6 +62,12 @@ class ConfigFileReader:
     def user_config(self) -> Dict:
         return self.read_from_yaml()
 
+    @property
+    def requested_db_flavour(self) -> str:
+        user_config = self.user_config
+        requested_db_flavour: str = user_config['credentials']['dbflavour']
+        return requested_db_flavour
+
     def read_from_yaml(self) -> Dict:
         with open(self.config_file_path, 'r', encoding='utf-8') as config_file:
             user_config: Dict = yaml.load(config_file, Loader=yaml.FullLoader)
@@ -125,16 +131,16 @@ class DatabaseConnectionFactory:
         self.config_file_reader = config_file_reader
 
     def validate_requested_database_flavour(
-            self,
-            requested_db_flavour) -> SupportedDatabaseFlavour:
+            self) -> SupportedDatabaseFlavour:
         """
         Validate if requested database flavour is supported
         """
         try:
-            supported_user_db_flavour = SupportedDatabaseFlavour(requested_db_flavour)
+            supported_user_db_flavour = SupportedDatabaseFlavour(self.config_file_reader.requested_db_flavour)
         except ValueError as e:
             logging.error(traceback.format_exc())
-            raise RequestedDatabaseFlavourNotSupportedException(requested_database_flavour=requested_db_flavour)
+            raise RequestedDatabaseFlavourNotSupportedException(
+                requested_database_flavour=self.config_file_reader.requested_db_flavour)
         return supported_user_db_flavour
 
     @property
@@ -142,9 +148,7 @@ class DatabaseConnectionFactory:
         """
         Return the expected connection
         """
-        requested_db_flavour: str = self.config_file_reader.user_config['credentials']['dbflavour']
-        supported_db_flavour = self.validate_requested_database_flavour(requested_db_flavour)
-
+        supported_db_flavour = self.validate_requested_database_flavour()
         # Map Supported database flavours to different connections
         return eval(self.__class__.MAPPING[supported_db_flavour])
 
