@@ -9,7 +9,7 @@ from pathlib import Path
 import typer
 
 from dvc.core.struct import DatabaseRevision, Operation, DatabaseVersion
-from dvc.core.database.postgres import SQLFileExecutor
+from dvc.core.database.postgres import PostgresSQLFileExecutor
 from dvc.core.config import DatabaseConnectionFactory, Default, ConfigFileReader
 
 from dvc.app.backend import get_target_database_revision_sql_files
@@ -25,7 +25,7 @@ def init():
     # Step 2: Set up metadata schema and tables
     config_file_reader = ConfigFileReader(Default.CONFIG_FILE_PATH)
     conn = DatabaseConnectionFactory(config_file_reader=config_file_reader).conn
-    sql_file_executor = SQLFileExecutor(conn=conn)
+    sql_file_executor = PostgresSQLFileExecutor(conn=conn)
     sql_file_executor.set_up_database_revision_control_tables()
 
     typer.echo("Database init successful!")
@@ -42,7 +42,7 @@ def upgrade(mark_only: bool = typer.Option(False, help='Only mark the SQL file t
     operation_type = Operation.Upgrade
     config_file_reader = ConfigFileReader(Default.CONFIG_FILE_PATH)
     conn = DatabaseConnectionFactory(config_file_reader=config_file_reader).conn
-    sql_file_executor = SQLFileExecutor(conn=conn)
+    sql_file_executor = PostgresSQLFileExecutor(conn=conn)
     latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
 
     typer.echo(f"Current Database Version is {latest_database_version.current_version}")
@@ -72,7 +72,7 @@ def upgrade(mark_only: bool = typer.Option(False, help='Only mark the SQL file t
             executed_sql_file_path_applied=sql_file_path,
             operation=operation_type
         )
-        sql_file_executor = SQLFileExecutor(conn=conn)
+        sql_file_executor = PostgresSQLFileExecutor(conn=conn)
         sql_file_executor.execute_database_revision(database_revision=database_revision)
     elif apply and mark_only:
         logging.info(f"Now only marking {sql_file_path} to metadata table")
@@ -80,7 +80,7 @@ def upgrade(mark_only: bool = typer.Option(False, help='Only mark the SQL file t
             executed_sql_file_path_applied=sql_file_path,
             operation=operation_type
         )
-        sql_file_executor = SQLFileExecutor(conn=conn)
+        sql_file_executor = PostgresSQLFileExecutor(conn=conn)
         sql_file_executor._write_database_revision_metadata(database_revision=database_revision)
     else:
         logging.info(f"Do nothing...")
@@ -97,7 +97,7 @@ def downgrade(mark_only: bool = typer.Option(False, help='Only mark the SQL file
     operation_type = Operation.Downgrade
     config_file_reader = ConfigFileReader(Default.CONFIG_FILE_PATH)
     conn = DatabaseConnectionFactory(config_file_reader=config_file_reader).conn
-    sql_file_executor = SQLFileExecutor(conn=conn)
+    sql_file_executor = PostgresSQLFileExecutor(conn=conn)
     latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
 
     typer.echo(f"Current Database Version is {latest_database_version.current_version}")
@@ -126,7 +126,7 @@ def downgrade(mark_only: bool = typer.Option(False, help='Only mark the SQL file
             executed_sql_file_path_applied=sql_file_path,
             operation=operation_type
         )
-        sql_file_executor = SQLFileExecutor(conn=conn)
+        sql_file_executor = PostgresSQLFileExecutor(conn=conn)
         sql_file_executor.execute_database_revision(database_revision=database_revision)
     elif apply and mark_only:
         logging.info(f"Now only marking {sql_file_path} to metadata table")
@@ -134,7 +134,7 @@ def downgrade(mark_only: bool = typer.Option(False, help='Only mark the SQL file
             executed_sql_file_path_applied=sql_file_path,
             operation=operation_type
         )
-        sql_file_executor = SQLFileExecutor(conn=conn)
+        sql_file_executor = PostgresSQLFileExecutor(conn=conn)
         sql_file_executor._write_database_revision_metadata(database_revision=database_revision)
     else:
         logging.info(f"Do nothing...")
@@ -150,7 +150,7 @@ def current():
     """
     config_file_reader = ConfigFileReader(Default.CONFIG_FILE_PATH)
     conn = DatabaseConnectionFactory(config_file_reader=config_file_reader).conn
-    sql_file_executor = SQLFileExecutor(conn=conn)
+    sql_file_executor = PostgresSQLFileExecutor(conn=conn)
     latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
     typer.echo(f"Database: {conn.info.dbname}")
     typer.echo(f"Host: {conn.info.host}")

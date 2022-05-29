@@ -20,5 +20,5 @@ class DatabaseRevision:
 class DatabaseVersion:
     current_version: str
     next_upgrade_revision_version: str
-    next_downgrade_revision_version: Optional[str]
-    created_at: Optional[datetime.datetime]
+    next_downgrade_revision_version: Optional[str] = None
+    created_at: Optional[datetime.datetime] = None

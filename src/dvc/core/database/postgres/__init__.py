@@ -8,7 +8,7 @@ from dvc.core.struct import DatabaseRevision, DatabaseVersion
 from dvc.core.hash import FileHasher
 
 
-class SQLFileExecutor(SQLFileExecutorTemplate):
+class PostgresSQLFileExecutor(SQLFileExecutorTemplate):
     METADATA_SQL_FOLDER_PATH = Path(__file__).parent
     FILE_HASHER = FileHasher()
 
