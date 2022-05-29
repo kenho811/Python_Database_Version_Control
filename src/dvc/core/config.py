@@ -1,3 +1,5 @@
+import traceback
+
 import psycopg2
 import yaml
 from pathlib import Path
@@ -7,6 +9,7 @@ from psycopg2._psycopg import connection
 
 from dvc.core.database import SupportedDatabaseFlavour
 from dvc.core.regex import get_matched_files_in_folder_by_regex
+from dvc.core.exception import RequestedDatabaseFlavourNotSupportedException
 
 
 class Default:
@@ -112,33 +115,38 @@ class DatabaseConnectionFactory:
     """
     Return connections for various databases
     """
+    MAPPING = {
+        SupportedDatabaseFlavour.Postgres: 'self.pgconn'
+    }
+
     def __init__(self,
                  config_file_reader: ConfigFileReader,
                  ):
         self.config_file_reader = config_file_reader
 
-    @property
-    def supported_user_database_flavour(self) -> SupportedDatabaseFlavour:
-        user_db_flavour: str = self.config_file_reader.user_config['credentials']['dbflavour']
+    def validate_requested_database_flavour(
+            self,
+            requested_db_flavour) -> SupportedDatabaseFlavour:
+        """
+        Validate if requested database flavour is supported
+        """
         try:
-            supported_user_db_flavour = SupportedDatabaseFlavour(user_db_flavour)
-        except Exception as e:
-            logging.error(f"Supported Database Flavours are :")
-            logging.error([e.name for e in SupportedDatabaseFlavour])
-            raise
-
+            supported_user_db_flavour = SupportedDatabaseFlavour(requested_db_flavour)
+        except ValueError as e:
+            logging.error(traceback.format_exc())
+            raise RequestedDatabaseFlavourNotSupportedException(requested_database_flavour=requested_db_flavour)
         return supported_user_db_flavour
 
     @property
     def conn(self) -> Any:
         """
-        Generic getter for any database connection
+        Return the expected connection
         """
-        supported_user_database_flavour = self.supported_user_database_flavour
-        if supported_user_database_flavour == SupportedDatabaseFlavour.Postgres:
-            return self.pgconn
-        else:
-            raise ValueError(f"Not supported database flavour {supported_user_database_flavour}")
+        requested_db_flavour: str = self.config_file_reader.user_config['credentials']['dbflavour']
+        supported_db_flavour = self.validate_requested_database_flavour(requested_db_flavour)
+
+        # Map Supported database flavours to different connections
+        return eval(self.__class__.MAPPING[supported_db_flavour])
 
     @property
     def pgconn(self) -> connection:

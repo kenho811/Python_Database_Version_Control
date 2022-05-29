@@ -9,6 +9,7 @@ from pathlib import Path
 import dvc.core.config
 
 from dvc.core.config import DatabaseConnectionFactory, Default, ConfigFileWriter, ConfigFileReader
+from dvc.core.exception import RequestedDatabaseFlavourNotSupportedException
 
 
 class TestConfigFileWriter:
@@ -60,6 +61,24 @@ class TestConfigFileReader:
 
 
 class TestDatabaseConnectionFactory:
+
+    def test__raise_requested_database_not_supported_exception(
+            self,
+            dummy_user_configuration_postgres_dict,
+    ):
+        """
+        GIVEN a fake database flavour
+        WHEN DatabaseConnectionFactory.validate_requested_database_flavour is called
+        THEN assert RequestedDatabaseFlavourNotSupportedException is raised
+        """
+        # Arrange
+        requested_database_flavour = 'fake_database_flavour'
+
+        with mock.patch('dvc.core.config.ConfigFileReader') as mock_config_file_reader:
+            with pytest.raises(RequestedDatabaseFlavourNotSupportedException) as exc_info:
+                DatabaseConnectionFactory(mock_config_file_reader).validate_requested_database_flavour(
+                    requested_db_flavour=requested_database_flavour)
+
     def test__pass_user_credentials_to_connect_as_kwargs(
             self,
             dummy_user_configuration_postgres_dict,
