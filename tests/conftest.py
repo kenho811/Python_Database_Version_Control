@@ -4,6 +4,8 @@ from pathlib import Path
 import yaml
 import logging
 
+from tests.fixtures.database_revision import *
+
 
 @pytest.fixture()
 def dummy_user_configuration_postgres_dict() -> Dict:

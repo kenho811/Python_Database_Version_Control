@@ -24,7 +24,7 @@ jobs:
           if [ -f setup.py ]; then pip install -e .'[dev]'; fi
       - name: Test with pytest
         run: |
-          pytest
+          pytest -v
       - name: Test with pytest coverage
         run: |
           pytest --cov=dvc tests/
