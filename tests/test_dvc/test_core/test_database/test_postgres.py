@@ -51,6 +51,9 @@ def rv1_upgrade_database_revision():
 
 @pytest.mark.usefixtures('postgres_service')
 class TestSQLFileExecutor:
+    """
+    Integration tests with Postgresql
+    """
 
     @pytest.fixture()
     def postgres_sql_file_executor(self,
