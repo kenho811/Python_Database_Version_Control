@@ -1,5 +1,5 @@
 from unittest import mock
-from unittest.mock import Mock, MagicMock
+from unittest.mock import Mock, MagicMock, PropertyMock
 import yaml
 from typing import Dict
 import pytest
@@ -74,10 +74,13 @@ class TestDatabaseConnectionFactory:
         # Arrange
         requested_database_flavour = 'fake_database_flavour'
 
-        with mock.patch('dvc.core.config.ConfigFileReader') as mock_config_file_reader:
+        with mock.patch('dvc.core.config.ConfigFileReader.requested_db_flavour',
+                        new_callable=PropertyMock) as mock_requested_db_flavour:
+            config_file_reader = ConfigFileReader()
+            mock_requested_db_flavour.return_value = requested_database_flavour
             with pytest.raises(RequestedDatabaseFlavourNotSupportedException) as exc_info:
-                DatabaseConnectionFactory(mock_config_file_reader).validate_requested_database_flavour(
-                    requested_db_flavour=requested_database_flavour)
+                DatabaseConnectionFactory(config_file_reader).validate_requested_database_flavour()
+
 
     def test__pass_user_credentials_to_connect_as_kwargs(
             self,
@@ -88,24 +91,24 @@ class TestDatabaseConnectionFactory:
         WHEN DatabaseConnectionFactory.conn is called
         THEN check psycopg2.connect is called once and with expected args
         """
-
         # Arrange
-        mock_config_file_reader = MagicMock(spec=ConfigFileReader)
-        mock_config_file_reader.user_config = dummy_user_configuration_postgres_dict
-
         with mock.patch('psycopg2.connect') as mock_connect:
-            # Act
-            conn = DatabaseConnectionFactory(config_file_reader=mock_config_file_reader).conn
+            with mock.patch('dvc.core.config.ConfigFileReader.user_config', new_callable=PropertyMock) as mock_user_config:
+                # Arrange
+                config_file_reader = ConfigFileReader()
+                mock_user_config.return_value = dummy_user_configuration_postgres_dict
+                # Act
+                conn = DatabaseConnectionFactory(config_file_reader=config_file_reader).conn
 
-            # Assert
-            expects_args = {
-                "dbname": 'superman_db',
-                "user": 'peter_parker',
-                "password": '1234',
-                "port": 5432,
-                "host": 'localhost',
-            }
-            mock_connect.assert_called_once()
-            mock_connect.assert_called_with(
-                **expects_args
-            )
+                # Assert
+                expects_args = {
+                    "dbname": 'superman_db',
+                    "user": 'peter_parker',
+                    "password": '1234',
+                    "port": 5432,
+                    "host": 'localhost',
+                }
+                mock_connect.assert_called_once()
+                mock_connect.assert_called_with(
+                    **expects_args
+                )

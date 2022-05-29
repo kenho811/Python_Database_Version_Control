@@ -47,7 +47,6 @@ def upgrade(
     operation_type = Operation.Upgrade
     db_interactor = DatabaseInteractor(config_file_path)
     config_file_reader = db_interactor.config_file_reader
-    conn = db_interactor.conn
     sql_file_executor = db_interactor.sql_file_executor
     latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
 
@@ -105,7 +104,6 @@ def downgrade(
     operation_type = Operation.Downgrade
     db_interactor = DatabaseInteractor(config_file_path)
     config_file_reader = db_interactor.config_file_reader
-    conn = db_interactor.conn
     sql_file_executor = db_interactor.sql_file_executor
     latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
 
