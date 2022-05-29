@@ -1,12 +1,15 @@
 import pytest
 from typing import Dict
+from pathlib import Path
+import yaml
+
 
 @pytest.fixture
-def user_configuration_dict() -> Dict:
+def dummy_user_configuration_dict() -> Dict:
     """
     Fixture of User Configruration
     """
-    USER_CONFIG_FILE: Dict = {
+    DUMMY_USER_CONFIG_FILE: Dict = {
         "database_revision_sql_files_folder": "sample_revision_sql_files",
         "credentials": {
             "user": "peter_parker",
@@ -17,4 +20,21 @@ def user_configuration_dict() -> Dict:
             "dbflavour": "postgres"
         }
     }
-    return USER_CONFIG_FILE
+    return DUMMY_USER_CONFIG_FILE
+
+
+@pytest.fixture()
+def dummy_config_file_path(tmp_path) -> Path:
+    return tmp_path.joinpath('dummy_config_file_path.yaml')
+
+
+@pytest.fixture(autouse=True)
+def init_dummy_config_file_path(
+        monkeypatch,
+        dummy_config_file_path,
+        dummy_user_configuration_dict):
+    """
+    Create a dummy config file with dummy configs
+    """
+    with open(dummy_config_file_path, 'w') as dummy_config_file:
+        yaml.dump(dummy_user_configuration_dict, dummy_config_file, default_flow_style=False)

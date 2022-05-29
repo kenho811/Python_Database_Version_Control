@@ -11,7 +11,7 @@ runner = CliRunner()
 
 
 def test__init__call_func_write_default_config_file_once(monkeypatch,
-                                                         user_configuration_dict,
+                                                         dummy_user_configuration_dict,
                                                          ):
     """
     Test Behaviour of init() func
