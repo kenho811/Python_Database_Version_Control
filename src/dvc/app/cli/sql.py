@@ -16,8 +16,7 @@ app = typer.Typer()
 
 
 @app.command()
-def generate(from_sql_folder: str = typer.Option(...,
-                                                 help="Folder path with SQL files from which to generate Database Revsion Files")):
+def generate(from_sql_folder: str = typer.Option(..., help="Folder path with SQL files from which to generate Database Revsion Files")):
     """
     Generate RV upgrade files from all the SQLs files in a given directory
     """

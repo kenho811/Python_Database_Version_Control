@@ -4,7 +4,7 @@ database subcommand
 
 import logging
 import traceback
-from typing import List
+from typing import List, Optional
 from pathlib import Path
 import typer
 
@@ -12,19 +12,20 @@ from dvc.core.struct import DatabaseRevision, Operation, DatabaseVersion
 from dvc.core.database.postgres import PostgresSQLFileExecutor
 from dvc.core.config import DatabaseConnectionFactory, Default, ConfigFileReader
 
-from dvc.app.backend import get_target_database_revision_sql_files
+from dvc.app.backend import get_target_database_revision_sql_files, validate_file_exist, get_database_connection
 
 app = typer.Typer()
 
 
 @app.command()
-def init():
+def init(
+        config_file_path: Optional[str] = typer.Option(None, help="path to config file"),
+):
     """
     Generate configuration template & Initialise database
     """
     # Step 2: Set up metadata schema and tables
-    config_file_reader = ConfigFileReader(Default.CONFIG_FILE_PATH)
-    conn = DatabaseConnectionFactory(config_file_reader=config_file_reader).conn
+    conn = get_database_connection(config_file_path)
     sql_file_executor = PostgresSQLFileExecutor(conn=conn)
     sql_file_executor.set_up_database_revision_control_tables()
 
@@ -34,14 +35,15 @@ def init():
 
 
 @app.command()
-def upgrade(mark_only: bool = typer.Option(False, help='Only mark the SQL file to metadata table without applying')):
+def upgrade(
+        config_file_path: Optional[str] = typer.Option(None, help="path to config file"),
+        mark_only: bool = typer.Option(False, help='Only mark the SQL file to metadata table without applying')):
     """
     Upgrade the Current Database Version by applying a corresponding Upgrade Revision Version
     """
     # Step 1: Check latest database version
     operation_type = Operation.Upgrade
-    config_file_reader = ConfigFileReader(Default.CONFIG_FILE_PATH)
-    conn = DatabaseConnectionFactory(config_file_reader=config_file_reader).conn
+    conn = get_database_connection(config_file_path)
     sql_file_executor = PostgresSQLFileExecutor(conn=conn)
     latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
 
@@ -50,6 +52,7 @@ def upgrade(mark_only: bool = typer.Option(False, help='Only mark the SQL file t
 
     # Step 2: Loop through existing revision SQL files
     target_upgrade_revision_files: List[Path] = get_target_database_revision_sql_files(
+        config_file_reader=config_file_reader,
         operation_type=operation_type,
         target_revision_version=latest_database_version.next_upgrade_revision_version
     )
@@ -88,15 +91,17 @@ def upgrade(mark_only: bool = typer.Option(False, help='Only mark the SQL file t
 
 
 @app.command()
-def downgrade(mark_only: bool = typer.Option(False, help='Only mark the SQL file to metadata table without applying')):
+def downgrade(
+        config_file_path: Optional[str] = typer.Option(None, help="path to config file"),
+        mark_only: bool = typer.Option(False, help='Only mark the SQL file to metadata table without applying')
+):
     """
     Downgrade the Current Database Version by applying a corresponding Downgrade Revision Version
     :return:
     """
     # Step 1: Check latest database version
     operation_type = Operation.Downgrade
-    config_file_reader = ConfigFileReader(Default.CONFIG_FILE_PATH)
-    conn = DatabaseConnectionFactory(config_file_reader=config_file_reader).conn
+    conn = get_database_connection(config_file_path)
     sql_file_executor = PostgresSQLFileExecutor(conn=conn)
     latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
 
@@ -105,6 +110,7 @@ def downgrade(mark_only: bool = typer.Option(False, help='Only mark the SQL file
 
     # Step 2: Loop through existing revision SQL files
     target_downgrade_revision_files: List[Path] = get_target_database_revision_sql_files(
+        config_file_reader=config_file_reader,
         operation_type=operation_type,
         target_revision_version=latest_database_version.next_downgrade_revision_version
     )
@@ -141,15 +147,13 @@ def downgrade(mark_only: bool = typer.Option(False, help='Only mark the SQL file
         typer.Abort()
 
 
-
 @app.command()
-def current():
+def current(config_file_path: Optional[str] = typer.Option(None, help="path to config file")):
     """
     Check the current Database Version
     :return:
     """
-    config_file_reader = ConfigFileReader(Default.CONFIG_FILE_PATH)
-    conn = DatabaseConnectionFactory(config_file_reader=config_file_reader).conn
+    conn = get_database_connection(config_file_path)
     sql_file_executor = PostgresSQLFileExecutor(conn=conn)
     latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
     typer.echo(f"Database: {conn.info.dbname}")
@@ -158,16 +162,15 @@ def current():
 
 
 @app.command()
-def ping():
+def ping(config_file_path: Optional[str] = typer.Option(None, help="path to config file")):
     """
     Ping the current database connection
     """
-    config_file_reader = ConfigFileReader(Default.CONFIG_FILE_PATH)
     try:
-        conn = DatabaseConnectionFactory(config_file_reader=config_file_reader).conn
+        conn = get_database_connection(config_file_path)
     except Exception as e:
-        logging.error(traceback.format_exc())
         typer.echo("Something is wrong with the database connection!")
+        raise
     else:
         typer.echo("Database connection looks good!")
         typer.echo(f"Database: {conn.info.dbname}")

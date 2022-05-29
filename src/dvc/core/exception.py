@@ -13,3 +13,4 @@ class RequestedDatabaseFlavourNotSupportedException(Exception):
         Supported Database Flavours are:
         {[e.name for e in SupportedDatabaseFlavour]}
         """
+

@@ -4,7 +4,9 @@ from pathlib import Path
 import yaml
 import logging
 
+# Import fixtures
 from tests.fixtures.database_revision import *
+from tests.fixtures.postgres_service import *
 
 
 @pytest.fixture()
