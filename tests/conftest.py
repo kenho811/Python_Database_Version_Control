@@ -2,9 +2,10 @@ import pytest
 from typing import Dict
 from pathlib import Path
 import yaml
+import logging
 
 
-@pytest.fixture
+@pytest.fixture()
 def dummy_user_configuration_postgres_dict() -> Dict:
     """
     Fixture of User Configruration
@@ -30,11 +31,17 @@ def dummy_config_file_path(tmp_path) -> Path:
 
 @pytest.fixture(autouse=True)
 def init_dummy_config_file_path(
-        monkeypatch,
         dummy_config_file_path,
         dummy_user_configuration_postgres_dict):
     """
     Create a dummy config file with dummy configs
     """
+    # Set up
     with open(dummy_config_file_path, 'w') as dummy_config_file:
         yaml.dump(dummy_user_configuration_postgres_dict, dummy_config_file, default_flow_style=False)
+        yield
+
+    # Tear down
+    logging.info(f"deleting file {dummy_config_file_path}")
+    dummy_config_file_path.unlink()
+
