@@ -53,7 +53,8 @@ class TestDatabaseRevisionFilesManager:
 
     def test__validate_database_revision_sql_files__raise_InvalidDatabaseRevisionFilesException_with_status_101(
             self,
-            dummy_config_file_reader_with_supported_db_flavour
+            dummy_config_file_reader_with_supported_db_flavour,
+            dummy_regex_files_folder_with_incorrect_files_names,
     ):
         pass
         # assert False, dummy_config_file_reader.user_config
