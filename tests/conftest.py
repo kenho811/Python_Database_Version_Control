@@ -9,6 +9,7 @@ from unittest import mock
 from tests.fixtures.database_revision import *
 from tests.fixtures.postgres_service import *
 from tests.fixtures.config_service import *
+from tests.fixtures.regex_service import *
 
 # Import dvc
 from dvc.core.config import ConfigFileReader

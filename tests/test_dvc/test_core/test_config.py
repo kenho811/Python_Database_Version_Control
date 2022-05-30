@@ -79,26 +79,26 @@ class TestDatabaseConnectionFactory:
     def test__pass_user_credentials_to_connect_as_kwargs(
             self,
             dummy_config_file_reader_with_supported_db_flavour,
+            dummy_pgconn,
     ):
         """
+        (Currently test postgres specifically)
         GIVEN patched psycopg2.connect
         WHEN DatabaseConnectionFactory.conn is called
         THEN check psycopg2.connect is called once and with expected args
         """
-        # Arrange
-        with mock.patch('psycopg2.connect') as mock_connect:
-            # Act
-            conn = DatabaseConnectionFactory(config_file_reader=dummy_config_file_reader_with_supported_db_flavour).conn
+        # Act
+        DatabaseConnectionFactory(config_file_reader=dummy_config_file_reader_with_supported_db_flavour).conn
 
-            # Assert
-            expects_args = {
-                "dbname": 'superman_db',
-                "user": 'peter_parker',
-                "password": '1234',
-                "port": 5432,
-                "host": 'localhost',
-            }
-            mock_connect.assert_called_once()
-            mock_connect.assert_called_with(
-                **expects_args
-            )
+        # Assert
+        expects_args = {
+            "dbname": 'superman_db',
+            "user": 'peter_parker',
+            "password": '1234',
+            "port": 5432,
+            "host": 'localhost',
+        }
+        dummy_pgconn.assert_called_once()
+        dummy_pgconn.assert_called_with(
+            **expects_args
+        )

@@ -23,10 +23,10 @@ class TestSQLFileExecutor:
 
     @pytest.fixture()
     def postgres_sql_file_executor(self,
-                                   pgconn
+                                   real_pgconn
                                    ):
         # Arrange
-        postgres_sql_file_executor = PostgresSQLFileExecutor(pgconn)
+        postgres_sql_file_executor = PostgresSQLFileExecutor(real_pgconn)
         postgres_sql_file_executor.set_up_database_revision_control_tables()
         return postgres_sql_file_executor
 
@@ -44,7 +44,7 @@ class TestSQLFileExecutor:
 
     def test__when_rv1_upgrade_revisions_applied__assert_2_new_tables_in_schema_fundamentals(
             self,
-            pgconn,
+            real_pgconn,
             postgres_sql_file_executor,
             rv1_upgrade_database_revision,
     ):
@@ -55,7 +55,7 @@ class TestSQLFileExecutor:
         sql = f"""
         select count(*) from information_schema.tables where table_schema = 'fundamentals';
         """
-        cur = pgconn.cursor()
+        cur = real_pgconn.cursor()
         cur.execute(sql)
         result = cur.fetchone()
         cnt, = result
@@ -66,7 +66,7 @@ class TestSQLFileExecutor:
         sql = f"""
         select count(*) from dvc.database_revision_history;
         """
-        cur = pgconn.cursor()
+        cur = real_pgconn.cursor()
         cur.execute(sql)
         result = cur.fetchone()
         cnt, = result
@@ -75,7 +75,7 @@ class TestSQLFileExecutor:
 
     def test__when_rv2_upgrade_revisions_applied__assert_1_new_tables_in_schema_datetime(
             self,
-            pgconn,
+            real_pgconn,
             postgres_sql_file_executor,
             rv2_upgrade_database_revision,
     ):
@@ -86,7 +86,7 @@ class TestSQLFileExecutor:
         sql = f"""
         select count(*) from information_schema.tables where table_schema = 'datetime';
         """
-        cur = pgconn.cursor()
+        cur = real_pgconn.cursor()
         cur.execute(sql)
         result = cur.fetchone()
         cnt, = result
@@ -97,7 +97,7 @@ class TestSQLFileExecutor:
         sql = f"""
         select count(*) from dvc.database_revision_history;
         """
-        cur = pgconn.cursor()
+        cur = real_pgconn.cursor()
         cur.execute(sql)
         result = cur.fetchone()
         cnt, = result
@@ -106,7 +106,7 @@ class TestSQLFileExecutor:
 
     def test__when_rv2_downgrade_revisions_applied__assert_0_new_tables_in_schema_datetime(
             self,
-            pgconn,
+            real_pgconn,
             postgres_sql_file_executor,
             rv2_downgrade_database_revision,
     ):
@@ -117,7 +117,7 @@ class TestSQLFileExecutor:
         sql = f"""
         select count(*) from information_schema.tables where table_schema = 'datetime';
         """
-        cur = pgconn.cursor()
+        cur = real_pgconn.cursor()
         cur.execute(sql)
         result = cur.fetchone()
         cnt, = result
@@ -128,7 +128,7 @@ class TestSQLFileExecutor:
         sql = f"""
         select count(*) from dvc.database_revision_history;
         """
-        cur = pgconn.cursor()
+        cur = real_pgconn.cursor()
         cur.execute(sql)
         result = cur.fetchone()
         cnt, = result
@@ -137,7 +137,7 @@ class TestSQLFileExecutor:
 
     def test__when_rv1_downgrade_revisions_applied__assert_0_new_tables_in_schema_fundamentals(
             self,
-            pgconn,
+            real_pgconn,
             postgres_sql_file_executor,
             rv1_downgrade_database_revision,
     ):
@@ -148,7 +148,7 @@ class TestSQLFileExecutor:
         sql = f"""
         select count(*) from information_schema.tables where table_schema = 'fundamentals';
         """
-        cur = pgconn.cursor()
+        cur = real_pgconn.cursor()
         cur.execute(sql)
         result = cur.fetchone()
         cnt, = result
@@ -159,7 +159,7 @@ class TestSQLFileExecutor:
         sql = f"""
         select count(*) from dvc.database_revision_history;
         """
-        cur = pgconn.cursor()
+        cur = real_pgconn.cursor()
         cur.execute(sql)
         result = cur.fetchone()
         cnt, = result

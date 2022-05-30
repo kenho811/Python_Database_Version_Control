@@ -1,10 +1,26 @@
+from unittest import mock
 import pytest
 import psycopg2
 from psycopg2._psycopg import connection
 
 
 @pytest.fixture()
-def pgconn(postgres_service) -> connection:
+def dummy_pgconn() -> mock.MagicMock:
+    """
+    Return a dummy pgconn
+    """
+    # Set up
+    with mock.patch('psycopg2.connect') as mock_connect:
+        yield mock_connect
+
+    # Tear down
+
+
+@pytest.fixture()
+def real_pgconn(postgres_service) -> connection:
+    """
+    Return a real pgconn (connected to a real postgres container)
+    """
     return psycopg2.connect(postgres_service)
 
 
