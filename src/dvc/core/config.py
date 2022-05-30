@@ -1,3 +1,4 @@
+import re
 import traceback
 
 import psycopg2
@@ -78,6 +79,7 @@ class DatabaseRevisionFilesManager:
     """
     Manager all Database Revision Files
     """
+    STANDARD_RV_FILE_FORMAT = r'RV[0-9]*__.*\.(upgrade|downgrade)\.sql'
 
     def __init__(self,
                  config_file_reader: ConfigFileReader,
@@ -87,6 +89,15 @@ class DatabaseRevisionFilesManager:
     @property
     def database_revision_files_folder(self) -> Path:
         return Path(self.config_file_reader.user_config['database_revision_sql_files_folder'])
+
+    def validate_database_revision_sql_files(self):
+        # Step 1: Check revision file name
+        prog = re.compile(self.__class__.STANDARD_RV_FILE_FORMAT)
+
+        for file in self.database_revision_files_folder.glob('*/**'):
+            if file.is_file():
+                match = prog.match(file.name)
+                assert len(match) == 1
 
     def create_database_revision_files_folder(self):
         """

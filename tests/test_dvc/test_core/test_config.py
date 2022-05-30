@@ -40,7 +40,6 @@ class TestConfigFileWriter:
         dummy_config_file_path.unlink()
 
 
-@pytest.mark.usefixtures('init_dummy_config_file_path')
 class TestConfigFileReader:
     def test__return_expected_user_config(
             self,
@@ -58,6 +57,16 @@ class TestConfigFileReader:
 
         # Assert
         assert user_config == dummy_user_configuration_postgres_dict
+
+
+class TestDatabaseRevisionFilesManager:
+
+    def test__validate_database_revision_sql_files__raise_InvalidDatabaseRevisionFilesException_with_status_101(
+            self,
+            dummy_config_file_reader
+    ):
+        pass
+        # assert False, dummy_config_file_reader.user_config
 
 
 class TestDatabaseConnectionFactory:
@@ -81,7 +90,6 @@ class TestDatabaseConnectionFactory:
             with pytest.raises(RequestedDatabaseFlavourNotSupportedException) as exc_info:
                 DatabaseConnectionFactory(config_file_reader).validate_requested_database_flavour()
 
-
     def test__pass_user_credentials_to_connect_as_kwargs(
             self,
             dummy_user_configuration_postgres_dict,
@@ -93,7 +101,8 @@ class TestDatabaseConnectionFactory:
         """
         # Arrange
         with mock.patch('psycopg2.connect') as mock_connect:
-            with mock.patch('dvc.core.config.ConfigFileReader.user_config', new_callable=PropertyMock) as mock_user_config:
+            with mock.patch('dvc.core.config.ConfigFileReader.user_config',
+                            new_callable=PropertyMock) as mock_user_config:
                 # Arrange
                 config_file_reader = ConfigFileReader()
                 mock_user_config.return_value = dummy_user_configuration_postgres_dict
