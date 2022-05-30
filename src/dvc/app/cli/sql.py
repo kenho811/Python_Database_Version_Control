@@ -31,7 +31,7 @@ def generate(from_sql_folder: str = typer.Option(..., help="Folder path with SQL
     logging.info(f"Dumping to from database revision folder: {to_sql_folder_path}")
 
     # Step 3: Get latest RV
-    existing_rv_file_name_regex = f".*\.{Operation.Upgrade.value}\.sql"
+    existing_rv_file_name_regex = rf".*\.{Operation.Upgrade.value}\.sql"
     existing_rv_files = db_rv_files_man.get_database_revision_files_by_regex(existing_rv_file_name_regex)
 
     if len(existing_rv_files) == 0:
@@ -43,7 +43,7 @@ def generate(from_sql_folder: str = typer.Option(..., help="Folder path with SQL
     logging.info(f"Latest database revision is {latest_database_revision_number}")
 
     # Step 4: Generate new RV files
-    source_sql_file_name_regex = f".*\.sql"
+    source_sql_file_name_regex = rf".*\.sql"
     source_sql_files_paths: List[Path] = get_matched_files_in_folder_by_regex(
         folder_path=from_sql_folder_path,
         file_name_regex=source_sql_file_name_regex
