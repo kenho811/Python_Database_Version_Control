@@ -70,16 +70,8 @@ def upgrade(
 
     # Step 3: Confirmation
     sql_file_path = target_upgrade_revision_files[0]
-    apply = typer.confirm(f"Are you sure you want to apply the revision file at {sql_file_path}?")
 
-    if apply and not mark_only:
-        logging.info(f"Now applying {sql_file_path} and marking to metadata table")
-        database_revision = DatabaseRevision(
-            executed_sql_file_path_applied=sql_file_path,
-            operation=operation_type
-        )
-        sql_file_executor.execute_database_revision(database_revision=database_revision)
-    elif apply and mark_only:
+    if mark_only:
         logging.info(f"Now only marking {sql_file_path} to metadata table")
         database_revision = DatabaseRevision(
             executed_sql_file_path_applied=sql_file_path,
@@ -87,8 +79,12 @@ def upgrade(
         )
         sql_file_executor._write_database_revision_metadata(database_revision=database_revision)
     else:
-        logging.info(f"Do nothing...")
-        typer.Abort()
+        logging.info(f"Now applying {sql_file_path} and marking to metadata table")
+        database_revision = DatabaseRevision(
+            executed_sql_file_path_applied=sql_file_path,
+            operation=operation_type
+        )
+        sql_file_executor.execute_database_revision(database_revision=database_revision)
 
 
 @app.command()
@@ -129,13 +125,6 @@ def downgrade(
     apply = typer.confirm(f"Are you sure you want to apply the revision file at {sql_file_path}?")
 
     if apply and not mark_only:
-        logging.info(f"Now applying {sql_file_path} and marking to metadata table")
-        database_revision = DatabaseRevision(
-            executed_sql_file_path_applied=sql_file_path,
-            operation=operation_type
-        )
-        sql_file_executor.execute_database_revision(database_revision=database_revision)
-    elif apply and mark_only:
         logging.info(f"Now only marking {sql_file_path} to metadata table")
         database_revision = DatabaseRevision(
             executed_sql_file_path_applied=sql_file_path,
@@ -143,8 +132,12 @@ def downgrade(
         )
         sql_file_executor._write_database_revision_metadata(database_revision=database_revision)
     else:
-        logging.info(f"Do nothing...")
-        typer.Abort()
+        logging.info(f"Now applying {sql_file_path} and marking to metadata table")
+        database_revision = DatabaseRevision(
+            executed_sql_file_path_applied=sql_file_path,
+            operation=operation_type
+        )
+        sql_file_executor.execute_database_revision(database_revision=database_revision)
 
 
 @app.command()
