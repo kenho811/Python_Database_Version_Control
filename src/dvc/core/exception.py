@@ -1,4 +1,5 @@
 from enum import Enum
+from pathlib import Path
 
 from dvc.core.database import SupportedDatabaseFlavour
 
@@ -28,10 +29,14 @@ class InvalidDatabaseRevisionFilesException(Exception):
         MULTIPLE_REVISION_FILE_WITH_SAME_RV_NUMBER_EXISTS = 102  # No two revision files shoudl share i. same RV and ii. same upgrade/downgrade.
 
     def __init__(self,
-                 status: Status
-                 ,
+                 status: Status,
+                 file_path: Path
                  ):
         self.status = status
+        self.file_path= file_path
 
     def __str__(self):
-        return self.status.name
+        return f"""
+        {self.status.name}
+        {self.file_path}
+        """

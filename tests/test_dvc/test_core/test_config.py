@@ -8,8 +8,9 @@ from pathlib import Path
 
 import dvc.core.config
 
-from dvc.core.config import DatabaseConnectionFactory, Default, ConfigFileWriter, ConfigFileReader
-from dvc.core.exception import RequestedDatabaseFlavourNotSupportedException
+from dvc.core.config import DatabaseConnectionFactory, Default, ConfigFileWriter, ConfigFileReader, \
+    DatabaseRevisionFilesManager
+from dvc.core.exception import RequestedDatabaseFlavourNotSupportedException, InvalidDatabaseRevisionFilesException
 
 
 class TestConfigFileWriter:
@@ -51,13 +52,31 @@ class TestConfigFileReader:
 
 class TestDatabaseRevisionFilesManager:
 
+    @pytest.fixture()
+    def dummy_config_file_reader_with_patched_database_revision_files_folder(
+            self,
+            dummy_regex_files_folder_with_incorrect_files_names
+    ):
+        """
+        Yield a config file reader which points to a regex files folder with incorrect files names
+        """
+        # Arrange
+        with mock.patch('dvc.core.config.ConfigFileReader.user_config',
+                        new_callable=mock.PropertyMock,
+                        return_value={
+                            "database_revision_sql_files_folder": dummy_regex_files_folder_with_incorrect_files_names}) as mock_user_config:
+            yield ConfigFileReader()
+
     def test__validate_database_revision_sql_files__raise_InvalidDatabaseRevisionFilesException_with_status_101(
             self,
-            dummy_config_file_reader_with_supported_db_flavour,
-            dummy_regex_files_folder_with_incorrect_files_names,
+            dummy_config_file_reader_with_patched_database_revision_files_folder,
     ):
-        pass
-        # assert False, dummy_config_file_reader.user_config
+        db_rev_man = DatabaseRevisionFilesManager(
+            dummy_config_file_reader_with_patched_database_revision_files_folder)
+        with pytest.raises(InvalidDatabaseRevisionFilesException) as exc_info:
+            db_rev_man.validate_database_revision_sql_files()
+
+
 
 
 class TestDatabaseConnectionFactory:

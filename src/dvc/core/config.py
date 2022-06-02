@@ -10,7 +10,7 @@ from psycopg2._psycopg import connection
 
 from dvc.core.database import SupportedDatabaseFlavour
 from dvc.core.regex import get_matched_files_in_folder_by_regex
-from dvc.core.exception import RequestedDatabaseFlavourNotSupportedException
+from dvc.core.exception import RequestedDatabaseFlavourNotSupportedException, InvalidDatabaseRevisionFilesException
 
 
 class Default:
@@ -94,10 +94,15 @@ class DatabaseRevisionFilesManager:
         # Step 1: Check revision file name
         prog = re.compile(self.__class__.STANDARD_RV_FILE_FORMAT)
 
-        for file in self.database_revision_files_folder.glob('*/**'):
+        for file in self.database_revision_files_folder.glob('**/*'):
             if file.is_file():
                 match = prog.match(file.name)
-                assert len(match) == 1
+                if not match:
+                    raise InvalidDatabaseRevisionFilesException(
+                        file_path=file,
+                        status=InvalidDatabaseRevisionFilesException.Status.NON_CONFORMANT_REVISION_FILE_NAME_EXISTS)
+
+        # Step 2: Check no duplicates
 
     def create_database_revision_files_folder(self):
         """

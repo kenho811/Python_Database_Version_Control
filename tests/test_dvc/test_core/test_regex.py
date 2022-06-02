@@ -7,8 +7,6 @@ from pathlib import Path
 from dvc.core.regex import get_matched_files_in_folder_by_regex
 
 
-
-
 class TestGetMatchedFilesInFolderByRegex:
 
     @pytest.mark.parametrize(
@@ -19,7 +17,7 @@ class TestGetMatchedFilesInFolderByRegex:
          ])
     def test__get_matched_files_in_folder_by_regex__assert_number_sql_files(
             self,
-            dummy_regex_files_folder_with_incorrect_files_names,
+            dummy_regex_files_folder_with_correct_files_names,
             file_name_regex,
             expected_num_matched_files_paths
     ):
@@ -30,7 +28,7 @@ class TestGetMatchedFilesInFolderByRegex:
         """
         ## Act
         txt_matched_files_paths: List[Path] = get_matched_files_in_folder_by_regex(
-            folder_path=dummy_regex_files_folder_with_incorrect_files_names,
+            folder_path=dummy_regex_files_folder_with_correct_files_names,
             file_name_regex=file_name_regex,
         )
 

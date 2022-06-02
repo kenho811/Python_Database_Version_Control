@@ -40,6 +40,7 @@ setup(
                 'pytest',
                 'pytest-cov',
                 'pytest-docker',
+                'pytest-html',
                 'sphinx',
                 # Sphinx Theme
                 'furo',

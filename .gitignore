@@ -4,3 +4,6 @@ config.yaml
 **/__pycache__/*
 build/*
 dist/*
+test_report/*
+
+!**/.gitkeep
