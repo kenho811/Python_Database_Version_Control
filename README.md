@@ -10,14 +10,20 @@ https://python-database-version-control.readthedocs.io/en/release/
 
 ## Demonstration
 
-See: https://www.youtube.com/watch?v=9l3m7zBxN4Y
+For video demonstration, see
+- https://www.youtube.com/watch?v=9l3m7zBxN4Y
+
+For demonstration on your own machine, 
+1. Use `git clone` to clone the repository.
+2. Make sure you have docker and docker compose installed on your machine.
+3. Run `docker compose up` to spin up a brand new postgres container and dvc container. The latter will apply demo migration SQL scripts to the postgres DB.
+4. From the host machine, use the URL `postgres://test:test@localhost:5433/test` to access the postgres DB. Check that there are indeed new schemas and new tables as specified in the ./demo_assets/sample_revision_sql_files folder
 
 
 ## Usage
 
-1. Git clone the repository. Cd into the repository.
-2. pip install with `pip install .`
-3. Run `dvc --help` in the terminal to see further instructions.
+1. pip install with `pip install database-version-control`
+2. Run `dvc --help` in the terminal to see further instructions.
 
 
 ## Development
@@ -25,6 +31,7 @@ See: https://www.youtube.com/watch?v=9l3m7zBxN4Y
 1. Git clone the repository. Cd into the repository.
 2. pip install with `pip install .[dev]` (in zsh, do `pip install .'[dev]'`)
 3. use `pytest` to run tests
+4. Open a PR to add to the repository
 
 ## Details
 ### Database supported
