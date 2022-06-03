@@ -6,11 +6,11 @@ import pytest
 import psycopg2
 from pathlib import Path
 
-import dvc.core.config
-
+from dvc.core.database import SupportedDatabaseFlavour
 from dvc.core.config import DatabaseConnectionFactory, ConfigDefault, ConfigFileWriter, ConfigReader, \
     DatabaseRevisionFilesManager
-from dvc.core.exception import RequestedDatabaseFlavourNotSupportedException, InvalidDatabaseRevisionFilesException
+from dvc.core.exception import RequestedDatabaseFlavourNotSupportedException, InvalidDatabaseRevisionFilesException, \
+    EnvironmentVariableNotSetException
 
 
 class TestConfigFileWriter:
@@ -32,8 +32,49 @@ class TestConfigFileWriter:
         assert dummy_absent_config_file_path.is_file()
 
 
-class TestConfigFileReader:
-    def test__return_expected_user_config(
+class TestConfigReader:
+
+    def test__when_no_config_file_exists_nor_env_var__raise_environment_variables_not_set_exception(
+            self,
+            dummy_absent_config_file_path,
+    ):
+        """
+        GIVEN a dummy config file with dummy user configuration,
+        WHEN ConfigFileReader.user_config is called
+        THEN check dummy user configuration is returned
+        """
+        # Action
+        with pytest.raises(EnvironmentVariableNotSetException) as exc_info:
+            user_config = ConfigReader(dummy_absent_config_file_path).user_config
+
+    def test__when_no_config_file_exists__return_expected_user_config_from_env_var(
+            self,
+            dummy_user_configuration_with_supported_db_flavour,
+            dummy_absent_config_file_path,
+            monkeypatch,
+    ):
+        """
+        GIVEN a dummy config file with dummy user configuration,
+        WHEN ConfigFileReader.user_config is called
+        THEN check dummy user configuration is returned
+        """
+        # Arrange
+        # Set environment variables
+        monkeypatch.setenv(ConfigDefault.KEY__DATABASE_REVISION_SQL_FILES_FOLDER, "sample_revision_sql_files")
+        monkeypatch.setenv(ConfigDefault.KEY__USER, "peter_parker")
+        monkeypatch.setenv(ConfigDefault.KEY__PASSWORD, "1234")
+        monkeypatch.setenv(ConfigDefault.KEY__HOST, "localhost")
+        monkeypatch.setenv(ConfigDefault.KEY__PORT, "5432")
+        monkeypatch.setenv(ConfigDefault.KEY__DBNAME, "superman_db")
+        monkeypatch.setenv(ConfigDefault.KEY__DBFLAVOUR, SupportedDatabaseFlavour.Postgres.value)
+
+        # Action
+        user_config = ConfigReader(dummy_absent_config_file_path).user_config
+
+        # Assert
+        assert user_config == dummy_user_configuration_with_supported_db_flavour
+
+    def test__when_config_file_exists__return_expected_user_config_from_config_file(
             self,
             dummy_user_configuration_with_supported_db_flavour,
             dummy_existing_config_file_path,
@@ -75,8 +116,6 @@ class TestDatabaseRevisionFilesManager:
             dummy_config_file_reader_with_patched_database_revision_files_folder)
         with pytest.raises(InvalidDatabaseRevisionFilesException) as exc_info:
             db_rev_man.validate_database_revision_sql_files()
-
-
 
 
 class TestDatabaseConnectionFactory:

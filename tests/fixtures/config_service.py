@@ -6,8 +6,9 @@ import logging
 from unittest import mock
 
 # Import dvc
-from dvc.core.config import ConfigReader
+from dvc.core.config import ConfigReader, ConfigDefault
 from dvc.core.database import SupportedDatabaseFlavour
+
 
 
 @pytest.fixture()
@@ -72,23 +73,29 @@ def dummy_existing_config_file_path(
 @pytest.fixture
 def dummy_absent_config_file_path(
         tmp_path,
-        dummy_user_configuration_with_supported_db_flavour):
+        dummy_user_configuration_with_supported_db_flavour,
+        monkeypatch
+):
     """
     Return path to a non-existing config file
     """
     dummy_absent_config_file_path = tmp_path.joinpath('dummy_absent_config_file_path.yaml')
 
-    # Set up: Remove the file if it exists
+    # Set up:
+    # Step 1: Remove the file if it exists
     if dummy_absent_config_file_path.is_file():
         logging.info(f"File {dummy_absent_config_file_path} is found. Deleting...")
         dummy_absent_config_file_path.unlink()
+
 
     yield dummy_absent_config_file_path
 
-    # Tear down: Remove the file if it exists
+    # Tear down:
+    # Step 1: Remove the file if it exists
     if dummy_absent_config_file_path.is_file():
         logging.info(f"File {dummy_absent_config_file_path} is found. Deleting...")
         dummy_absent_config_file_path.unlink()
+
 
 
 @pytest.fixture()
