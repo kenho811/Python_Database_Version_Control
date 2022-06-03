@@ -4,8 +4,7 @@ echo "Waiting for 10 seconds until db backend is ready"
 sleep 10
 
 #################
-echo "Now initialising dvc configurations"
-dvc cfg init
+echo "Reading Config from environment variables"
 echo "Now initialising dvc configurations"
 dvc db init
 echo "Now upgrading db"
