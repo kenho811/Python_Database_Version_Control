@@ -50,7 +50,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: kenho811/database-version-control:latest
+          tags: kenho811/database-version-control:${{ github.ref_name }}
 
   push-docker-description:
     runs-on: ubuntu-latest
