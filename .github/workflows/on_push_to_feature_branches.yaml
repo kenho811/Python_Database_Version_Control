@@ -2,8 +2,9 @@ name: Tests only
 
 on:
   push:
-    branches-ignore:
-      - 'release/**'
+    branches:
+      - master
+      - 'feature/**'
 
 jobs:
   tests:
