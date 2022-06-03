@@ -55,8 +55,8 @@ jobs:
       - name: Build and Push Docker image
         uses: docker/build-push-action@v3
         with:
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          push: true
+          tags: kenho811/database-version-control:${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
   push-docker-description:
