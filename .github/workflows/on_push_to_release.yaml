@@ -3,7 +3,7 @@ name: Test. build and push
 on:
   push:
     branches:
-      - release
+      - 'release/**'
         
 jobs:
   tests:
@@ -53,9 +53,10 @@ jobs:
         with:
           push: true
           tags: kenho811/database-version-control:latest
-      - name: Push read.me to ocker Hub Description
+      - name: Push READMD.md to docker Hub Description
         uses: peter-evans/dockerhub-description@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: kenho811/database-version-control
+          readme-filepath: ./README.md
