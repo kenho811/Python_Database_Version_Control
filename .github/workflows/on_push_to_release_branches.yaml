@@ -7,6 +7,7 @@ on:
 
 jobs:
   tests:
+    name: Run tests
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -33,6 +34,7 @@ jobs:
           pytest --cov=dvc tests/
 
   build-push-docker-image:
+    name: Build and push docker image to Dockerhub
     runs-on: ubuntu-latest
     needs: tests
 
@@ -59,7 +61,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  push-docker-description:
+  push-readme-to-dockerhub:
+    name: Push README.md to dockerhub
     runs-on: ubuntu-latest
     needs: build-push-docker-image
     steps:
@@ -77,3 +80,34 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: kenho811/database-version-control
           readme-filepath: ./README.md
+
+  pr-merge-to-master:
+    name: Create PR Release to Master
+    runs-on: ubuntu-latest
+    needs: push-readme-to-dockerhub
+    steps:
+      - name: git checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+
+      # https://github.com/marketplace/actions/github-pull-request-action
+      - name: create pull request
+        id: open-pr
+        uses: repo-sync/pull-request@v2
+        with:
+          github_token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          destination_branch: ${{ github.event.repository.default_branch }}
+          pr_title: "[Automated] Merge ${{ github.ref_name }} into ${{ github.event.repository.default_branch }}"
+          pr_body: "Automated Pull Request"
+          pr_reviewer: "ken"
+          pr_assignee: "ken"
+
+      # https://github.com/marketplace/actions/enable-pull-request-automerge
+      - name: enable automerge
+        if: steps.open-pr.outputs.pr_number != ''
+        uses: peter-evans/enable-pull-request-automerge@v2
+        with:
+          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          pull-request-number: ${{ steps.open-pr.outputs.pr_number }}
+          merge-method: merge
