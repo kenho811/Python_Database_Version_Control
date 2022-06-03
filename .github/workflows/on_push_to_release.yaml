@@ -1,4 +1,4 @@
-name: Python Packages
+name: Test. build and push
 
 on:
   push:
@@ -57,5 +57,5 @@ jobs:
         uses: peter-evans/dockerhub-description@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: kenho811/database-version-control

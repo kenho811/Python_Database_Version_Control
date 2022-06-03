@@ -1,4 +1,4 @@
-name: Python Packages
+name: Tests only
 
 on:
   push:
