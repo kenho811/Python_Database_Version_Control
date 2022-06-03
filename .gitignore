@@ -1,5 +1,5 @@
 */**.egg-info
-config.yaml
+*.yaml
 .idea/*
 **/__pycache__/*
 build/*

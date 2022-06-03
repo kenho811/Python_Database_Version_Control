@@ -11,12 +11,12 @@ from dvc.core.database.mysql import MySQLSQLFileExecutor
 from dvc.core.database.bigquery import BigQuerySQLFileExecutor
 
 from dvc.core.struct import Operation
-from dvc.core.config import Default, DatabaseRevisionFilesManager, ConfigFileReader, DatabaseConnectionFactory
+from dvc.core.config import ConfigDefault, DatabaseRevisionFilesManager, ConfigReader, DatabaseConnectionFactory
 from dvc.core.file import validate_file_exist
 
 
 def get_target_database_revision_sql_files(
-        config_file_reader: ConfigFileReader,
+        config_file_reader: ConfigReader,
         operation_type: Operation,
         target_revision_version: str,
 ) -> List[Path]:
@@ -44,10 +44,10 @@ class DatabaseInteractor:
     @property
     def config_file_reader(self):
         if self.config_file_path is None:
-            config_file_reader = ConfigFileReader(Default.CONFIG_FILE_PATH)
+            config_file_reader = ConfigReader(ConfigDefault.VAL__FILE_PATH)
         else:
             validate_file_exist(self.config_file_path)
-            config_file_reader = ConfigFileReader(self.config_file_path)
+            config_file_reader = ConfigReader(self.config_file_path)
         return config_file_reader
 
     @property

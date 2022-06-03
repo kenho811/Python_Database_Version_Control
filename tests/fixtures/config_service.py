@@ -6,7 +6,7 @@ import logging
 from unittest import mock
 
 # Import dvc
-from dvc.core.config import ConfigFileReader
+from dvc.core.config import ConfigReader
 from dvc.core.database import SupportedDatabaseFlavour
 
 
@@ -15,7 +15,7 @@ def dummy_user_configuration_with_supported_db_flavour() -> Dict:
     """
     Fixture of User Configruration
     """
-    DUMMY_USER_CONFIG_FILE: Dict = {
+    DUMMY_USER_CONFIG: Dict = {
         "database_revision_sql_files_folder": "sample_revision_sql_files",
         "credentials": {
             "user": "peter_parker",
@@ -26,7 +26,7 @@ def dummy_user_configuration_with_supported_db_flavour() -> Dict:
             "dbflavour": SupportedDatabaseFlavour.Postgres.value
         }
     }
-    return DUMMY_USER_CONFIG_FILE
+    return DUMMY_USER_CONFIG
 
 
 @pytest.fixture()
@@ -99,10 +99,10 @@ def dummy_config_file_reader_with_supported_db_flavour(
     Yield dummy config file reader with user_config property patched
     """
 
-    with mock.patch('dvc.core.config.ConfigFileReader.user_config',
+    with mock.patch('dvc.core.config.ConfigReader.user_config',
                     new_callable=mock.PropertyMock,
                     return_value=dummy_user_configuration_with_supported_db_flavour) as mock_user_config:
-        yield ConfigFileReader()
+        yield ConfigReader()
 
 
 @pytest.fixture()
@@ -113,7 +113,7 @@ def dummy_config_file_reader_with_unsupported_db_flavour(
     Yield dummy config file reader with user_config property patched
     """
 
-    with mock.patch('dvc.core.config.ConfigFileReader.user_config',
+    with mock.patch('dvc.core.config.ConfigReader.user_config',
                     new_callable=mock.PropertyMock,
                     return_value=dummy_user_configuration_with_unsupported_db_flavour) as mock_user_config:
-        yield ConfigFileReader()
+        yield ConfigReader()

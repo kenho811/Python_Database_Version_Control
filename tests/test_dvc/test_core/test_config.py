@@ -8,7 +8,7 @@ from pathlib import Path
 
 import dvc.core.config
 
-from dvc.core.config import DatabaseConnectionFactory, Default, ConfigFileWriter, ConfigFileReader, \
+from dvc.core.config import DatabaseConnectionFactory, ConfigDefault, ConfigFileWriter, ConfigReader, \
     DatabaseRevisionFilesManager
 from dvc.core.exception import RequestedDatabaseFlavourNotSupportedException, InvalidDatabaseRevisionFilesException
 
@@ -44,7 +44,7 @@ class TestConfigFileReader:
         THEN check dummy user configuration is returned
         """
         # Action
-        user_config = ConfigFileReader(dummy_existing_config_file_path).user_config
+        user_config = ConfigReader(dummy_existing_config_file_path).user_config
 
         # Assert
         assert user_config == dummy_user_configuration_with_supported_db_flavour
@@ -61,11 +61,11 @@ class TestDatabaseRevisionFilesManager:
         Yield a config file reader which points to a regex files folder with incorrect files names
         """
         # Arrange
-        with mock.patch('dvc.core.config.ConfigFileReader.user_config',
+        with mock.patch('dvc.core.config.ConfigReader.user_config',
                         new_callable=mock.PropertyMock,
                         return_value={
                             "database_revision_sql_files_folder": dummy_regex_files_folder_with_incorrect_files_names}) as mock_user_config:
-            yield ConfigFileReader()
+            yield ConfigReader()
 
     def test__validate_database_revision_sql_files__raise_InvalidDatabaseRevisionFilesException_with_status_101(
             self,

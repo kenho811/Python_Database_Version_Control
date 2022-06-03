@@ -12,5 +12,5 @@ from tests.fixtures.config_service import *
 from tests.fixtures.regex_service import *
 
 # Import dvc
-from dvc.core.config import ConfigFileReader
+from dvc.core.config import ConfigReader
 
