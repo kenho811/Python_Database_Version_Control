@@ -1,7 +1,8 @@
+# docker-compose for demonstration purposes
 version: "3.9"
 services:
   postgres_db:
-    # Accessible from other contains via postgres://test:test@postgres_db:5432/test
+    # Accessible from containers via postgres://test:test@postgres_db:5432/test
     # Accessible from host machine via postgres://test:test@localhost:5433/test
     image: postgres
     restart: on-failure
@@ -12,7 +13,8 @@ services:
     ports:
       - "5433:5432"
   db-migration-tool:
-    image: dvc:latest
+    # Pull image from  public repository
+    image: kenho811/database-version-control:latest
     depends_on:
       - postgres_db
     environment:
@@ -23,9 +25,6 @@ services:
       - DVC__PORT=5432
       - DVC__DBNAME=test
       - DVC__DBFLAVOUR=postgres
-    build:
-      context:  .
-      dockerfile: Dockerfile
     # Attach demo assets to the db-migration-tool and run scripts at start up
     working_dir: /usr/src/app/demo_assets
     volumes:

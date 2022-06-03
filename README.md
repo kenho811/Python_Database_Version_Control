@@ -1,29 +1,53 @@
 Python library to do database version control.
 
-## PyPi
+## Usage
 
-See: https://pypi.org/project/database-version-control/
+### As a Microservice
+#### Image on Dockerhub
+https://hub.docker.com/repository/docker/kenho811/database-version-control#
+
+- Run the below to see it in action
+```commandline
+# Clone the repo and checkout release branch
+git clone -b release git@github.com:kenho811/Python_Database_Version_Control.git 
+
+# cd to the repository
+cd Python_Database_Version_Control
+
+# Fnd the docker-compose.yml and run 
+docker compose up
+
+# Using psql as client, access the postgres DB and see the result
+(URL: postgres://test:test@localhost:5433/test)
+PGPASSWORD=test psql -U test -d test -h localhost -p 5433
+
+# Check out docker-compose.yml file for usage as a microservice
+```
+
+
+### As a Commandline tool
+#### Commandline tool on PyPI
+https://pypi.org/project/database-version-control/
+
+```commandline
+# Install the library from PyPi
+pip install database-version-control
+
+# To get more instructions of the commandline tool, run the below in the terminal
+dvc --help
+```
 
 ## Documentation
+### On Readthedocs
 
 https://python-database-version-control.readthedocs.io/en/release/
 
-## Demonstration
+## Video Demonstration
+### On Youtube
 
-For video demonstration, see
 - https://www.youtube.com/watch?v=9l3m7zBxN4Y
 
-For demonstration on your own machine, 
-1. Use `git clone` to clone the repository.
-2. Make sure you have docker and docker compose installed on your machine.
-3. Run `docker compose up` to spin up a brand new postgres container and dvc container. The latter will apply demo migration SQL scripts to the postgres DB.
-4. From the host machine, use the URL `postgres://test:test@localhost:5433/test` to access the postgres DB. Check that there are indeed new schemas and new tables as specified in the ./demo_assets/sample_revision_sql_files folder
 
-
-## Usage
-
-1. pip install with `pip install database-version-control`
-2. Run `dvc --help` in the terminal to see further instructions.
 
 
 ## Development
