@@ -37,7 +37,7 @@ jobs:
   build-n-push-docker-image:
     name: Build and push docker image to Dockerhub
     runs-on: ubuntu-latest
-    needs: tests
+#    needs: tests
 
     steps:
       - name: Set up QEMU
@@ -59,7 +59,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: latest
+          tags: master1
           labels: ${{ steps.meta.outputs.labels }}
 
   # Step 2b2: Push to DockerHub
