@@ -4,13 +4,17 @@ on:
   push:
     branches:
       - 'release/**'
-        
+
+env:
+  # Convert git branch name to valid docker tag
+  DOCKER_TAG: ${{ git rev-parse --abbrev-ref HEAD | sed 's/[^a-zA-Z0-9]/-/g') }}
+
 jobs:
   tests:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: [ "3.7", "3.8", "3.9", "3.10" ]
         os: [ ubuntu-latest ]
     steps:
       - uses: actions/checkout@v3
@@ -50,7 +54,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: kenho811/database-version-control:${{ github.ref_name }}
+          tags: kenho811/database-version-control:${{ env.DOCKER_TAG }}
 
   push-docker-description:
     runs-on: ubuntu-latest
