@@ -50,7 +50,31 @@ https://python-database-version-control.readthedocs.io/en/release/
 
 
 
-## Development
+## Development-Testing-release workflow
+
+```commandline
+# Git clone the repo and checkout master
+git clone -b master git@github.com:kenho811/Python_Database_Version_Control.git 
+
+# create a feature branch
+git checkout -b feature/{code_change_theme}
+
+# Pip install dependencies
+pip install with `pip install ".[dev]"`
+
+# Development
+
+# Write unit + integration tests
+
+# Run pytest
+pytest
+
+# Open PR against master
+
+# (By maintainer) For a new release, cut a new release branch with version number (match app version number). 
+git checkout -b release/{app_version_number}
+
+```
 
 1. Git clone the repository. Cd into the repository.
 2. pip install with `pip install ".[dev]"`

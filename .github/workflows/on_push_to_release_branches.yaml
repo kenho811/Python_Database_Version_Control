@@ -34,7 +34,7 @@ jobs:
 
   build-push-docker-image:
     runs-on: ubuntu-latest
-#    needs: tests
+    needs: tests
 
     steps:
       - name: Set up QEMU
