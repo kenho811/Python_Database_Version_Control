@@ -76,11 +76,6 @@ git checkout -b release/{app_version_number}
 
 ```
 
-1. Git clone the repository. Cd into the repository.
-2. pip install with `pip install ".[dev]"`
-3. use `pytest` to run tests
-4. Open a PR to add to the repository
-
 ## Details
 ### Database supported
 - Postgres Database
