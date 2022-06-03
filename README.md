@@ -29,7 +29,7 @@ For demonstration on your own machine,
 ## Development
 
 1. Git clone the repository. Cd into the repository.
-2. pip install with `pip install .[dev]` (in zsh, do `pip install .'[dev]'`)
+2. pip install with `pip install ".[dev]"`
 3. use `pytest` to run tests
 4. Open a PR to add to the repository
 
