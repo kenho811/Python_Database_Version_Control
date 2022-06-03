@@ -76,6 +76,17 @@ git checkout -b release/{app_version_number}
 
 ```
 
+## CI convention 
+- The below is currently triggered via Github Action
+
+Branch | DockerHub tag         | PyPI version  | 
+--- |-----------------------|---------------| 
+master | latest                | N/A           |
+feature/{theme} | N/A                   | N/A           |
+release/{version_num} | release-{version_num} | {version_num} |
+
+
+
 ## Details
 ### Database supported
 - Postgres Database
