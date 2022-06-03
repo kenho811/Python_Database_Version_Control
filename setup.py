@@ -42,6 +42,7 @@ setup(
                 'pytest-docker',
                 'pytest-html',
                 'sphinx',
+                'flake8',
                 # Sphinx Theme
                 'furo',
             ]
