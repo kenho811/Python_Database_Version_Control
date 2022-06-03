@@ -5,10 +5,6 @@ on:
     branches:
       - 'release/**'
 
-env:
-  # Convert git branch name to valid docker tag
-  DOCKER_TAG: ${{ ${{ github.ref_name }} | sed 's/[^a-zA-Z0-9]/-/g') }}
-
 jobs:
   tests:
     runs-on: ${{ matrix.os }}
