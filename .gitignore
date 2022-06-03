@@ -1,6 +1,7 @@
 */**.egg-info
-*.yaml
+config.yaml
 .idea/*
+.coverage
 **/__pycache__/*
 build/*
 dist/*
