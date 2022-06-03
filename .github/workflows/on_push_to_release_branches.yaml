@@ -6,6 +6,7 @@ on:
       - 'release/**'
 
 jobs:
+  # Step 1: Run tests
   tests:
     name: Run tests
     runs-on: ${{ matrix.os }}
@@ -33,6 +34,7 @@ jobs:
         run: |
           pytest --cov=dvc tests/
 
+  # Step 2a: Publish to PYPI
   build-n-push-to-PyPI:
     # Triggered after all tests run successfully
     name: Build and publish Python distributions to PyPI
@@ -51,7 +53,10 @@ jobs:
         uses: pypa/gh-action-pypi-publish@master
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
+        # Allow to fail, given that PyPI does not allow overriding existing release  with same name
+        continue-on-error: true
 
+  # Step 2b1: Push to DockerHub
   build-n-push-docker-image:
     name: Build and push docker image to Dockerhub
     runs-on: ubuntu-latest
@@ -79,9 +84,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-        # Allow to fail, given that PyPI does not allow overriding existing release  with same name
-        continue-on-error: true
 
+  # Step 2b2: Push to DockerHub
   push-readme-to-dockerhub:
     name: Push README.md to dockerhub
     runs-on: ubuntu-latest
@@ -102,6 +106,7 @@ jobs:
           repository: kenho811/database-version-control
           readme-filepath: ./README.md
 
+  # PR merge back to master after all CI is done
   pr-merge-to-master:
     name: Create PR Release to Master
     runs-on: ubuntu-latest
