@@ -53,6 +53,12 @@ jobs:
         with:
           push: true
           tags: kenho811/database-version-control:latest
+      - name: Check the File System
+        run: |
+          echo "PWD is"
+          pwd
+          echo "Files are"
+          ls
       - name: Push READMD.md to docker Hub Description
         uses: peter-evans/dockerhub-description@v3
         with:
