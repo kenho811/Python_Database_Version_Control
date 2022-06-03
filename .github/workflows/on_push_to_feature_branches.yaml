@@ -1,9 +1,8 @@
-name: Tests only
+name: Test
 
 on:
   push:
     branches:
-      - master
       - 'feature/**'
 
 jobs:

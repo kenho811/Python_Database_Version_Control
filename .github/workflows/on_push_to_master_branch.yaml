@@ -1,9 +1,9 @@
-name: Test, build, push to PyPI and DockerHub and merge back to master
+name: Test, build, push Dockerhub
 
 on:
   push:
     branches:
-      - 'release/**'
+      - master
 
 jobs:
   # Step 1: Run tests
@@ -33,30 +33,7 @@ jobs:
       - name: Test with pytest coverage
         run: |
           pytest --cov=dvc tests/
-
-  # Step 2a: Publish to PYPI
-  build-n-push-to-PyPI:
-    # Triggered after all tests run successfully
-    name: Build and publish Python distributions to PyPI
-    runs-on: ubuntu-latest
-    needs: tests
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v3
-        with:
-          python-version: 3.9
-      - name: Build tar ball
-        run: |
-          python setup.py sdist
-      - name: Publish distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
-        # Allow to fail, given that PyPI does not allow overriding existing release  with same name
-        continue-on-error: true
-
-  # Step 2b1: Push to DockerHub
+  # Step 2: Push to DockerHub
   build-n-push-docker-image:
     name: Build and push docker image to Dockerhub
     runs-on: ubuntu-latest
@@ -105,35 +82,3 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: kenho811/database-version-control
           readme-filepath: ./README.md
-
-  # PR merge back to master after all CI is done
-  pr-merge-to-master:
-    name: Create PR Release to Master
-    runs-on: ubuntu-latest
-    needs: tests
-    steps:
-      - name: git checkout
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-
-      # https://github.com/marketplace/actions/github-pull-request-action
-      - name: create pull request
-        id: open-pr
-        uses: repo-sync/pull-request@v2
-        with:
-          github_token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          destination_branch: ${{ github.event.repository.default_branch }}
-          pr_title: "[Automated] Merge ${{ github.ref_name }} into ${{ github.event.repository.default_branch }}"
-          pr_body: "Automated Pull Request"
-          pr_reviewer: "ken"
-          pr_assignee: "ken"
-
-      # https://github.com/marketplace/actions/enable-pull-request-automerge
-      - name: enable automerge
-        if: steps.open-pr.outputs.pr_number != ''
-        uses: peter-evans/enable-pull-request-automerge@v2
-        with:
-          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          pull-request-number: ${{ steps.open-pr.outputs.pr_number }}
-          merge-method: merge
