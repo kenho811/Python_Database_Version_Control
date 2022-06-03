@@ -7,6 +7,7 @@ from pathlib import Path
 from dvc.core.regex import get_matched_files_in_folder_by_regex
 
 
+@pytest.mark.unit
 class TestGetMatchedFilesInFolderByRegex:
 
     @pytest.mark.parametrize(

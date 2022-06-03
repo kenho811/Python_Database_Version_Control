@@ -22,15 +22,12 @@ jobs:
           pip install flake8 pytest 
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           if [ -f setup.py ]; then pip install -e .'[dev]'; fi
-      - name: Test with pytest
+      - name: Pytest Unit test
         run: |
-          pytest -v --html=test_report/report.html
+          pytest -m "unit "-v
+      - name: Pytest Integration test
+        run: |
+          pytest -m "integration "-v
       - name: Test with pytest coverage
         run: |
           pytest --cov=dvc tests/
-      - name: Upload Documentation to Wiki
-        uses: SwiftDocOrg/github-wiki-publish-action@v1
-        with:
-          path: "test_report/report.html"
-        env:
-          GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}

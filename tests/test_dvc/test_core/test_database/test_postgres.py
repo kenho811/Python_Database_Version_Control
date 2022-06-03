@@ -11,10 +11,7 @@ from dvc.core.struct import DatabaseVersion, DatabaseRevision, Operation
 from requests.exceptions import ConnectionError
 
 
-
-
-
-
+@pytest.mark.integration
 @pytest.mark.usefixtures('postgres_service')
 class TestSQLFileExecutor:
     """

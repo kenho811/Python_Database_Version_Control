@@ -10,6 +10,7 @@ from dvc.app.cli.config import app
 runner = CliRunner()
 
 
+@pytest.mark.unit
 def test__init__no_error_when_called_twice():
     """
     Test no error when called twice

@@ -13,6 +13,7 @@ from dvc.core.exception import RequestedDatabaseFlavourNotSupportedException, In
     EnvironmentVariableNotSetException
 
 
+@pytest.mark.unit
 class TestConfigFileWriter:
 
     def test__write_dummy_user_configuration(
@@ -32,6 +33,7 @@ class TestConfigFileWriter:
         assert dummy_absent_config_file_path.is_file()
 
 
+@pytest.mark.unit
 class TestConfigReader:
 
     def test__when_no_config_file_exists_nor_env_var__raise_environment_variables_not_set_exception(
@@ -91,6 +93,7 @@ class TestConfigReader:
         assert user_config == dummy_user_configuration_with_supported_db_flavour
 
 
+@pytest.mark.unit
 class TestDatabaseRevisionFilesManager:
 
     @pytest.fixture()
@@ -118,6 +121,7 @@ class TestDatabaseRevisionFilesManager:
             db_rev_man.validate_database_revision_sql_files()
 
 
+@pytest.mark.unit
 class TestDatabaseConnectionFactory:
 
     def test__raise_requested_database_not_supported_exception(
