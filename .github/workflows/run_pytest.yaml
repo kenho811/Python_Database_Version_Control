@@ -24,10 +24,10 @@ jobs:
           if [ -f setup.py ]; then pip install -e .'[dev]'; fi
       - name: Pytest Unit test
         run: |
-          pytest -m "unit "-v
+          pytest -m "unit" -v
       - name: Pytest Integration test
         run: |
-          pytest -m "integration "-v
+          pytest -m "integration" -v
       - name: Test with pytest coverage
         run: |
           pytest --cov=dvc tests/
