@@ -55,17 +55,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Echo meta variables
-        run: |
-          echo "tags"
-          echo ${{ steps.meta.outputs.tags }}
-          echo "labels"
-          echo ${{ steps.meta.outputs.labels }}
-      - name: Build and Push Docker image
+      - # Force using latest label for master branch commits
+        name: Build and Push Docker image
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: kenho811/database-version-control:latest
           labels: ${{ steps.meta.outputs.labels }}
 
   # Step 2b2: Push to DockerHub
