@@ -25,6 +25,8 @@ jobs:
       - name: Pytest Unit test
         run: |
           pytest -m "unit" -v
+      - name: Set up docker
+        uses: docker-practice/actions-setup-docker@master
       - name: Pytest Integration test
         run: |
           pytest -m "integration" -v
