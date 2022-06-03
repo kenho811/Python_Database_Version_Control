@@ -1,4 +1,4 @@
-name: Python package
+name: Python Packages
 
 on: [push]
 
@@ -19,12 +19,18 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 pytest
+          pip install flake8 pytest 
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           if [ -f setup.py ]; then pip install -e .'[dev]'; fi
       - name: Test with pytest
         run: |
-          pytest -v
+          pytest -v --html=test_report/report.html
       - name: Test with pytest coverage
         run: |
           pytest --cov=dvc tests/
+      - name: Upload Documentation to Wiki
+        uses: SwiftDocOrg/github-wiki-publish-action@v1
+        with:
+          path: "test_report/report.html"
+        env:
+          GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
