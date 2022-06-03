@@ -3,7 +3,7 @@ name: Python Packages
 on:
   push:
     branches-ignore:
-      - master
+      - release
 
 jobs:
   tests:
@@ -33,14 +33,3 @@ jobs:
       - name: Test with pytest coverage
         run: |
           pytest --cov=dvc tests/
-
-  build:
-    runs-on: ubuntu-latest
-    needs: tests
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Build
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ matrix.python-version }}
