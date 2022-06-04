@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Post commit script
+
+echo "Now generating pytest reports"
+pytest --html=docs/_static/pytest_report.html

@@ -62,6 +62,9 @@ git checkout -b feature/{code_change_theme}
 # Pip install dependencies
 pip install with `pip install ".[dev]"`
 
+# Enable local githooks
+git config --local core.hooksPath .githooks/
+
 # Development
 
 # Write unit + integration tests

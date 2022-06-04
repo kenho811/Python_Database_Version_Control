@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Test Report</title>
+    <link href="assets/style.css" rel="stylesheet" type="text/css"/></head>
+  <body onLoad="init()">
+    <script>/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+
+function toArray(iter) {
+    if (iter === null) {
+        return null;
+    }
+    return Array.prototype.slice.call(iter);
+}
+
+function find(selector, elem) { // eslint-disable-line no-redeclare
+    if (!elem) {
+        elem = document;
+    }
+    return elem.querySelector(selector);
+}
+
+function findAll(selector, elem) {
+    if (!elem) {
+        elem = document;
+    }
+    return toArray(elem.querySelectorAll(selector));
+}
+
+function sortColumn(elem) {
+    toggleSortStates(elem);
+    const colIndex = toArray(elem.parentNode.childNodes).indexOf(elem);
+    let key;
+    if (elem.classList.contains('result')) {
+        key = keyResult;
+    } else if (elem.classList.contains('links')) {
+        key = keyLink;
+    } else {
+        key = keyAlpha;
+    }
+    sortTable(elem, key(colIndex));
+}
+
+function showAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(showExtras);
+}
+
+function hideAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(hideExtras);
+}
+
+function showExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.remove('collapsed');
+    expandcollapse.classList.remove('expander');
+    expandcollapse.classList.add('collapser');
+}
+
+function hideExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.add('collapsed');
+    expandcollapse.classList.remove('collapser');
+    expandcollapse.classList.add('expander');
+}
+
+function showFilters() {
+    const filterItems = document.getElementsByClassName('filter');
+    for (let i = 0; i < filterItems.length; i++)
+        filterItems[i].hidden = false;
+}
+
+function addCollapse() {
+    // Add links for show/hide all
+    const resulttable = find('table#results-table');
+    const showhideall = document.createElement('p');
+    showhideall.innerHTML = '<a href="javascript:showAllExtras()">Show all details</a> / ' +
+                            '<a href="javascript:hideAllExtras()">Hide all details</a>';
+    resulttable.parentElement.insertBefore(showhideall, resulttable);
+
+    // Add show/hide link to each result
+    findAll('.col-result').forEach(function(elem) {
+        const collapsed = getQueryParameter('collapsed') || 'Passed';
+        const extras = elem.parentNode.nextElementSibling;
+        const expandcollapse = document.createElement('span');
+        if (extras.classList.contains('collapsed')) {
+            expandcollapse.classList.add('expander');
+        } else if (collapsed.includes(elem.innerHTML)) {
+            extras.classList.add('collapsed');
+            expandcollapse.classList.add('expander');
+        } else {
+            expandcollapse.classList.add('collapser');
+        }
+        elem.appendChild(expandcollapse);
+
+        elem.addEventListener('click', function(event) {
+            if (event.currentTarget.parentNode.nextElementSibling.classList.contains('collapsed')) {
+                showExtras(event.currentTarget);
+            } else {
+                hideExtras(event.currentTarget);
+            }
+        });
+    });
+}
+
+function getQueryParameter(name) {
+    const match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+function init () { // eslint-disable-line no-unused-vars
+    resetSortHeaders();
+
+    addCollapse();
+
+    showFilters();
+
+    sortColumn(find('.initial-sort'));
+
+    findAll('.sortable').forEach(function(elem) {
+        elem.addEventListener('click',
+            function() {
+                sortColumn(elem);
+            }, false);
+    });
+}
+
+function sortTable(clicked, keyFunc) {
+    const rows = findAll('.results-table-row');
+    const reversed = !clicked.classList.contains('asc');
+    const sortedRows = sort(rows, keyFunc, reversed);
+    /* Whole table is removed here because browsers acts much slower
+     * when appending existing elements.
+     */
+    const thead = document.getElementById('results-table-head');
+    document.getElementById('results-table').remove();
+    const parent = document.createElement('table');
+    parent.id = 'results-table';
+    parent.appendChild(thead);
+    sortedRows.forEach(function(elem) {
+        parent.appendChild(elem);
+    });
+    document.getElementsByTagName('BODY')[0].appendChild(parent);
+}
+
+function sort(items, keyFunc, reversed) {
+    const sortArray = items.map(function(item, i) {
+        return [keyFunc(item), i];
+    });
+
+    sortArray.sort(function(a, b) {
+        const keyA = a[0];
+        const keyB = b[0];
+
+        if (keyA == keyB) return 0;
+
+        if (reversed) {
+            return keyA < keyB ? 1 : -1;
+        } else {
+            return keyA > keyB ? 1 : -1;
+        }
+    });
+
+    return sortArray.map(function(item) {
+        const index = item[1];
+        return items[index];
+    });
+}
+
+function keyAlpha(colIndex) {
+    return function(elem) {
+        return elem.childNodes[1].childNodes[colIndex].firstChild.data.toLowerCase();
+    };
+}
+
+function keyLink(colIndex) {
+    return function(elem) {
+        const dataCell = elem.childNodes[1].childNodes[colIndex].firstChild;
+        return dataCell == null ? '' : dataCell.innerText.toLowerCase();
+    };
+}
+
+function keyResult(colIndex) {
+    return function(elem) {
+        const strings = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed',
+            'Skipped', 'Passed'];
+        return strings.indexOf(elem.childNodes[1].childNodes[colIndex].firstChild.data);
+    };
+}
+
+function resetSortHeaders() {
+    findAll('.sort-icon').forEach(function(elem) {
+        elem.parentNode.removeChild(elem);
+    });
+    findAll('.sortable').forEach(function(elem) {
+        const icon = document.createElement('div');
+        icon.className = 'sort-icon';
+        icon.textContent = 'vvv';
+        elem.insertBefore(icon, elem.firstChild);
+        elem.classList.remove('desc', 'active');
+        elem.classList.add('asc', 'inactive');
+    });
+}
+
+function toggleSortStates(elem) {
+    //if active, toggle between asc and desc
+    if (elem.classList.contains('active')) {
+        elem.classList.toggle('asc');
+        elem.classList.toggle('desc');
+    }
+
+    //if inactive, reset all other functions and add ascending active
+    if (elem.classList.contains('inactive')) {
+        resetSortHeaders();
+        elem.classList.remove('inactive');
+        elem.classList.add('active');
+    }
+}
+
+function isAllRowsHidden(value) {
+    return value.hidden == false;
+}
+
+function filterTable(elem) { // eslint-disable-line no-unused-vars
+    const outcomeAtt = 'data-test-result';
+    const outcome = elem.getAttribute(outcomeAtt);
+    const classOutcome = outcome + ' results-table-row';
+    const outcomeRows = document.getElementsByClassName(classOutcome);
+
+    for(let i = 0; i < outcomeRows.length; i++){
+        outcomeRows[i].hidden = !elem.checked;
+    }
+
+    const rows = findAll('.results-table-row').filter(isAllRowsHidden);
+    const allRowsHidden = rows.length == 0 ? true : false;
+    const notFoundMessage = document.getElementById('not-found-message');
+    notFoundMessage.hidden = !allRowsHidden;
+}
+</script>
+    <h1>pytest_report.html</h1>
+    <p>Report generated on 04-Jun-2022 at 22:10:26 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v3.1.1</p>
+    <h2>Environment</h2>
+    <table id="environment">
+      <tr>
+        <td>Packages</td>
+        <td>{"pluggy": "1.0.0", "py": "1.11.0", "pytest": "7.1.2"}</td></tr>
+      <tr>
+        <td>Platform</td>
+        <td>Linux-5.17.3-arch1-1-x86_64-with-arch</td></tr>
+      <tr>
+        <td>Plugins</td>
+        <td>{"cov": "3.0.0", "docker": "0.12.0", "html": "3.1.1", "metadata": "2.0.1", "order": "1.0.1"}</td></tr>
+      <tr>
+        <td>Python</td>
+        <td>3.7.12</td></tr></table>
+    <h2>Summary</h2>
+    <p>16 tests ran in 10.16 seconds. </p>
+    <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="passed">16 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="failed">0 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
+    <h2>Results</h2>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable result initial-sort" col="result">Result</th>
+          <th class="sortable" col="name">Test</th>
+          <th class="sortable" col="duration">Duration</th>
+          <th class="sortable links" col="links">Links</th></tr>
+        <tr hidden="true" id="not-found-message">
+          <th colspan="4">No results found. Try to check the filters</th></tr></thead>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_dvc/test_app/test_cli/test_config.py::test__init__no_error_when_called_twice</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     root:config.py:92 config.yaml already exists! Do nothing.
+INFO     root:config.py:137 Reading config from file...
+INFO     root:config.py:210 sample_revision_sql_files already exists. Do nothing
+INFO     root:config.py:92 config.yaml already exists! Do nothing.
+INFO     root:config.py:137 Reading config from file...
+INFO     root:config.py:210 sample_revision_sql_files already exists. Do nothing<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_dvc/test_core/test_config.py::TestConfigFileWriter::test__write_dummy_user_configuration</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     root:config.py:88 Now generating default config file /tmp/pytest-of-ken/pytest-3/test__write_dummy_user_configu0/dummy_absent_config_file_path.yaml<br/> -----------------------------Captured log teardown------------------------------ <br/>INFO     root:config_service.py:96 File /tmp/pytest-of-ken/pytest-3/test__write_dummy_user_configu0/dummy_absent_config_file_path.yaml is found. Deleting...<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_dvc/test_core/test_config.py::TestConfigReader::test__when_no_config_file_exists_nor_env_var__raise_environment_variables_not_set_exception</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     root:config.py:146 Reading config from environment...<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_dvc/test_core/test_config.py::TestConfigReader::test__when_no_config_file_exists__return_expected_user_config_from_env_var</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     root:config.py:146 Reading config from environment...<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_dvc/test_core/test_config.py::TestConfigReader::test__when_config_file_exists__return_expected_user_config_from_config_file</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     root:config_service.py:64 creating file /tmp/pytest-of-ken/pytest-3/test__when_config_file_exists_0/dummy_existing_config_file_path.yaml<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     root:config.py:137 Reading config from file...<br/> -----------------------------Captured log teardown------------------------------ <br/>INFO     root:config_service.py:69 deleting file /tmp/pytest-of-ken/pytest-3/test__when_config_file_exists_0/dummy_existing_config_file_path.yaml<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_dvc/test_core/test_config.py::TestDatabaseRevisionFilesManager::test__validate_database_revision_sql_files__raise_InvalidDatabaseRevisionFilesException_with_status_101</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     root:regex_service.py:84 creating file /tmp/pytest-of-ken/pytest-3/test__validate_database_revisi0/dummy_regex_files_folder_with_incorrect_files_names/V1__create_scm_fundamentals_and_tbls.downgrade.sql
+INFO     root:regex_service.py:84 creating file /tmp/pytest-of-ken/pytest-3/test__validate_database_revisi0/dummy_regex_files_folder_with_incorrect_files_names/RV1__create_scm_fundamentals_and_tbls.whatisthis.sql
+INFO     root:regex_service.py:84 creating file /tmp/pytest-of-ken/pytest-3/test__validate_database_revisi0/dummy_regex_files_folder_with_incorrect_files_names/RV2__create_scm_datetime_and_tbls.downgrade.weirdFileEnding
+INFO     root:regex_service.py:84 creating file /tmp/pytest-of-ken/pytest-3/test__validate_database_revisi0/dummy_regex_files_folder_with_incorrect_files_names/RV2__create_scm_datetime_and_tbls.upgrade.sql<br/> -----------------------------Captured log teardown------------------------------ <br/>INFO     root:regex_service.py:92 deleting file /tmp/pytest-of-ken/pytest-3/test__validate_database_revisi0/dummy_regex_files_folder_with_incorrect_files_names/V1__create_scm_fundamentals_and_tbls.downgrade.sql
+INFO     root:regex_service.py:92 deleting file /tmp/pytest-of-ken/pytest-3/test__validate_database_revisi0/dummy_regex_files_folder_with_incorrect_files_names/RV1__create_scm_fundamentals_and_tbls.whatisthis.sql
+INFO     root:regex_service.py:92 deleting file /tmp/pytest-of-ken/pytest-3/test__validate_database_revisi0/dummy_regex_files_folder_with_incorrect_files_names/RV2__create_scm_datetime_and_tbls.downgrade.weirdFileEnding
+INFO     root:regex_service.py:92 deleting file /tmp/pytest-of-ken/pytest-3/test__validate_database_revisi0/dummy_regex_files_folder_with_incorrect_files_names/RV2__create_scm_datetime_and_tbls.upgrade.sql<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_dvc/test_core/test_config.py::TestDatabaseConnectionFactory::test__raise_requested_database_not_supported_exception</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>ERROR    root:config.py:252 ValueError: &#x27;UNSUPPORTED DATABASE FLAVOUR!!!!!&#x27; is not a valid SupportedDatabaseFlavour
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File &quot;/home/ken/fathers_programmes/Python_Database_Version_Control/src/dvc/core/config.py&quot;, line 250, in validate_requested_database_flavour
+    supported_user_db_flavour = SupportedDatabaseFlavour(self.config_file_reader.requested_db_flavour)
+  File &quot;/usr/lib/python3.7/enum.py&quot;, line 315, in __call__
+    return cls.__new__(cls, value)
+  File &quot;/usr/lib/python3.7/enum.py&quot;, line 569, in __new__
+    raise exc
+  File &quot;/usr/lib/python3.7/enum.py&quot;, line 553, in __new__
+    result = cls._missing_(value)
+  File &quot;/usr/lib/python3.7/enum.py&quot;, line 582, in _missing_
+    raise ValueError(&quot;%r is not a valid %s&quot; % (value, cls.__name__))
+ValueError: &#x27;UNSUPPORTED DATABASE FLAVOUR!!!!!&#x27; is not a valid SupportedDatabaseFlavour<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_dvc/test_core/test_config.py::TestDatabaseConnectionFactory::test__pass_user_credentials_to_connect_as_kwargs</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_dvc/test_core/test_regex.py::TestGetMatchedFilesInFolderByRegex::test__get_matched_files_in_folder_by_regex__assert_number_sql_files[.*\.sql-4]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     root:regex_service.py:56 creating file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol0/dummy_regex_files_folder_with_correct_files_names/RV1__create_scm_fundamentals_and_tbls.downgrade.sql
+INFO     root:regex_service.py:56 creating file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol0/dummy_regex_files_folder_with_correct_files_names/RV1__create_scm_fundamentals_and_tbls.upgrade.sql
+INFO     root:regex_service.py:56 creating file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol0/dummy_regex_files_folder_with_correct_files_names/RV2__create_scm_datetime_and_tbls.downgrade.sql
+INFO     root:regex_service.py:56 creating file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol0/dummy_regex_files_folder_with_correct_files_names/RV2__create_scm_datetime_and_tbls.upgrade.sql<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     root:regex.py:16 Looking for the files with regex: .*\.sql in folder /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol0/dummy_regex_files_folder_with_correct_files_names<br/> -----------------------------Captured log teardown------------------------------ <br/>INFO     root:regex_service.py:64 deleting file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol0/dummy_regex_files_folder_with_correct_files_names/RV1__create_scm_fundamentals_and_tbls.downgrade.sql
+INFO     root:regex_service.py:64 deleting file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol0/dummy_regex_files_folder_with_correct_files_names/RV1__create_scm_fundamentals_and_tbls.upgrade.sql
+INFO     root:regex_service.py:64 deleting file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol0/dummy_regex_files_folder_with_correct_files_names/RV2__create_scm_datetime_and_tbls.downgrade.sql
+INFO     root:regex_service.py:64 deleting file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol0/dummy_regex_files_folder_with_correct_files_names/RV2__create_scm_datetime_and_tbls.upgrade.sql<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_dvc/test_core/test_regex.py::TestGetMatchedFilesInFolderByRegex::test__get_matched_files_in_folder_by_regex__assert_number_sql_files[.*\.upgrade\.sql-2]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     root:regex_service.py:56 creating file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol1/dummy_regex_files_folder_with_correct_files_names/RV1__create_scm_fundamentals_and_tbls.downgrade.sql
+INFO     root:regex_service.py:56 creating file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol1/dummy_regex_files_folder_with_correct_files_names/RV1__create_scm_fundamentals_and_tbls.upgrade.sql
+INFO     root:regex_service.py:56 creating file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol1/dummy_regex_files_folder_with_correct_files_names/RV2__create_scm_datetime_and_tbls.downgrade.sql
+INFO     root:regex_service.py:56 creating file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol1/dummy_regex_files_folder_with_correct_files_names/RV2__create_scm_datetime_and_tbls.upgrade.sql<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     root:regex.py:16 Looking for the files with regex: .*\.upgrade\.sql in folder /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol1/dummy_regex_files_folder_with_correct_files_names<br/> -----------------------------Captured log teardown------------------------------ <br/>INFO     root:regex_service.py:64 deleting file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol1/dummy_regex_files_folder_with_correct_files_names/RV1__create_scm_fundamentals_and_tbls.downgrade.sql
+INFO     root:regex_service.py:64 deleting file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol1/dummy_regex_files_folder_with_correct_files_names/RV1__create_scm_fundamentals_and_tbls.upgrade.sql
+INFO     root:regex_service.py:64 deleting file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol1/dummy_regex_files_folder_with_correct_files_names/RV2__create_scm_datetime_and_tbls.downgrade.sql
+INFO     root:regex_service.py:64 deleting file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol1/dummy_regex_files_folder_with_correct_files_names/RV2__create_scm_datetime_and_tbls.upgrade.sql<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_dvc/test_core/test_regex.py::TestGetMatchedFilesInFolderByRegex::test__get_matched_files_in_folder_by_regex__assert_number_sql_files[RV1__.*\.sql-2]</td>
+          <td class="col-duration">0.00</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     root:regex_service.py:56 creating file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol2/dummy_regex_files_folder_with_correct_files_names/RV1__create_scm_fundamentals_and_tbls.downgrade.sql
+INFO     root:regex_service.py:56 creating file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol2/dummy_regex_files_folder_with_correct_files_names/RV1__create_scm_fundamentals_and_tbls.upgrade.sql
+INFO     root:regex_service.py:56 creating file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol2/dummy_regex_files_folder_with_correct_files_names/RV2__create_scm_datetime_and_tbls.downgrade.sql
+INFO     root:regex_service.py:56 creating file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol2/dummy_regex_files_folder_with_correct_files_names/RV2__create_scm_datetime_and_tbls.upgrade.sql<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     root:regex.py:16 Looking for the files with regex: RV1__.*\.sql in folder /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol2/dummy_regex_files_folder_with_correct_files_names<br/> -----------------------------Captured log teardown------------------------------ <br/>INFO     root:regex_service.py:64 deleting file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol2/dummy_regex_files_folder_with_correct_files_names/RV1__create_scm_fundamentals_and_tbls.downgrade.sql
+INFO     root:regex_service.py:64 deleting file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol2/dummy_regex_files_folder_with_correct_files_names/RV1__create_scm_fundamentals_and_tbls.upgrade.sql
+INFO     root:regex_service.py:64 deleting file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol2/dummy_regex_files_folder_with_correct_files_names/RV2__create_scm_datetime_and_tbls.downgrade.sql
+INFO     root:regex_service.py:64 deleting file /tmp/pytest-of-ken/pytest-3/test__get_matched_files_in_fol2/dummy_regex_files_folder_with_correct_files_names/RV2__create_scm_datetime_and_tbls.upgrade.sql<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_dvc/test_core/test_database/test_postgres.py::TestSQLFileExecutor::test__assert_database_version_zero</td>
+          <td class="col-duration">5.98</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_dvc/test_core/test_database/test_postgres.py::TestSQLFileExecutor::test__when_rv1_upgrade_revisions_applied__assert_2_new_tables_in_schema_fundamentals</td>
+          <td class="col-duration">0.21</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_dvc/test_core/test_database/test_postgres.py::TestSQLFileExecutor::test__when_rv2_upgrade_revisions_applied__assert_1_new_tables_in_schema_datetime</td>
+          <td class="col-duration">0.13</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_dvc/test_core/test_database/test_postgres.py::TestSQLFileExecutor::test__when_rv2_downgrade_revisions_applied__assert_0_new_tables_in_schema_datetime</td>
+          <td class="col-duration">0.07</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_dvc/test_core/test_database/test_postgres.py::TestSQLFileExecutor::test__when_rv1_downgrade_revisions_applied__assert_0_new_tables_in_schema_fundamentals</td>
+          <td class="col-duration">3.46</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody></table></body></html>
