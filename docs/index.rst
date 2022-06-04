@@ -11,11 +11,11 @@ Welcome to Database Version Control's documentation!
    :caption: Contents:
    :numbered:
 
-   intro
-   quickstart
-   design
-   test
-   ci
+   pages/introduction
+   pages/quickstart
+   design/index
+   pages/tests
+   pages/ci
 
 
 

@@ -1,4 +1,4 @@
-Design
+Graph
 =======
 
 This page explains gives a graphical overview of the tool.
