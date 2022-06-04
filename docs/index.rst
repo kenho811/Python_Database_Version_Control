@@ -14,7 +14,7 @@ Welcome to Database Version Control's documentation!
    pages/introduction
    pages/quickstart
    design/index
-   pages/tests
+   tests/index
    pages/ci
 
 
