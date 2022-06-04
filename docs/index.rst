@@ -6,6 +6,9 @@
 Welcome to Database Version Control's documentation!
 ====================================================
 
+.. note::
+   See latest test report: `here <_static/pytest_report.html>`_
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
@@ -16,6 +19,7 @@ Welcome to Database Version Control's documentation!
    design/index
    tests/index
    pages/ci
+
 
 
 
