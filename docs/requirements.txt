@@ -1,1 +1,3 @@
+# All requirements for buildin documentation
 furo
+graphviz

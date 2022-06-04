@@ -43,8 +43,6 @@ setup(
                 'pytest-html',
                 'sphinx',
                 'flake8',
-                # Sphinx Theme
-                'furo',
             ]
     },
     entry_points='''
