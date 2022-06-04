@@ -14,6 +14,8 @@ Welcome to Database Version Control's documentation!
    intro
    quickstart
    design
+   test
+   ci
 
 
 

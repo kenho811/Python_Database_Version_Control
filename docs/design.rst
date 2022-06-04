@@ -1,79 +1,80 @@
 Design
 =======
 
-.. warning::
+This page explains gives a graphical overview of the tool.
 
-    (Still work in progress)
 
-This section explains the internal structural design of the tool.
+
+DVC CLI commands and subcommands
+----------------------------------
+
+This section explains the client-facing side of the tool. The library is exposed via the commandline `dvc`.
 
 
 .. graphviz::
-   :name: Database Verion Control Tool Setup
-   :caption: Internal structure
-   :alt: How Sphinx and GraphViz Render the Final Document
+   :name: Database Verion Control CLI Commands and Subcommands
+   :caption: DVC CLI Commands and Subcommands
    :align: center
 
-   digraph foo {
+   digraph cli {
       graph [fontname="Verdana", fontsize="12"];
       node [fontname="Verdana", fontsize="12"];
       edge [fontname="Sans", fontsize="9"];
+      rankdir="LR";
 
-
-      # Define classes
-      dvc_cli [label="DVC CLI", shape="rect"];
-      ConfigReader [label="ConfigReader", shape="class"];
-      ConfigFileWriter [label="ConfigFileWriter", shape="class"];
-
-      # Define Environment
-
-
-      dvc_cli
-      "Env Var" -> ConfigReader -> "baz";
-      ConfigFileWriter -> "Config File" -> ConfigReader -> "baz";
+     dvc -> {cfg, db, sql}
+     cfg -> init
+     db -> {ping, init, upgrade, downgrade}
+     sql -> generate
 
 
    }
 
+Core Structure
+----------------------
+
+This section explains the core of the tool. It shows the interaction between the classes (marked in `yellow`). Greyed out items are features yet to be implemented.
 
 .. graphviz::
-    :name: sphinx.ext.graphviz
-    :caption: Sphinx and GraphViz Data Flow
-    :alt: How Sphinx and GraphViz Render the Final Document
-    :align: center
-
-     digraph "sphinx-ext-graphviz" {
-         size="6,4";
-         rankdir="LR";
-         graph [fontname="Verdana", fontsize="12"];
-         node [fontname="Verdana", fontsize="12"];
-         edge [fontname="Sans", fontsize="9"];
-
-         sphinx [label="Sphinx", shape="component",
-                   href="https://www.sphinx-doc.org/",
-                   target="_blank"];
-         dot [label="GraphViz", shape="component",
-              href="https://www.graphviz.org/",
-              target="_blank"];
-         docs [label="Docs (.rst)", shape="folder",
-               fillcolor=green, style=filled];
-         svg_file [label="SVG Image", shape="note", fontcolor=white,
-                 fillcolor="#3333ff", style=filled];
-         html_files [label="HTML Files", shape="folder",
-              fillcolor=yellow, style=filled];
-
-         docs -> sphinx [label=" parse "];
-         sphinx -> dot [label=" call ", style=dashed, arrowhead=none];
-         dot -> svg_file [label=" draw "];
-         sphinx -> html_files [label=" render "];
-         svg_file -> html_files [style=dashed];
-     }
+   :name: Database Verion Control Core Structure
+   :caption: DVC Core structure
+   :align: center
 
 
-.. graphviz::
+   digraph core {
+      graph [fontname="Verdana", fontsize="12"];
+      node [fontname="Verdana", fontsize="12"];
+      edge [fontname="Sans", fontsize="9"];
+      label = "Core";
 
-    graph {
-      "1.5x0.5" [shape=rect margin="1.5,0.5"] # in inches
-      "0.5x1.5" [shape=rect margin="0.5,1.5"] # in inches
-      "1.5x1.5" [shape=rect margin="1.5"]     # in inches
-    }
+      env [label="Env Var"];
+      conffile [label="Config File"];
+      ConfigReader [label="ConfigReader", shape="class", color="yellow", style="filled"];
+      ConfigFileWriter [label="ConfigFileWriter", shape="class", color="yellow", style="filled"];
+      DatabaseRevisionFilesManager [label="DatabaseRevisionFilesManager", shape="class", color="yellow", style="filled"];
+      sqlfiles [label="SQL Files"];
+
+
+      subgraph cluster_0 {
+          label="SQLFileExecutors and Databases"
+
+          PostgresqlSQLFileExecutor[shape="class", color="yellow", style="filled"];
+          MysqlSQLFileExecutor[shape="class", color="grey", style="filled"];
+          BigquerySQLFileExecutor[shape="class", color="grey", style="filled"];
+          postgresql
+          mysql[color=grey, style="filled"];
+          bigquery[color=grey, style="filled"];
+
+          PostgresqlSQLFileExecutor -> postgresql[label="apply"]
+          MysqlSQLFileExecutor -> mysql[label="apply"]
+          BigquerySQLFileExecutor -> bigquery[label="apply"]
+      }
+
+      env -> ConfigReader[label="input"];
+      ConfigFileWriter -> conffile[label="generate"];
+      conffile -> ConfigReader[label="input"];
+      ConfigReader -> DatabaseRevisionFilesManager[label="input"];
+      DatabaseRevisionFilesManager -> sqlfiles[label="lookup"];
+      DatabaseRevisionFilesManager -> {PostgresqlSQLFileExecutor,MysqlSQLFileExecutor,BigquerySQLFileExecutor}[label="call"];
+
+      }
