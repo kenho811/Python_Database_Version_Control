@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Post commit script
+
+echo "Pre-commit hook is triggered"
+
+echo "Now generating pytest reports"
+pytest --html=docs/_static/pytest_report.html
+
