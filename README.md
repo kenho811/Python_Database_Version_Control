@@ -40,7 +40,7 @@ dvc --help
 ## Documentation
 ### On Readthedocs
 
-https://python-database-version-control.readthedocs.io/en/release/
+https://python-database-version-control.readthedocs.io/en/latest
 
 ## Video Demonstration
 ### On Youtube
