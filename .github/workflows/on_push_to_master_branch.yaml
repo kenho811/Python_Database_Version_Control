@@ -101,6 +101,7 @@ jobs:
         run: |
           python -m pip install -U pip
           python -m pip install -r docs/requirements.txt
+          python -m pip install -e ".[dev]"
 
       - name: Build pytest report
         run: |
