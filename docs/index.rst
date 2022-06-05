@@ -3,11 +3,13 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Database Version Control's documentation!
-====================================================
+Welcome to Database Version Control Version documentation!
+=============================================================================
 
 .. note::
    See latest test report: `here <_static/pytest_report.html>`_
+
+
 
 .. toctree::
    :maxdepth: 2
@@ -33,5 +35,3 @@ Database Version Contrl (DVC) is a CLI utility which adds metadata of all change
 
 .. warning::
    Supported Database: Postgresql
-
-   Tests status: Insufficient
