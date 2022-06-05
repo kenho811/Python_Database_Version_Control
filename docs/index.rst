@@ -18,9 +18,10 @@ Welcome to Database Version Control Version documentation!
 
    pages/introduction
    pages/quickstart
+   usage/index
    design/index
    tests/index
-   workflow/index
+   contribution/index
    pages/changelog
 
 

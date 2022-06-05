@@ -1,5 +1,5 @@
-Files
-=======
+Naming Convention of SQL Files
+==================================
 
 The tool discovers and applies SQL files to the database for version control.
 
