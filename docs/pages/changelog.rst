@@ -24,7 +24,7 @@ Change Log
 
 - Created Dockerfile to containerise the tool
 
-- Created docker-compose.yml file for demonstration purposes
+- Created docker-compose.yml file for demonstration purposes. Created demo_assets to be attached as volume to docker-compose containers.
 
 - Added Github Action workflows to automate the below:
     - Pushing Docker image (with different tags) and readme to Dockerhub.
