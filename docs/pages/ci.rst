@@ -16,21 +16,29 @@ The table below shows the details:
 
    * - Branch
      - Performs Tests?
+     - Generate any artifacts?
      - DockerHub Tag
+     - Push DockerHub Readme?
      - PyPI Version
      - Readthedocs Version
    * - master
      - Yes
+     - Yes. Pytest artifacts.
      - latest
+     - Yes.
      - N/A
      - latest
    * - feature/{theme}
      - Yes
      - N/A
      - N/A
+     - No
+     - N/A
      - N/A
    * - release/{version}
      - Yes
+     - Yes. Pytest artifacts.
      - release-{version}
+     - No
      - {version}
      - N/A

@@ -72,6 +72,10 @@ git config --local core.hooksPath .githooks/
 # Run pytest
 pytest
 
+# Generate Documentation locally. ISLOCAL=1 removes local dependencies.
+cd docs
+ISLOCAL=1 make clean html
+
 # Open PR against master
 
 # (By maintainer) For a new release, cut a new release branch with version number (match app version number). 
@@ -82,11 +86,11 @@ git checkout -b release/{app_version_number}
 ## CI convention 
 - The below is currently triggered via Github Action
 
-Branch | DockerHub tag         | PyPI version  | 
---- |-----------------------|---------------| 
-master | latest                | N/A           |
-feature/{theme} | N/A                   | N/A           |
-release/{version_num} | release-{version_num} | {version_num} |
+Branch | DockerHub tag         | Dockerhub Readme | PyPI version  | Readthedocs version |
+--- |--------------------------|------------------|---------------|---------------------|
+master | latest                | Yes | N/A           | latest |
+feature/{theme} | N/A                   | No | N/A           | N/A |
+release/{version_num} | release-{version_num} | No | {version_num} | release-{version_num} |
 
 
 
