@@ -1,3 +1,10 @@
 # All requirements for buildin documentation
+
+# Build RTDS theme
 furo
+
+# Build graphs in RTDS theme
 graphviz
+
+# Build artifacts in RTDS
+rtds-action

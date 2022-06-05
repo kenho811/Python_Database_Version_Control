@@ -7,7 +7,7 @@ Welcome to Database Version Control Version documentation!
 =============================================================================
 
 .. note::
-   See latest test report: `here <_static/pytest_report.html>`_
+   See latest test report: `here <_static/pytest/report.html>`_
 
 
 

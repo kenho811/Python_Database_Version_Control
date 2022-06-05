@@ -2,12 +2,12 @@
 
 # Post commit script
 
-echo "Pre-commit hook is triggered"
-mkdir -p ./docs/_static
-
-echo "Step 1: Now generating pytest reports"
-pytest --html=./docs/_static/pytest_report.html
-
-echo "Step 2: Now adding generated files to commit"
-git add ./docs/_static
+#echo "Pre-commit hook is triggered"
+#mkdir -p ./docs/_static
+#
+#echo "Step 1: Now generating pytest reports"
+#pytest --html=./docs/_static/pytest_report.html
+#
+#echo "Step 2: Now adding generated files to commit"
+#git add ./docs/_static
 
