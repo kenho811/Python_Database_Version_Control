@@ -1,8 +1,12 @@
 
-![DVC](docs/_static/img/app_logo_black.png "Version Control Your Database Now!")
+<p align="center">
+  <img src="docs/_static/img/app_logo_black.png"  alt="Version Control Your Database Now!"/>
+</p>
 
-
+<p align="center">
 A Database Version Control (DVC) tool written in Python.
+</p>
+
 
 ## Usage
 
