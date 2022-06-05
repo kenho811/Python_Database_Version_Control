@@ -1,4 +1,8 @@
-Python library to do database version control.
+
+![DVC](docs/_static/img/app_logo_black.png "Version Control Your Database Now!")
+
+
+A Database Version Control (DVC) tool written in Python.
 
 ## Usage
 
