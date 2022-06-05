@@ -79,7 +79,7 @@ if not is_local:
     rtds_action_artifact_prefix = "report-for-"
 
     # A GitHub personal access token is required, more info below
-    rtds_action_github_token = os.getenv("GITHUB_TOKEN")
+    rtds_action_github_token = os.environ["GITHUB_TOKEN"]
 
     # Whether or not to raise an error on Read the Docs if the
     # artifact containing the notebooks can't be downloaded (optional)
