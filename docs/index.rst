@@ -24,7 +24,7 @@ Welcome to Database Version Control Version documentation!
    pages/changelog
 
 
-Summary
+Description
 ----------------
 
 Database Version Control (DVC) is a CLI utility which version controls your database in the following ways:
@@ -34,6 +34,13 @@ Database Version Control (DVC) is a CLI utility which version controls your data
 - For each SQL script applied, update the metadata table(s);
 
 - Exposes the metadata via CLI commands.
+
+Benefits
+----------------
+
+- Rich metadata is available in the database. The database can be directly queried with SQL for both historical and current database versions.
+
+- Only plain SQL files are accepted. No extra abstraction layer as is generally available in ORM.
 
 
 Quick links
