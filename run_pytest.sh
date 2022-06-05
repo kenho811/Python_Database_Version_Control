@@ -1,1 +1,0 @@
-pytest --html=test_report/report.html

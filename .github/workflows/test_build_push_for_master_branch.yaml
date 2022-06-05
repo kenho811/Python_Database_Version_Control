@@ -86,9 +86,9 @@ jobs:
           readme-filepath: ./README.md
 
   build-n-push-to-rtds:
-
     name: "Build artifacts for the docs"
     runs-on: ubuntu-latest
+    needs: tests
     steps:
       - uses: actions/checkout@v2
 
