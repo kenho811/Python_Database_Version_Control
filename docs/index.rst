@@ -20,6 +20,7 @@ Welcome to Database Version Control Version documentation!
    pages/quickstart
    design/index
    tests/index
+   pages/changelog
    pages/ci
 
 
