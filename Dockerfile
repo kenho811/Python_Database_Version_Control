@@ -11,4 +11,4 @@ RUN pip install .
 
 # other commands
 
-CMD ["dev"]
+ENTRYPOINT ["dvc"]
