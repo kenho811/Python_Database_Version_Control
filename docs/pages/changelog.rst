@@ -4,6 +4,8 @@ Change Log
 0.1.15
 --------
 
+- Update Dockerfile. Changed instruction ``CMD`` to ``ENTRYPOINT`` for ``dvc`` command.
+
 - Added pages to documentation using sphinx
 
 - Created graphs using graphviz and dots
