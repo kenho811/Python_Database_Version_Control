@@ -3,12 +3,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Database Version Control Version documentation!
+Welcome to Database Version Control's  documentation!
 =============================================================================
 
-.. note::
-   See latest test report: `here <_static/pytest/report.html>`_
 
+
+.. image:: _static/img/app_logo_black.png
+   :class: center
+
+.. rst-class:: center
+
+   `DVC to version control your database!`
 
 
 .. toctree::
@@ -23,6 +28,16 @@ Welcome to Database Version Control Version documentation!
    tests/index
    contribution/index
    pages/changelog
+
+Summary
+----------------
+Compute (Application) and Storage (Database) are decoupled.
+
+When you make changes to your application code, you should also mke changes to your database.
+In other words, you probably want to version control both your application code and your database.
+Without version controlling both, any changes in either side can cause incompatibility issues and break the entire service as a whole.
+
+Use DVC now to version control your database!
 
 
 Description
@@ -51,6 +66,11 @@ Quick links
 * `Docker Image on Dockerhub <https://hub.docker.com/repository/docker/kenho811/database-version-control#>`_
 * `Documentation on Readthedocs (latest) <https://python-database-version-control.readthedocs.io/en/latest>`_
 * `Demo on Youtube <https://www.youtube.com/watch?v=9l3m7zBxN4Y>`_
+
+
+Test Status
+~~~~~~~~~~~~~~
+* `Pytest Report <../_static/pytest/report.html>`_
 
 
 .. warning::
