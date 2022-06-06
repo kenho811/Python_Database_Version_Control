@@ -62,7 +62,7 @@ Benefits
 Quick links
 ~~~~~~~~~~~~~~
 
-* `Code on GitHub <https://github.com/kenho811/Python_Database_Version_Control/tree/release>`_
+* `Code on GitHub <https://github.com/kenho811/Python_Database_Version_Control>`_
 * `Docker Image on Dockerhub <https://hub.docker.com/repository/docker/kenho811/database-version-control#>`_
 * `Documentation on Readthedocs (latest) <https://python-database-version-control.readthedocs.io/en/latest>`_
 * `Demo on Youtube <https://www.youtube.com/watch?v=9l3m7zBxN4Y>`_
