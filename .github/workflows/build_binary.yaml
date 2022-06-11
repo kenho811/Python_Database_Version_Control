@@ -7,7 +7,10 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macos-latest, windows-latest, ubuntu-latest ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
@@ -22,7 +25,7 @@ jobs:
       - name: Generate release tag
         id: tag
         run: |
-          echo "::set-output name=release_tag::${{ github.ref_name }}_$(date +"%Y.%m.%d_%H-%M")"
+          echo "::set-output name=release_tag::${{ github.ref_name }}_$(date +"%Y.%m.%d_%H-%M")_${{ matrix.os }}"
       - name: Push to Github Releases
         uses: softprops/action-gh-release@v1
         with:
