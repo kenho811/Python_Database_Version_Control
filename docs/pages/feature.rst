@@ -2,7 +2,7 @@ Features
 ============
 
 Command Line Interface
---------------
+--------------------------
 
 .. image:: ../_static/gif/command_line_interface.gif
    :class: center
