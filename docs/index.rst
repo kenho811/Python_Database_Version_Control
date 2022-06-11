@@ -15,15 +15,33 @@ Welcome to Database Version Control's  documentation!
 
    `DVC to version control your database!`
 
-.. image:: https://img.shields.io/github/license/kenho811/Python_Database_Version_Control?style=plastic   :alt: License
-.. image:: https://img.shields.io/github/workflow/status/kenho811/Python_Database_Version_Control/Test   :alt: GitHub Workflow Status
-.. image:: https://img.shields.io/readthedocs/python-database-version-control/latest?style=plastic  :alt: Readthedocs
-.. image:: https://img.shields.io/pypi/v/database-version-control :alt: PyPI
-.. image:: https://img.shields.io/pypi/pyversions/database-version-control :alt: Python
-.. image:: https://img.shields.io/github/commit-activity/m/kenho811/Python_Database_Version_Control?style=plastic :alt: Commit
-.. image:: https://img.shields.io/github/last-commit/kenho811/Python_Database_Version_Control :alt: Last commit
-.. image:: https://img.shields.io/github/followers/kenho811?style=social :alt: GitHub
-.. image:: https://img.shields.io/youtube/channel/views/UC9aCwHsCO0ZewWlQy27naEA?style=social)](https://www.youtube.com/watch?v=9l3m7zBxN4Y :alt: Youtube
+.. image:: https://img.shields.io/github/license/kenho811/Python_Database_Version_Control?style=plastic
+   :alt: License
+   :class: center
+.. image:: https://img.shields.io/github/workflow/status/kenho811/Python_Database_Version_Control/Test
+   :alt: GitHub Workflow Status
+   :class: center
+.. image:: https://img.shields.io/readthedocs/python-database-version-control/latest?style=plastic
+   :alt: Readthedocs
+   :class: center
+.. image:: https://img.shields.io/pypi/v/database-version-control
+   :alt: PyPI
+   :class: center
+.. image:: https://img.shields.io/pypi/pyversions/database-version-control
+   :alt: Python
+   :class: center
+.. image:: https://img.shields.io/github/commit-activity/m/kenho811/Python_Database_Version_Control?style=plastic
+   :alt: Commit
+   :class: center
+.. image:: https://img.shields.io/github/last-commit/kenho811/Python_Database_Version_Control
+   :alt: Last commit
+   :class: center
+.. image:: https://img.shields.io/github/followers/kenho811?style=social
+   :alt: GitHub
+   :class: center
+.. image:: https://img.shields.io/youtube/channel/views/UC9aCwHsCO0ZewWlQy27naEA?style=social)](https://www.youtube.com/watch?v=9l3m7zBxN4Y
+   :alt: Youtube
+   :class: center
 
 
 
