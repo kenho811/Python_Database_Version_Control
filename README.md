@@ -8,9 +8,16 @@
 A Database Version Control (DVC) tool written in Python.
 </p>
 
-[![GitHub](https://img.shields.io/github/license/kenho811/Python_Database_Version_Control?style=plastic)](https://github.com/kenho811/Python_Database_Version_Control/tree/master)
+[![GitHub](https://img.shields.io/github/license/kenho811/Python_Database_Version_Control?style=plastic)](https://github.com/kenho811/Python_Database_Version_Control/blob/master/LICENSE)
 [![Read the Docs (version)](https://img.shields.io/readthedocs/python-database-version-control/latest?style=plastic)](https://python-database-version-control.readthedocs.io/en/latest)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/kenho811/Python_Database_Version_Control/Test)
+[![PyPI](https://img.shields.io/pypi/v/database-version-control)](https://pypi.org/project/database-version-control/)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/database-version-control)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/kenho811/Python_Database_Version_Control?style=plastic)
+![GitHub last commit](https://img.shields.io/github/last-commit/kenho811/Python_Database_Version_Control)
 
+![GitHub followers](https://img.shields.io/github/followers/kenho811?style=social)
+[![YouTube Channel Views](https://img.shields.io/youtube/channel/views/UC9aCwHsCO0ZewWlQy27naEA?style=social)](https://www.youtube.com/watch?v=9l3m7zBxN4Y)
 
 ## Usage
 
