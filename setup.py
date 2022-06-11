@@ -60,7 +60,9 @@ setup(
                 'pytest-cov',
                 'pytest-docker',
                 'pytest-html',
+                'pytest-html',
                 'sphinx',
+                'pyinstaller',
                 'flake8',
             ]
     },
