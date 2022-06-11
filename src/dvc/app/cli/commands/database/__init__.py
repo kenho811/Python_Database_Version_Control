@@ -3,17 +3,14 @@ database subcommand
 """
 
 import logging
-import traceback
 from typing import List, Optional
 from pathlib import Path
 import typer
 
 from dvc.core.struct import DatabaseRevision, Operation, DatabaseVersion
-from dvc.core.database.postgres import PostgresSQLFileExecutor
-from dvc.core.config import DatabaseConnectionFactory, ConfigDefault, ConfigReader
 
-from dvc.app.cli.database.backend import DatabaseInteractor
-from dvc.app.cli.database.backend import get_target_database_revision_sql_files
+from dvc.app.cli.commands.database.backend import DatabaseInteractor
+from dvc.app.cli.commands.database.backend import get_target_database_revision_sql_files
 
 app = typer.Typer()
 

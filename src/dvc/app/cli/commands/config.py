@@ -4,8 +4,6 @@ config subcommand
 import logging
 
 import typer
-from typing import Dict
-from pathlib import Path
 
 from dvc.core.config import ConfigDefault, DatabaseRevisionFilesManager, ConfigFileWriter, ConfigReader
 

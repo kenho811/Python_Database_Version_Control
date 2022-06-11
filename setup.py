@@ -68,7 +68,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'dvc=dvc.app.cli:app',
+            'dvc=dvc.app.cli.main:app',
         ]
     },
     classifiers=[

@@ -1,11 +1,7 @@
 import pytest
-from typing import Dict
 from typer.testing import CliRunner
-from unittest.mock import Mock, patch
 
-import dvc.core.config
-from dvc.app.cli.config import init
-from dvc.app.cli.config import app
+from dvc.app.cli.commands.config import app
 
 runner = CliRunner()
 
