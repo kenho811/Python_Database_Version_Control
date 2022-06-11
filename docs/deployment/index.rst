@@ -1,7 +1,7 @@
-Usage
-=======
+Deployment
+============
 
-This page explains how the tool can be used
+This page explains how the tool can be deployment
 
 .. toctree::
    :maxdepth: 2
