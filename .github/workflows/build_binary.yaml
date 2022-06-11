@@ -17,14 +17,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
-      - run: pyinstaller --onefile --distpath ./dist --log-level=DEBUG  -n dvc ./src/dvc/app/cli/main.py
-      - uses: actions/upload-artifact@v3
-        with:
-          name: dvc-ubuntu
-          path: ./dist/dvc
-      - name: Release
+      - name: Generate Binary
+        run: pyinstaller --onefile --distpath ./dist --log-level=DEBUG  -n dvc ./src/dvc/app/cli/main.py
+      - name: Generate release tag
+        id: tag
+        run: |
+          echo "::set-output name=release_tag::${{ github.ref_name }}_$(date +"%Y.%m.%d_%H-%M")"
+      - name: Push to Github Releases
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: test
-          files: |
+            tag_name: ${{ steps.tag.outputs.release_tag }}
+            files: |
             ./dist/dvc
