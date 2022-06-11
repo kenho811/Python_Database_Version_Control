@@ -1,3 +1,4 @@
+# DVC
 
 <p align="center">
   <img src="docs/_static/img/app_logo_black.png"  alt="Version Control Your Database Now!"/>
@@ -6,6 +7,9 @@
 <p align="center">
 A Database Version Control (DVC) tool written in Python.
 </p>
+
+[![GitHub](https://img.shields.io/github/license/kenho811/Python_Database_Version_Control?style=plastic)](https://github.com/kenho811/Python_Database_Version_Control/tree/master)
+[![Read the Docs (version)](https://img.shields.io/readthedocs/python-database-version-control/latest?style=plastic)](https://python-database-version-control.readthedocs.io/en/latest)
 
 
 ## Usage
