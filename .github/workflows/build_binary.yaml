@@ -11,6 +11,17 @@ jobs:
     strategy:
       matrix:
         os: [ macos-latest, windows-latest, ubuntu-latest ]
+        # Specify OS-specific variables
+        include:
+          - os: macos-latest
+            OUTPUT: |
+              ./dist/dvc
+          - os: windows-latest
+            OUTPUT: |
+              ./dist/dvc.exe
+          - os: ubuntu-latest
+            OUTPUT: |
+              ./dist/dvc
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
@@ -25,10 +36,9 @@ jobs:
       - name: Generate release tag
         id: tag
         run: |
-          echo "::set-output name=release_tag::${{ github.ref_name }}_$(date +"%Y.%m.%d_%H-%M")_${{ matrix.os }}"
+          echo "::set-output name=release_tag::${{ github.ref_name }}_$(date +"%Y.%m.%d_%H-%M")_${{ runner.os }}"
       - name: Push to Github Releases
         uses: softprops/action-gh-release@v1
         with:
             tag_name: ${{ steps.tag.outputs.release_tag }}
-            files: |
-              ./dist/dvc
+            files: ${{ matrix.OUTPUT }}
