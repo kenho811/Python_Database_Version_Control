@@ -1,7 +1,7 @@
 # All requirements for buildin documentation
 
-# Build RTDS theme
-furo
+# use furo
+furo==2022.4.7
 
 # Build graphs in RTDS theme
 graphviz
