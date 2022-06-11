@@ -1,0 +1,24 @@
+name: Build and publish binaries
+
+on:
+  push:
+    branches:
+      - 'feature/gh_package'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.7"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - run: pyinstaller --onefile --distpath ./dist --log-level=DEBUG  -n dvc ./src/dvc/app/cli/main.py
+      - uses: actions/upload-artifact@v2
+        with:
+          name: dvc-ubuntu
+          path: ./dist/dvc
