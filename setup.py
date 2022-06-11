@@ -66,10 +66,11 @@ setup(
                 'flake8',
             ]
     },
-    entry_points='''
-    [console_scripts]
-    dvc=dvc.app.cli:app
-    ''',
+    entry_points={
+        'console_scripts': [
+            'dvc=dvc.app.cli:app',
+        ]
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
