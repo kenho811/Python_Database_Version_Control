@@ -60,14 +60,17 @@ setup(
                 'pytest-cov',
                 'pytest-docker',
                 'pytest-html',
+                'pytest-html',
                 'sphinx',
+                'pyinstaller',
                 'flake8',
             ]
     },
-    entry_points='''
-    [console_scripts]
-    dvc=dvc.app.cli:app
-    ''',
+    entry_points={
+        'console_scripts': [
+            'dvc=dvc.app.cli.main:app',
+        ]
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
