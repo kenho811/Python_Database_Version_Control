@@ -70,7 +70,7 @@ Quick links
 
 Test Status
 ~~~~~~~~~~~~~~
-* `Pytest Report <../_static/pytest/report.html>`_
+* `Pytest Report <_static/pytest/report.html>`_
 
 
 .. warning::
