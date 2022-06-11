@@ -18,7 +18,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
       - run: pyinstaller --onefile --distpath ./dist --log-level=DEBUG  -n dvc ./src/dvc/app/cli/main.py
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: dvc-ubuntu
           path: ./dist/dvc
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ./dist/dvc
