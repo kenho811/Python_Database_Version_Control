@@ -51,8 +51,9 @@ Welcome to Database Version Control's  documentation!
    :numbered:
 
    pages/introduction
+   pages/feature
    pages/quickstart
-   usage/index
+   deployment/index
    design/index
    tests/index
    contribution/index

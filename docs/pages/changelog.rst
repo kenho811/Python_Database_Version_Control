@@ -1,6 +1,14 @@
 Change Log
 =============
 
+0.1.16
+--------
+- Created binaries for windows, mac and linux with pyinstaller. added sql files to the binaries.
+
+- Removed confirmation for both upgrade and downgrade command (i.e. `dvc db upgrade` and `dvc db downgrade`)
+
+
+
 0.1.15
 --------
 

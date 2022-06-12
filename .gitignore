@@ -8,6 +8,5 @@ dist/*
 test_report/*
 docs/_build/**
 docs/_static/pytest/**
-*.spec
 
 !**/.gitkeep

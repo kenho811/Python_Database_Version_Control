@@ -7,5 +7,7 @@ Just like git which stores all the metadata in a dot git folder (.git), the tool
 - Schema dvc will be created
 
   - Table dvc.database_revision_history will be created.
+        - History of revision SQL files applied.
 
   - Table dvc.database_version_history will be created.
+        - History of database versions which result from revision SQL files applied.

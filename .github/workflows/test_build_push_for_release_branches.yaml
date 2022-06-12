@@ -168,7 +168,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
       - name: Generate Binary
-        run: pyinstaller --onefile --distpath ./dist --log-level=DEBUG  -n dvc ./src/dvc/app/cli/main.py
+        run: pyinstaller --distpath ./dist --log-level=DEBUG dvc.spec
       - name: Generate release tag
         id: tag
         run: |

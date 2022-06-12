@@ -1,5 +1,5 @@
-Graph
-=======
+Overview
+==========
 
 This page explains gives a graphical overview of the tool.
 
