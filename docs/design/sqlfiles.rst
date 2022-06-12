@@ -1,5 +1,5 @@
-Naming Convention of SQL Files
-==================================
+Revision SQL files Namaing Convention
+=========================================
 
 The tool discovers and applies SQL files to the database for version control.
 

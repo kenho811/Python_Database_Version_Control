@@ -57,6 +57,24 @@ Configuration File
    :alt: Config Via Configuration File
 
 - Showing dvc tool reads configuration from a configuration file.
+    - Ran a postgres DB via docker `docker run -e POSTGRES_USER=test -e POSTGRES_PASSWORD=test -e POSTGRES_DB=test -p 5433:5432 postgres:latest`
+    - Copied a `config.yaml` file with configurations which match the spun up postgres DB.
+    - Pinged the DB with `dvc db ping`. Success!
+
+- The config.yaml file looks as follows:
+
+.. code-block:: rst
+
+   credentials:
+       dbflavour: postgres
+       dbname: 'test'
+       host: 'localhost'
+       password: 'test'
+       port: 5433
+       user: 'test'
+   database_revision_sql_files_folder: sample_revision_sql_files
+
+
 
 
 Environment Variable
@@ -70,3 +88,20 @@ Environment Variable
    :alt: Config Via Env Var
 
 - Showing dvc tool reads configuration from environment variables
+    - Ran a postgres DB via docker `docker run -e POSTGRES_USER=test -e POSTGRES_PASSWORD=test -e POSTGRES_DB=test -p 5433:5432 postgres:latest`
+    - Loaded the env variables to the shell.
+    - Pinged the DB with `dvc db ping`. Success!
+
+- The environment variables look as follows:
+
+.. code-block:: rst
+
+   >>> printnev| grep DVC
+   DVC__DATABASE_REVISION_SQL_FILES_FOLDER=sample_revision_sql_files
+   DVC__USER=test
+   DVC__PASSWORD=test
+   DVC__HOST=postgres_db
+   DVC__PORT=5432
+   DVC__DBNAME=test
+   DVC__DBFLAVOUR=postgres
+

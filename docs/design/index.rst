@@ -7,6 +7,8 @@ This page explains the design of the tool
    :maxdepth: 2
    :caption: Contents:
 
+   overview
+   config
    sqlfiles
-   graphs
    metadata
+
