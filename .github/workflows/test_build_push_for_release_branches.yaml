@@ -169,6 +169,10 @@ jobs:
           pip install -e ".[dev]"
       - name: Generate Binary
         run: pyinstaller --distpath ./dist --log-level=DEBUG dvc.spec
+      - name: Smoke Test
+        run: |
+          echo "Now running simple smoke test to test generated binary"
+          dvc version
       - name: Generate release tag
         id: tag
         run: |
