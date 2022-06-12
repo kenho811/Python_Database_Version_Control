@@ -57,6 +57,33 @@ A Database Version Control (DVC) tool written in Python.
 
 ## Deployment
 
+
+
+### As a Commandline tool
+#### Executables on github releases
+https://github.com/kenho811/Python_Database_Version_Control/releases
+
+- The releases page provides executables on the below three Operating Systems.
+  - Mac (Latest)
+  - Linux Ubunutu (Latest)
+  - Windows (Latest)
+
+if you happen to use one of the OSes listed above, you can download the executable directly and use it without installing python!
+
+
+#### Python Library on PyPI
+https://pypi.org/project/database-version-control/
+
+- If you have python and pip installed, you can download the command line tool from PyPI!
+
+```commandline
+# Install the library from PyPi
+pip install database-version-control
+
+# To get more instructions of the commandline tool, run the below in the terminal
+dvc --help
+```
+
 ### As a Microservice
 #### Image on Dockerhub
 https://hub.docker.com/repository/docker/kenho811/database-version-control#
@@ -77,19 +104,6 @@ docker compose up
 PGPASSWORD=test psql -U test -d test -h localhost -p 5433
 
 # Check out docker-compose.yml file for usage as a microservice
-```
-
-
-### As a Commandline tool
-#### Commandline tool on PyPI
-https://pypi.org/project/database-version-control/
-
-```commandline
-# Install the library from PyPi
-pip install database-version-control
-
-# To get more instructions of the commandline tool, run the below in the terminal
-dvc --help
 ```
 
 ## Documentation
