@@ -1,7 +1,7 @@
 Deployment
 ============
 
-This page explains how the tool can be deployment
+This page explains how the tool can be deployed.
 
 .. toctree::
    :maxdepth: 2
@@ -9,7 +9,3 @@ This page explains how the tool can be deployment
 
    dockerimage
    cli
-
-
-- Relevant to both usages are:
-    - `Naming Convention of SQL Files <../design/sqlfiles.html>`_

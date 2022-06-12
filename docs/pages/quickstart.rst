@@ -30,7 +30,7 @@ Run the below to see it in action.
 
     # Check out docker-compose.yml file for usage as a microservice
 
-See detailed usage of the `Docker Image <../usage/dockerimage.html>`_
+See detailed deployment of the `Docker Image <../deployment/dockerimage.html>`_
 
 PyPI Library
 ------------
@@ -50,4 +50,4 @@ Run the below to see it in action.
     dvc --help
 
 
-See detailed usage of the `commandline tool <../usage/cli.html>`_
+See detailed deployment of the `commandline tool <../deployment/cli.html>`_
