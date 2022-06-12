@@ -119,9 +119,8 @@ def downgrade(
         raise typer.Abort()
 
     sql_file_path = target_downgrade_revision_files[0]
-    apply = typer.confirm(f"Are you sure you want to apply the revision file at {sql_file_path}?")
 
-    if apply and not mark_only:
+    if mark_only:
         logging.info(f"Now only marking {sql_file_path} to metadata table")
         database_revision = DatabaseRevision(
             executed_sql_file_path_applied=sql_file_path,
