@@ -41,8 +41,8 @@ Upgrade or Downgrade
     - Applied database downgrade via `dvc db downgrade`.
     - Showed the database version was back to 1.
 
-Configuration
----------------
+Flexible Configuration Format
+--------------------------------------
 
 Configuration is read either from i. Configuration File (config.yaml) or ii. Environment Variable
 
