@@ -19,7 +19,43 @@ A Database Version Control (DVC) tool written in Python.
 ![GitHub followers](https://img.shields.io/github/followers/kenho811?style=social)
 [![YouTube Channel Views](https://img.shields.io/youtube/channel/views/UC9aCwHsCO0ZewWlQy27naEA?style=social)](https://www.youtube.com/watch?v=9l3m7zBxN4Y)
 
-## Usage
+
+## Key Features
+
+### Command line interface
+
+<p align="center">
+  <img src="docs/_static/gif/command_line_interface.gif"  alt="Command Line Interface"/>
+</p>
+
+### Rich Database metadata
+
+<p align="center">
+  <img src="docs/_static/gif/rich_metadata.gif"  alt="Rich Database Metadata"/>
+</p>
+
+### Database Upgrade and Downgrade
+
+<p align="center">
+  <img src="docs/_static/gif/database_upgrade_and_downgrade.gif"  alt="Rich Database Metadata"/>
+</p>
+
+### Flexible Configuration Format
+
+- Via Environment Variables
+
+<p align="center">
+  <img src="docs/_static/gif/config_via_env_var.gif"  alt="Config via environment variables"/>
+</p>
+
+- Via Configuration File
+
+<p align="center">
+  <img src="docs/_static/gif/config_via_config_file.gif"  alt="Config via environment variables"/>
+</p>
+
+
+## Deployment
 
 ### As a Microservice
 #### Image on Dockerhub
@@ -114,7 +150,7 @@ release/{version_num} | release-{version_num} | No | {version_num} | release-{ve
 
 
 
-## Details
+## Technical Details
 ### Database supported
 - Postgres Database
 
@@ -140,7 +176,7 @@ release/{version_num} | release-{version_num} | No | {version_num} | release-{ve
   - RV2__alter_scm_company_secrets_tbl_earnings_updated_at_add_index.upgrade.sql
   - RV2__alter_scm_company_secrets_tbl_earnings_updated_at_remove_index.downgrade.sql
 
-### Metadata 
+### Database Metadata 
 
 - Schema dvc will be created
   - Table dvc.database_revision_history will be created.
