@@ -1,6 +1,11 @@
 Change Log
 =============
 
+0.1.17
+--------
+- Included help text and documentation URL in the CLI.
+
+
 0.1.16
 --------
 - Created binaries for windows, mac and linux with pyinstaller. added sql files to the binaries.
