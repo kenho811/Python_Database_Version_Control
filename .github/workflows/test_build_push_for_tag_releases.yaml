@@ -176,7 +176,7 @@ jobs:
         run: |
           zip -r macos.zip ./dist
       - name: upload macos artifact
-      - uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v2
         with:
           name: uploads
           path: macos.zip
@@ -203,7 +203,7 @@ jobs:
         run: |
           zip -r linux.zip ./dist
       - name: upload macos artifact
-      - uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v2
         with:
           name: uploads
           path: linux.zip
