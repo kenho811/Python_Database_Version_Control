@@ -218,10 +218,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: uploads
+          path: uploads
       - name: Show files
         run: |
-          ls
-          ls ./uploads
+          ls -R
       - name: upload macos artifact
         id: upload-macos
         uses: actions/upload-release-asset@v1.0.1
