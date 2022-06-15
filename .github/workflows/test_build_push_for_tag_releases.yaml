@@ -54,8 +54,6 @@ jobs:
         uses: pypa/gh-action-pypi-publish@master
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
-        # Allow to fail, given that PyPI does not allow overriding existing release  with same name
-        continue-on-error: true
 
   # Step 2b: Push to DockerHub
   build-n-push-docker-image:
