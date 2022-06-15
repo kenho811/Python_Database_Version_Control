@@ -42,7 +42,6 @@ setup(
     long_description_content_type="text/markdown",
     author='Ken Ho',
     author_email='kenho811@gmail.com',
-    url='https://github.com/kenho811/Python_Database_Version_Control/tree/release',
     packages=(find_packages(where="src")),
     package_dir={"": "src"},
     # Include SQL files (seen as data by setup tools)
