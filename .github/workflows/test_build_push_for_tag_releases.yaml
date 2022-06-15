@@ -86,38 +86,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  # PR merge back to master after all CI is done
-  pr-merge-to-master:
-    name: Create PR Release to Master
-    runs-on: ubuntu-latest
-    needs: tests
-    steps:
-      - name: git checkout
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-
-      # https://github.com/marketplace/actions/github-pull-request-action
-      - name: create pull request
-        id: open-pr
-        uses: repo-sync/pull-request@v2
-        with:
-          github_token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          destination_branch: ${{ github.event.repository.default_branch }}
-          pr_title: "[Automated] Merge ${{ github.ref_name }} into ${{ github.event.repository.default_branch }}"
-          pr_body: "Automated Pull Request"
-          pr_reviewer: "ken"
-          pr_assignee: "ken"
-
-      # https://github.com/marketplace/actions/enable-pull-request-automerge
-      - name: enable automerge
-        if: steps.open-pr.outputs.pr_number != ''
-        uses: peter-evans/enable-pull-request-automerge@v2
-        with:
-          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          pull-request-number: ${{ steps.open-pr.outputs.pr_number }}
-          merge-method: merge
-
   # Push to rtds
   build-n-push-to-rtds:
     name: "Build artifacts for the docs"
@@ -202,7 +170,7 @@ jobs:
       - name: zip linux artifact
         run: |
           zip -r linux.zip ./dist
-      - name: upload macos artifact
+      - name: upload linux artifact
         uses: actions/upload-artifact@v2
         with:
           name: uploads
@@ -229,7 +197,7 @@ jobs:
       - name: zip windows artifact
         run: |
           powershell Compress-Archive ./dist windows.zip
-      - name: upload macos artifact
+      - name: upload Windows artifact
         uses: actions/upload-artifact@v2
         with:
           name: uploads
@@ -252,6 +220,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: uploads
+      - name: Show files
+        run: |
+          ls
+          ls ./uploads
       - name: upload macos artifact
         id: upload-macos
         uses: actions/upload-release-asset@v1.0.1
