@@ -54,8 +54,6 @@ jobs:
         uses: pypa/gh-action-pypi-publish@master
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
-        # Allow to fail, given that PyPI does not allow overriding existing release  with same name
-        continue-on-error: true
 
   # Step 2b: Push to DockerHub
   build-n-push-docker-image:
@@ -85,38 +83,6 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-  # PR merge back to master after all CI is done
-  pr-merge-to-master:
-    name: Create PR Release to Master
-    runs-on: ubuntu-latest
-    needs: tests
-    steps:
-      - name: git checkout
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-
-      # https://github.com/marketplace/actions/github-pull-request-action
-      - name: create pull request
-        id: open-pr
-        uses: repo-sync/pull-request@v2
-        with:
-          github_token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          destination_branch: ${{ github.event.repository.default_branch }}
-          pr_title: "[Automated] Merge ${{ github.ref_name }} into ${{ github.event.repository.default_branch }}"
-          pr_body: "Automated Pull Request"
-          pr_reviewer: "ken"
-          pr_assignee: "ken"
-
-      # https://github.com/marketplace/actions/enable-pull-request-automerge
-      - name: enable automerge
-        if: steps.open-pr.outputs.pr_number != ''
-        uses: peter-evans/enable-pull-request-automerge@v2
-        with:
-          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          pull-request-number: ${{ steps.open-pr.outputs.pr_number }}
-          merge-method: merge
 
   # Push to rtds
   build-n-push-to-rtds:
@@ -153,12 +119,10 @@ jobs:
           webhook_token: ${{ secrets.RTDS_WEBHOOK_TOKEN }}
           commit_ref: ${{ github.ref }}
 
-  build-n-push-binary-to-gh-release:
+  # Build binaries on different OSes and release
+  build-mac-binary:
     needs: tests
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ macos-latest, windows-latest, ubuntu-latest ]
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
@@ -174,12 +138,123 @@ jobs:
         run: |
           echo "Now running simple smoke test to test generated binary"
           dvc version
-      - name: Generate release tag
-        id: tag
+      - name: zip mac artifact
         run: |
-          echo "::set-output name=release_tag::${{ github.ref_name }}_${{ runner.os }}"
-      - name: Push to Github Releases
+          zip -r macos.zip ./dist
+      - name: upload macos artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: uploads
+          path: macos.zip
+
+  build-linux-binary:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.7"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Generate Binary
+        run: pyinstaller --distpath ./dist --log-level=DEBUG dvc.spec
+      - name: Smoke Test
+        run: |
+          echo "Now running simple smoke test to test generated binary"
+          dvc version
+      - name: zip linux artifact
+        run: |
+          zip -r linux.zip ./dist
+      - name: upload linux artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: uploads
+          path: linux.zip
+
+  build-windows-binary:
+    needs: tests
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.7"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Generate Binary
+        run: pyinstaller --distpath ./dist --log-level=DEBUG dvc.spec
+      - name: Smoke Test
+        run: |
+          echo "Now running simple smoke test to test generated binary"
+          dvc version
+      - name: zip windows artifact
+        run: |
+          powershell Compress-Archive ./dist windows.zip
+      - name: upload Windows artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: uploads
+          path: windows.zip
+
+  build-n-push-binaries-to-gh-release:
+    needs: [build-mac-binary, build-linux-binary, build-windows-binary]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create Github Release
+        id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.tag.outputs.release_tag }}
-          files: ./dist/*
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: uploads
+          path: uploads
+      - name: Show files
+        run: |
+          ls -R
+      - name: upload macos artifact
+        id: upload-macos
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./uploads/macos.zip
+          asset_name: macos.zip
+          asset_content_type: application/zip
+      - name: upload linux
+        id: upload-linux
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./uploads/linux.zip
+          asset_name: linux.zip
+          asset_content_type: application/zip
+      - name: upload windows
+        id: upload-windows
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./uploads/windows.zip
+          asset_name: windows.zip
+          asset_content_type: application/zip
+      - name: echo upload details
+        run: |
+          echo url is ${{ steps.create_release.outputs.url }}
+          echo id is ${{ steps.create_release.outputs.id }}
+          echo upload_url is ${{ steps.create_release.outputs.upload_url }}
+          echo assets are ${{ steps.create_release.outputs.assets }}

@@ -71,9 +71,4 @@ setup(
             'dvc=dvc.app.cli.main:app',
         ]
     },
-    classifiers=[
-        "Programming Language :: Python :: 3.7, 3.8, 3.9, 3.10",
-        "License :: OSI Approved :: Apache License 2.0",
-        "Operating System :: OS Independent",
-    ],
 )
