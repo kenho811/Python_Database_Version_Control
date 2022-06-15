@@ -3,7 +3,7 @@ name: Test and Auto PR for release branch
 
 on:
   push:
-    tags:
+    branches:
       - 'release/**'
 
 jobs:
