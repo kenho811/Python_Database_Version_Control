@@ -1,8 +1,9 @@
-name: Test, build, push to PyPI and DockerHub and merge back to master
+name: Test, build, push for tag releases
+
 
 on:
   push:
-    branches:
+    tags:
       - 'release/**'
 
 jobs:
@@ -176,7 +177,7 @@ jobs:
       - name: Generate release tag
         id: tag
         run: |
-          echo "::set-output name=release_tag::${{ github.ref_name }}_$(date +"%Y.%m.%d_%H-%M")_${{ runner.os }}"
+          echo "::set-output name=release_tag::${{ github.ref_name }}_${{ runner.os }}"
       - name: Push to Github Releases
         uses: softprops/action-gh-release@v1
         with:

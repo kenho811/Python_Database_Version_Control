@@ -1,10 +1,11 @@
-name: Test
+name: Test only
 
 on:
   push:
-    branches:
-      - 'feature/**'
-      - '!feature/doc'
+    branches-ignore:
+      - 'master'
+    tags-ignore:
+      - 'release/**'
 
 jobs:
   tests:

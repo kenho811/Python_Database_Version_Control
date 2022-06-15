@@ -42,46 +42,17 @@ def upgrade(
     """
     # Step 1: Check latest database version
     operation_type = Operation.Upgrade
-    db_interactor = DatabaseInteractor(config_file_path)
-    config_file_reader = db_interactor.config_file_reader
-    sql_file_executor = db_interactor.sql_file_executor
-    latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
+    db_interactor = DatabaseInteractor(config_file_path_str=config_file_path)
+    latest_database_version: DatabaseVersion = db_interactor.get_latest_database_version()
 
     typer.echo(f"Current Database Version is {latest_database_version.current_version}")
     typer.echo(f"Next Upgrade Revision Version will be {latest_database_version.next_upgrade_revision_version}")
 
-    # Step 2: Loop through existing revision SQL files
-    target_upgrade_revision_files: List[Path] = get_target_database_revision_sql_files(
-        config_file_reader=config_file_reader,
-        operation_type=operation_type,
-        target_revision_version=latest_database_version.next_upgrade_revision_version
-    )
+    target_sql_files = db_interactor.get_target_revision_sql_files(operation_type=operation_type)
+    db_interactor.execute_sql_files(mark_only=mark_only,
+                                    operation_type=operation_type,
+                                    sql_files_paths=target_sql_files)
 
-    if len(target_upgrade_revision_files) > 1:
-        typer.echo("More than 1 target upgrade revision files found! As follows:")
-        typer.echo(target_upgrade_revision_files)
-        raise typer.Abort()
-    elif len(target_upgrade_revision_files) == 0:
-        typer.echo("No target upgrade revision files are found!")
-        raise typer.Abort()
-
-    # Step 3: Confirmation
-    sql_file_path = target_upgrade_revision_files[0]
-
-    if mark_only:
-        logging.info(f"Now only marking {sql_file_path} to metadata table")
-        database_revision = DatabaseRevision(
-            executed_sql_file_path_applied=sql_file_path,
-            operation=operation_type
-        )
-        sql_file_executor._write_database_revision_metadata(database_revision=database_revision)
-    else:
-        logging.info(f"Now applying {sql_file_path} and marking to metadata table")
-        database_revision = DatabaseRevision(
-            executed_sql_file_path_applied=sql_file_path,
-            operation=operation_type
-        )
-        sql_file_executor.execute_database_revision(database_revision=database_revision)
 
 
 @app.command()
@@ -95,45 +66,16 @@ def downgrade(
     """
     # Step 1: Check latest database version
     operation_type = Operation.Downgrade
-    db_interactor = DatabaseInteractor(config_file_path)
-    config_file_reader = db_interactor.config_file_reader
-    sql_file_executor = db_interactor.sql_file_executor
-    latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
+    db_interactor = DatabaseInteractor(config_file_path_str=config_file_path)
+    latest_database_version: DatabaseVersion = db_interactor.get_latest_database_version()
 
     typer.echo(f"Current Database Version is {latest_database_version.current_version}")
     typer.echo(f"Next Downgrade Revision Version will be {latest_database_version.next_downgrade_revision_version}")
 
-    # Step 2: Loop through existing revision SQL files
-    target_downgrade_revision_files: List[Path] = get_target_database_revision_sql_files(
-        config_file_reader=config_file_reader,
-        operation_type=operation_type,
-        target_revision_version=latest_database_version.next_downgrade_revision_version
-    )
-
-    if len(target_downgrade_revision_files) > 1:
-        typer.echo("More than 1 target downgrade revision files found! As follows:")
-        typer.echo(target_downgrade_revision_files)
-        raise typer.Abort()
-    elif len(target_downgrade_revision_files) == 0:
-        typer.echo("No target downgrade revision files are found!")
-        raise typer.Abort()
-
-    sql_file_path = target_downgrade_revision_files[0]
-
-    if mark_only:
-        logging.info(f"Now only marking {sql_file_path} to metadata table")
-        database_revision = DatabaseRevision(
-            executed_sql_file_path_applied=sql_file_path,
-            operation=operation_type
-        )
-        sql_file_executor._write_database_revision_metadata(database_revision=database_revision)
-    else:
-        logging.info(f"Now applying {sql_file_path} and marking to metadata table")
-        database_revision = DatabaseRevision(
-            executed_sql_file_path_applied=sql_file_path,
-            operation=operation_type
-        )
-        sql_file_executor.execute_database_revision(database_revision=database_revision)
+    target_sql_files = db_interactor.get_target_revision_sql_files(operation_type=operation_type)
+    db_interactor.execute_sql_files(mark_only=mark_only,
+                                    operation_type=operation_type,
+                                    sql_files_paths=target_sql_files)
 
 
 @app.command()
@@ -143,11 +85,7 @@ def current(config_file_path: Optional[str] = typer.Option(None, help="path to c
     :return:
     """
     db_interactor = DatabaseInteractor(config_file_path)
-    conn = db_interactor.conn
-    sql_file_executor = db_interactor.sql_file_executor
-    latest_database_version: DatabaseVersion = sql_file_executor.get_latest_database_version()
-    typer.echo(f"Database: {conn.info.dbname}")
-    typer.echo(f"Host: {conn.info.host}")
+    latest_database_version: DatabaseVersion = db_interactor.get_latest_database_version()
     typer.echo(f"Database Current Version: {latest_database_version.current_version}")
 
 

@@ -1,9 +1,10 @@
 Change Log
 =============
 
-0.1.17
+0.2.0
 --------
 - Included help text and documentation URL in the CLI.
+- Followed SemVer more closely. Bumped minor version with added feature and bump patch for bug fixes. Switched to using tag (not branch) for releases.
 
 
 0.1.16

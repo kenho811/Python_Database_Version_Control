@@ -8,5 +8,6 @@ dist/*
 test_report/*
 docs/_build/**
 docs/_static/pytest/**
+sample_revision_sql_files/**
 
 !**/.gitkeep

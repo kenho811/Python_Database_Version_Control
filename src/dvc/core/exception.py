@@ -2,6 +2,7 @@ from enum import Enum
 from pathlib import Path
 
 from dvc.core.database import SupportedDatabaseFlavour
+from dvc.core.struct import Operation
 
 
 class RequestedDatabaseFlavourNotSupportedException(Exception):
@@ -24,7 +25,8 @@ class InvalidDatabaseRevisionFilesException(Exception):
         List of all reasons
         """
         NON_CONFORMANT_REVISION_FILE_NAME_EXISTS = 101  # all files all follow 'RV{num}__{description}.{upgrade/downgrade}.sql' format
-        MULTIPLE_REVISION_FILE_WITH_SAME_RV_NUMBER_EXISTS = 102  # No two revision files shoudl share i. same RV and ii. same upgrade/downgrade.
+        MORE_REVISION_SQL_FILES_FOUND_THAN_REQUIRED_STEPS_SPECIFIED = 102  # Given specified number of steps, more targetrevision SQL Files are found
+        FEWER_REVISION_SQL_FILES_FOUND_THAN_REQUIRED_STEPS_SPECIFIED = 103  # Given specified number of steps, fewer target revision SQL Files are found
 
     def __init__(self,
                  status: Status,
@@ -39,6 +41,28 @@ class InvalidDatabaseRevisionFilesException(Exception):
         {self.file_path}
         """
 
+
+class DatabaseConnectionFailureException(Exception):
+
+    def __init__(self,
+                 ):
+        pass
+
+    def __str__(self):
+        return "Something is wrong with the database connection!"
+
+class OperationNotAccountedForException(Exception):
+    """
+    Operation not accounted for
+    """
+
+    def __init__(self,
+                 operation_type = Operation
+                 ):
+        self.operation_type = operation_type
+
+    def __str__(self):
+        return f"Your Operation {self.operation_type} is NOT one of {[e.value for e in Operation]}"
 
 class EnvironmentVariableNotSetException(Exception):
 
