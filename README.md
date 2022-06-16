@@ -155,18 +155,24 @@ git checkout -b release/{app_version_number}
 ## CI convention 
 - The below is currently triggered via Github Action
 
-Branch | DockerHub tag         | Dockerhub Readme | PyPI version  | Readthedocs version   |
---- |--------------------------|------------------|---------------|-----------------------|
-master | latest                | Yes | N/A           | latest                |
-feature/{theme} | N/A                   | No | N/A           | N/A                   |
-feature/doc | N/A                   | No | N/A           | feature-doc           |
-release/{version_num} | release-{version_num} | No | {version_num} | release-{version_num} |
+Branch | Testing | DockerHub tag | Dockerhub Readme | PyPI version  | Readthedocs version |
+--- |---------|---------------|------------------|---------------|---------------------|
+master | Yes     | latest        | Yes           | N/A           | latest              |
+release/** | Yes     | N/A           | N/A           | N/A           | N/A                 |
+feature | Yes     | N/A           | No            | N/A           | feature-doc         |
+
+Tag | DockerHub tag    | Dockerhub Readme | PyPI version | Readthedocs version |
+--- |------------------|------------------|--------------|---------------------|
+release/{semver} | release-{semver} | No | {semver}     | release-{semver}    |
 
 
 
 ## Technical Details
 ### Database supported
-- Postgres Database
+
+<p align="center">
+  <img src="docs/_static/img/postgresql_logo.png"  alt="Postgresql"/>
+</p>
 
 
 ### Database instructions format supported
