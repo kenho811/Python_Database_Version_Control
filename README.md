@@ -158,22 +158,23 @@ git checkout -b release/{app_version_number}
 Branch | Testing | DockerHub tag | Dockerhub Readme | PyPI version  | Readthedocs version |
 --- |---------|---------------|------------------|---------------|---------------------|
 master | Yes     | latest        | Yes           | N/A           | latest              |
-release/** | Yes     | N/A           | N/A           | N/A           | N/A                 |
+release/{major.minor} | Yes     | N/A           | N/A           | N/A           | N/A                 |
 feature | Yes     | N/A           | No            | N/A           | feature-doc         |
 
-Tag | DockerHub tag    | Dockerhub Readme | PyPI version | Readthedocs version |
---- |------------------|------------------|--------------|---------------------|
-release/{semver} | release-{semver} | No | {semver}     | release-{semver}    |
+Tag | DockerHub tag               | Dockerhub Readme | PyPI version        | Readthedocs version         |
+--- |-----------------------------|------------------|---------------------|-----------------------------|
+release/{major.minor.patch} | release-{major.minor.patch} | No | {major.minor.patch} | release-{major.minor.patch} |
 
 
 
 ## Technical Details
 ### Database supported
 
-<p align="center">
-  <img src="docs/_static/img/postgresql_logo.png"  alt="Postgresql"/>
-</p>
+Postgres                   |
+:-------------------------:|
+![Postgres](docs/_static/img/postgresql_logo.png)  | 
 
+Support for other databases will be added soon....
 
 ### Database instructions format supported
 

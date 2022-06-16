@@ -96,8 +96,12 @@ Test Status
 ~~~~~~~~~~~~~~
 * `Pytest Report <_static/pytest/report.html>`_
 
+Supported Databases
+~~~~~~~~~~~~~~~~~~~~~~
 
-.. warning::
-   As of 5th June 2022, only `Postgresql` is supported.
+.. list-table::
 
-   Support for other databases will be added in the future. Stay tuned!
+    * - .. figure:: _static/img/postgresql_logo.png
+
+            Postgresql
+

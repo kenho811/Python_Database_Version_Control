@@ -11,7 +11,7 @@ CI is currently done via github action. It is integrated to the following destin
 
 The table below shows the details:
 
-.. list-table:: CI convention
+.. list-table:: CI convention for branches
    :header-rows: 1
 
    * - Branch
@@ -25,29 +25,38 @@ The table below shows the details:
      - Yes
      - Pytest report.
      - latest
-     - Yes.
+     - Yes
      - N/A
      - latest
-   * - feature/doc
-     - Yes
-     - Pytest report.
-     - N/A
-     - No
-     - N/A
-     - feature-doc
-   * - feature/{other-themes}*
+   * - feature/**
      - Yes
      - N/A
      - N/A
      - No
      - N/A
      - N/A
-   * - release/{version}
+   * - release/{major.minor}
      - Yes
-     - Yes. Pytest artifacts.
-     - release-{version}
+     - N/A
+     - N/A
      - No
-     - {version}
+     - N/A
      - N/A
 
-- Note: feature/{other-themes} excludes feature/doc
+.. list-table:: CI convention for tags
+   :header-rows: 1
+
+   * - Tag
+     - Performs Tests?
+     - Artifacts
+     - DockerHub Tag
+     - Push DockerHub Readme?
+     - PyPI Version
+     - Readthedocs Version
+   * - release/{major.minor.patch}
+     - Yes
+     - Pytest artifacts + executables in github releases.
+     - release-{major.minor.patch}
+     - No
+     - {majoir.minor.patch}
+     - release-major.minor.patch
