@@ -2,9 +2,6 @@ name: Build Docker image and Push to Dockerhub
 
 description: "Build Docker Image and Push to DockerHub"
 inputs:
-  docker-image-tag:
-    required: true
-    description: "Docker Image Tag"
   dockerhub-username:
     required: true
     description: "Dockerhub username"
@@ -38,7 +35,7 @@ runs:
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: kenho811/database-version-control:${{ inputs.docker-image-tag }}
+        tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
     - # Push README.md to Dockerhub
       name: Check the File System
@@ -47,7 +44,7 @@ runs:
         echo "PWD is: "
         pwd
         echo "Files are: "
-        ls
+        ls -R
     - name: Push READMD.md to docker Hub Description
       uses: peter-evans/dockerhub-description@v3
       with:
