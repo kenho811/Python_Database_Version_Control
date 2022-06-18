@@ -12,7 +12,7 @@ import os
 from dvc.core.database import SupportedDatabaseFlavour
 from dvc.core.regex import get_matched_files_in_folder_by_regex
 from dvc.core.exception import RequestedDatabaseFlavourNotSupportedException, InvalidDatabaseRevisionFilesException, \
-    EnvironmentVariableNotSetException
+    EnvironmentVariableNotSetException, Operation
 
 
 class ConfigDefault:
@@ -170,11 +170,14 @@ class ConfigReader:
         return user_config
 
 
+
+
+
 class DatabaseRevisionFilesManager:
     """
     Manager all Database Revision Files
     """
-    STANDARD_RV_FILE_FORMAT = r'RV[0-9]*__.*\.(upgrade|downgrade)\.sql'
+    STANDARD_RV_FILE_FORMAT_REGEX = r'RV[0-9]*__.*\.(upgrade|downgrade)\.sql'
 
     def __init__(self,
                  config_file_reader: ConfigReader,
@@ -187,7 +190,7 @@ class DatabaseRevisionFilesManager:
 
     def validate_database_revision_sql_files(self):
         # Step 1: Check revision file name
-        prog = re.compile(self.__class__.STANDARD_RV_FILE_FORMAT)
+        prog = re.compile(self.__class__.STANDARD_RV_FILE_FORMAT_REGEX)
 
         for file in self.database_revision_files_folder.glob('**/*'):
             if file.is_file():
@@ -276,10 +279,3 @@ class DatabaseConnectionFactory:
 
         conn = psycopg2.connect(dbname=dbname, user=user, password=password, port=port, host=host)
         return conn
-
-
-def get_revision_number_from_database_revision_file(database_revision_file_path: Path) -> int:
-    """
-    """
-    revision_number = int(database_revision_file_path.name.split('__')[0][2:])
-    return revision_number

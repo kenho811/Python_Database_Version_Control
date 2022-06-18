@@ -11,22 +11,29 @@ from dvc.core.database.postgres import PostgresSQLFileExecutor
 from dvc.core.database.mysql import MySQLSQLFileExecutor
 from dvc.core.database.bigquery import BigQuerySQLFileExecutor
 
-from dvc.core.struct import Operation, DatabaseVersion, DatabaseRevision
+from dvc.core.struct import Operation, DatabaseVersion, DatabaseRevisionFile
 from dvc.core.config import ConfigDefault, DatabaseRevisionFilesManager, ConfigReader, DatabaseConnectionFactory
 from dvc.core.file import validate_file_exist
-from dvc.core.exception import InvalidDatabaseRevisionFilesException, DatabaseConnectionFailureException, OperationNotAccountedForException
+from dvc.core.exception import InvalidDatabaseRevisionFilesException, DatabaseConnectionFailureException, \
+    OperationNotAccountedForException
 
 
 def get_target_database_revision_sql_files(
         config_file_reader: ConfigReader,
         operation_type: Operation,
         target_revision_version: str,
+        steps=1,
 ) -> List[Path]:
-    file_name_regex = rf"{target_revision_version}__.*\.{operation_type.value}\.sql"
-
-    # Get path of Database Revision SQL files
     db_rv_files_man = DatabaseRevisionFilesManager(config_file_reader)
-    matched_paths = db_rv_files_man.get_database_revision_files_by_regex(file_name_regex=file_name_regex)
+
+    if steps == 1:
+        # Use regex
+        file_name_regex = rf"{target_revision_version}__.*\.{operation_type.value}\.sql"
+        # Get path of Database Revision SQL files
+        matched_paths = db_rv_files_man.get_database_revision_files_by_regex(file_name_regex=file_name_regex)
+    else:
+        raise NotImplementedError
+
     return matched_paths
 
 
@@ -57,7 +64,6 @@ class DatabaseInteractor:
         return latest_database_version
 
     def execute_sql_files(self,
-                          operation_type: Operation,
                           sql_files_paths: List[Path],
                           mark_only: bool = False,
                           ) -> None:
@@ -66,30 +72,32 @@ class DatabaseInteractor:
 
         if mark_only:
             logging.info(f"Now only marking {sql_file_path} to metadata table")
-            database_revision = DatabaseRevision(
-                executed_sql_file_path_applied=sql_file_path,
-                operation=operation_type
-            )
-            self.sql_file_executor._write_database_revision_metadata(database_revision=database_revision)
+            database_revision_file = DatabaseRevisionFile(
+                file_path=sql_file_path, )
+            self.sql_file_executor._write_database_revision_metadata(database_revision_file=database_revision_file)
         else:
             logging.info(f"Now applying {sql_file_path} and marking to metadata table")
-            database_revision = DatabaseRevision(
-                executed_sql_file_path_applied=sql_file_path,
-                operation=operation_type
+            database_revision_file = DatabaseRevisionFile(
+                file_path=sql_file_path,
             )
-            self.sql_file_executor.execute_database_revision(database_revision=database_revision)
+            self.sql_file_executor.execute_database_revision(database_revision_file=database_revision_file)
 
     def get_target_revision_sql_files(self,
                                       operation_type: Operation,
                                       steps: int = 1
                                       ) -> List[Path]:
         """
-        Helper to get target revision sql files
+        Helper to get target revision sql files.
+
+        Check number of returned revision files must be same as steps specified
 
         :param operation_type: Specify the operation type
         :param steps: Specify how many steps ahead/ backwards.
         :return:
         """
+        # Step 1:
+        assert steps >= 1, f"Steps must be equal to or greater than 1. Yours is {steps}"
+
         # Step 1: Get target revision files
         if operation_type == Operation.Upgrade:
             target_revision_version = self.get_latest_database_version().next_upgrade_revision_version
@@ -99,14 +107,12 @@ class DatabaseInteractor:
             raise OperationNotAccountedForException(operation_type=operation_type)
 
         # Step 2: Get target revision files
-        if steps == 1:
-            target_revision_files: List[Path] = get_target_database_revision_sql_files(
-                config_file_reader=self.config_file_reader,
-                operation_type=operation_type,
-                target_revision_version=target_revision_version,
-            )
-        else:
-            raise NotImplementedError("Steps other than 1 not implemented!")
+        target_revision_files: List[Path] = get_target_database_revision_sql_files(
+            config_file_reader=self.config_file_reader,
+            operation_type=operation_type,
+            target_revision_version=target_revision_version,
+            steps=steps
+        )
 
         # Step 3: Raise Error if number of returned revision files are different from the number of steps specified
         if len(target_revision_files) > steps:

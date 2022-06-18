@@ -7,7 +7,7 @@ from typing import List, Optional
 from pathlib import Path
 import typer
 
-from dvc.core.struct import DatabaseRevision, Operation, DatabaseVersion
+from dvc.core.struct import DatabaseRevisionFile, Operation, DatabaseVersion
 
 from dvc.app.cli.commands.database.backend import DatabaseInteractor
 from dvc.app.cli.commands.database.backend import get_target_database_revision_sql_files
@@ -36,7 +36,9 @@ def init(
 @app.command()
 def upgrade(
         config_file_path: Optional[str] = typer.Option(None, help="path to config file"),
-        mark_only: bool = typer.Option(False, help='Only mark the SQL file to metadata table without applying')):
+        mark_only: bool = typer.Option(False, help='Only mark the SQL file to metadata table without applying'),
+        confirm: bool = typer.Option(True, help='Prompt user to confirm operation or not.'),
+):
     """
     Upgrade the Current Database Version by applying a corresponding Upgrade Revision Version
     """
@@ -49,8 +51,14 @@ def upgrade(
     typer.echo(f"Next Upgrade Revision Version will be {latest_database_version.next_upgrade_revision_version}")
 
     target_sql_files = db_interactor.get_target_revision_sql_files(operation_type=operation_type)
+
+    if confirm:
+        logging.info(f"Going to apply file {target_sql_files[0]} .....")
+        resp = typer.confirm("You sure you want to continue ?")
+        if not resp:
+            raise typer.Abort()
+
     db_interactor.execute_sql_files(mark_only=mark_only,
-                                    operation_type=operation_type,
                                     sql_files_paths=target_sql_files)
 
 
@@ -58,7 +66,8 @@ def upgrade(
 @app.command()
 def downgrade(
         config_file_path: Optional[str] = typer.Option(None, help="path to config file"),
-        mark_only: bool = typer.Option(False, help='Only mark the SQL file to metadata table without applying')
+        mark_only: bool = typer.Option(False, help='Only mark the SQL file to metadata table without applying'),
+        confirm: bool = typer.Option(True, help='Prompt user to confirm operation or not.'),
 ):
     """
     Downgrade the Current Database Version by applying a corresponding Downgrade Revision Version
@@ -73,8 +82,14 @@ def downgrade(
     typer.echo(f"Next Downgrade Revision Version will be {latest_database_version.next_downgrade_revision_version}")
 
     target_sql_files = db_interactor.get_target_revision_sql_files(operation_type=operation_type)
+
+    if confirm:
+        logging.info(f"Going to apply file {target_sql_files[0]} .....")
+        resp = typer.confirm("You sure you want to continue ?")
+        if not resp:
+            raise typer.Abort()
+
     db_interactor.execute_sql_files(mark_only=mark_only,
-                                    operation_type=operation_type,
                                     sql_files_paths=target_sql_files)
 
 

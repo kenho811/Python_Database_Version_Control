@@ -5,7 +5,7 @@ import psycopg2
 from psycopg2._psycopg import connection
 
 from dvc.core.database.postgres import PostgresSQLFileExecutor
-from dvc.core.struct import DatabaseVersion, DatabaseRevision, Operation
+from dvc.core.struct import DatabaseVersion, DatabaseRevisionFile, Operation
 
 
 from requests.exceptions import ConnectionError

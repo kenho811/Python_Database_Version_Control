@@ -8,9 +8,8 @@ from typing import List
 import logging
 import shutil
 
-from dvc.core.config import get_matched_files_in_folder_by_regex, ConfigDefault, \
-    get_revision_number_from_database_revision_file, DatabaseRevisionFilesManager, ConfigReader
-from dvc.core.struct import Operation
+from dvc.core.config import get_matched_files_in_folder_by_regex, ConfigDefault,  DatabaseRevisionFilesManager, ConfigReader
+from dvc.core.struct import Operation, DatabaseRevisionFile
 
 app = typer.Typer()
 
@@ -20,6 +19,7 @@ def generate(from_sql_folder: str = typer.Option(..., help="Folder path with SQL
     """
     Generate RV upgrade files from all the SQLs files in a given directory
     """
+    raise NotImplementedError
     # Step 1: Get path of Source SQL files
     from_sql_folder_path = Path(from_sql_folder)
     logging.info(f"Sourcing from SQL folder: {from_sql_folder_path}")
@@ -32,13 +32,13 @@ def generate(from_sql_folder: str = typer.Option(..., help="Folder path with SQL
 
     # Step 3: Get latest RV
     existing_rv_file_name_regex = rf".*\.{Operation.Upgrade.value}\.sql"
-    existing_rv_files = db_rv_files_man.get_database_revision_files_by_regex(existing_rv_file_name_regex)
+    existing_rv_files: List[Path] = db_rv_files_man.get_database_revision_files_by_regex(existing_rv_file_name_regex)
 
     if len(existing_rv_files) == 0:
         latest_database_revision_number = 0
     else:
-        existing_rv_files.sort(key=lambda sql_path: get_revision_number_from_database_revision_file(sql_path), reverse=True)
-        latest_database_revision_number = get_revision_number_from_database_revision_file(existing_rv_files[0])
+        existing_rv_files.sort(key=lambda sql_path: DatabaseRevisionFile(sql_path), reverse=True)
+        latest_database_revision_number = DatabaseRevisionFile(existing_rv_files[0])
 
     logging.info(f"Latest database revision is {latest_database_revision_number}")
 
