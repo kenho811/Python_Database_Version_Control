@@ -82,26 +82,32 @@ Benefits
 
 - Only plain SQL files are accepted. No extra abstraction layer as is generally available in ORM.
 
+More information
+-------------------
+.. list-table::
 
-Quick links
-~~~~~~~~~~~~~~
+    * - .. figure:: _static/img/github_logo.png
 
-* `Code on GitHub <https://github.com/kenho811/Python_Database_Version_Control>`_
-* `Docker Image on Dockerhub <https://hub.docker.com/repository/docker/kenho811/database-version-control#>`_
-* `Documentation on Readthedocs (latest) <https://python-database-version-control.readthedocs.io/en/latest>`_
-* `Demo on Youtube <https://www.youtube.com/watch?v=9l3m7zBxN4Y>`_
+            `Code on GitHub <https://github.com/kenho811/Python_Database_Version_Control>`_
+      - .. figure:: _static/img/dockerhub_logo.png
 
+            `Docker Image on Dockerhub <https://hub.docker.com/repository/docker/kenho811/database-version-control#>`_
 
-Test Status
-~~~~~~~~~~~~~~
-* `Pytest Report <_static/pytest/report.html>`_
+      - .. figure:: _static/img/readthedocs_logo.png
+
+            `Documentation on Readthedocs (latest) <https://python-database-version-control.readthedocs.io/en/latest>`_
+
+      - .. figure:: _static/img/youtube_logo.png
+
+            `Demo on Youtube <https://www.youtube.com/watch?v=9l3m7zBxN4Y>`_
+
 
 Supported Databases
-~~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
 .. list-table::
 
     * - .. figure:: _static/img/postgresql_logo.png
 
-            Postgresql
+            `Postgresql <https://www.postgresql.org/>`_
 
