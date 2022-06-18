@@ -38,7 +38,7 @@ runs:
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: kenho811/database-version-control:$$ {{ inputs.docker-image-tag }}
+        tags: kenho811/database-version-control:${{ inputs.docker-image-tag }}
         labels: ${{ steps.meta.outputs.labels }}
     - # Push README.md to Dockerhub
       name: Check the File System
