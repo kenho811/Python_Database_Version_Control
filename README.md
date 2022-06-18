@@ -19,6 +19,12 @@ A Database Version Control (DVC) tool written in Python.
 ![GitHub followers](https://img.shields.io/github/followers/kenho811?style=social)
 [![YouTube Channel Views](https://img.shields.io/youtube/channel/views/UC9aCwHsCO0ZewWlQy27naEA?style=social)](https://www.youtube.com/watch?v=9l3m7zBxN4Y)
 
+## More information
+
+GitHub                                                                                                     |  DockerHub                                                                                                                       | Readthedocs                                                                                                                      | Youtube                                           |
+:---------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
+[![Github](docs/_static/img/github_logo.png)](https://github.com/kenho811/Python_Database_Version_Control) | [![Dockerhub](docs/_static/img/dockerhub_logo.png)](https://hub.docker.com/repository/docker/kenho811/database-version-control#) | [![Readthedocs](docs/_static/img/readthedocs_logo.png)](https://python-database-version-control.readthedocs.io/en/latest/) | [![Youtube](docs/_static/img/youtube_logo.png)](https://www.youtube.com/watch?v=9l3m7zBxN4Y)
+
 
 ## Key Features
 
@@ -105,12 +111,6 @@ PGPASSWORD=test psql -U test -d test -h localhost -p 5433
 
 # Check out docker-compose.yml file for usage as a microservice
 ```
-
-## More information
-
-GitHub                                                                                                     |                                                                                                                     Dockerhub    | Readthedocs                                                                                                                      | Youtube                                           |
-:---------------------------------------------------------------------------------------------------------:|---------------------------------------------------------------------------------------------------------------------------------:|----------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
-[![Github](docs/_static/img/github_logo.png)](https://github.com/kenho811/Python_Database_Version_Control) | [![Dockerhub](docs/_static/img/dockerhub_logo.png)](https://hub.docker.com/repository/docker/kenho811/database-version-control#) | [![Readthedocs](docs/_static/img/readthedocs_logo.png)](https://python-database-version-control.readthedocs.io/en/latest/) | [![Youtube](docs/_static/img/youtube_logo.png)](https://www.youtube.com/watch?v=9l3m7zBxN4Y) 
 
 
 
