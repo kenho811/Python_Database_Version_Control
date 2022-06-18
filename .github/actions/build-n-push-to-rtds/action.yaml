@@ -36,6 +36,12 @@ runs:
       with:
         name: report-for-${{ github.sha }}
         path: docs/_static/pytest
+    - name: Wait for complete upload of artifacts
+      shell: bash
+      run: |
+        echo "Going to sleep for a while......Waiting until artifact is completed uploaded......"
+        sleep 10
+        echo "Sleeping is over!!!!"
     - name: Trigger RTDs build
       uses: dfm/rtds-action@v1
       with:
