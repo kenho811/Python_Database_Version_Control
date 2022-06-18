@@ -1,5 +1,5 @@
 import pytest
-from dvc.core.struct import DatabaseVersion, DatabaseRevisionFile, Operation
+from dvc.core.struct import  DatabaseRevisionFile
 
 from tests.assets import TEST_REVISION_SQL_FILES_FOLDER_PATH
 

@@ -111,14 +111,6 @@ class TestDatabaseRevisionFilesManager:
                             "database_revision_sql_files_folder": dummy_regex_files_folder_with_incorrect_files_names}) as mock_user_config:
             yield ConfigReader()
 
-    def test__validate_database_revision_sql_files__raise_InvalidDatabaseRevisionFilesException_with_status_101(
-            self,
-            dummy_config_file_reader_with_patched_database_revision_files_folder,
-    ):
-        db_rev_man = DatabaseRevisionFilesManager(
-            dummy_config_file_reader_with_patched_database_revision_files_folder)
-        with pytest.raises(InvalidDatabaseRevisionFilesException) as exc_info:
-            db_rev_man.validate_database_revision_sql_files()
 
 
 @pytest.mark.unit
