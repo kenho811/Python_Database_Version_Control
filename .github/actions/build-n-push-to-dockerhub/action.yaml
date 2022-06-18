@@ -1,0 +1,52 @@
+name: Build Docker image and Push to Dockerhub
+
+description: "Build Docker Image and Push to DockerHub"
+inputs:
+  docker-image-tag:
+    required: true
+    description: "Docker Image Tag"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    - # Generate docker meta data
+      name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        images: kenho811/database-version-control
+    - name: Login to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - # Build Docker image
+      name: Build and Push Docker image
+      uses: docker/build-push-action@v3
+      with:
+        push: true
+        tags: kenho811/database-version-control:$$ {{ inputs.docker-image-tag }}
+        labels: ${{ steps.meta.outputs.labels }}
+    - # Push README.md to Dockerhub
+      name: Push README.md to dockerhub
+      runs-on: ubuntu-latest
+      needs: tests
+      steps:
+        - uses: actions/checkout@v3
+        - name: Check the File System
+          run: |
+            echo "PWD is: "
+            pwd
+            echo "Files are: "
+            ls
+    - name: Push READMD.md to docker Hub Description
+      uses: peter-evans/dockerhub-description@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+        repository: kenho811/database-version-control
+        readme-filepath: ./README.md
