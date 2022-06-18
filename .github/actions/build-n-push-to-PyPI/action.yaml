@@ -1,0 +1,23 @@
+name: Build and push python library to PyPI
+
+description: "Build and Push Python library to PyPI"
+inputs:
+  pypi-api-token:
+    required: true
+    description: "PyPI API Token"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.9
+    - name: Build tar ball
+      shell: bash
+      run: |
+        python setup.py sdist
+    - name: Publish distribution to PyPI
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}

@@ -3,7 +3,12 @@ Change Log
 
 0.2.1
 --------
-- Refactored Github workflows. Extracted pytest to a separate Github Action
+- Refactored Github workflows. Separated the below components from Github Workflows
+    - Running pytest
+    - Building and pushing python library to PyPI
+    - Building and Pushing artifacts to Readthedocs
+    - Building and pushing to Dockerhub
+    - Building and pushing Linux, Mac and Windows binaries to Github Releases
 
 0.2.0
 --------
