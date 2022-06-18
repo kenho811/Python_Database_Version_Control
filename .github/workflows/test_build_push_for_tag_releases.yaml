@@ -9,31 +9,17 @@ on:
 jobs:
   # Step 1: Run tests
   tests:
-    name: Run tests
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: [ "3.7", "3.8", "3.9", "3.10" ]
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
         os: [ ubuntu-latest ]
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
+      - name: Run Pytest
+        uses: ./.github/actions/run-pytest
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e ".[dev]"
-      - name: Pytest Unit test
-        run: |
-          pytest -m "unit" -v
-      - name: Pytest Integration test
-        run: |
-          pytest -m "integration" -v
-      - name: Test with pytest coverage
-        run: |
-          pytest --cov=dvc tests/
 
   # Step 2a: Publish to PYPI
   build-n-push-to-PyPI:

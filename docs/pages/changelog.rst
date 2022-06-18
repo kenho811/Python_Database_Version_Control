@@ -1,6 +1,10 @@
 Change Log
 =============
 
+0.2.1
+--------
+- Refactored Github workflows. Extracted pytest to a separate Github Action
+
 0.2.0
 --------
 - Included help text and documentation URL in the CLI.

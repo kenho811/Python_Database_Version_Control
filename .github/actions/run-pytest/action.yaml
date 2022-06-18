@@ -1,0 +1,31 @@
+name: Run Pytest
+
+description: "Run pytest"
+inputs:
+  python-version:
+    required: true
+    description: "The python version to use"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v3
+      with:
+        python-version: ${{ inputs.python-version }}
+    - name: Install dependencies
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+    - name: Pytest Unit test
+      shell: bash
+      run: |
+        pytest -m "unit" -v
+    - name: Pytest Integration test
+      shell: bash
+      run: |
+        pytest -m "integration" -v
+    - name: Test with pytest coverage
+      shell: bash
+      run: |
+        pytest --cov=dvc tests/
