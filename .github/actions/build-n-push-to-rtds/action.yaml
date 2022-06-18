@@ -16,7 +16,6 @@ runs:
   using: "composite"
   steps:
     - name: Set up Python
-      shell: bash
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
@@ -32,13 +31,12 @@ runs:
         pytest --html=docs/_static/pytest/report.html -v
     - name: upload pytest report
       uses: actions/upload-artifact@v2
-      shell: bash
       with:
         name: report-for-${{ github.sha }}
         path: docs/_static/pytest
     - name: Trigger RTDs build
       uses: dfm/rtds-action@v1
       with:
-        webhook_url: ${{ secrets.RTDS_WEBHOOK_URL }}
-        webhook_token: ${{ secrets.RTDS_WEBHOOK_TOKEN }}
-        commit_ref: ${{ github.ref }}
+        webhook_url: ${{ inputs.rtds-webhook-url }}
+        webhook_token: ${{ inputs.rtds-webhook-token }}
+        commit_ref: ${{ inputs.commit-ref }}
