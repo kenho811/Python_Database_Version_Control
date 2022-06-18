@@ -34,10 +34,11 @@ jobs:
           dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
           dockerhub-password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
+  # Push to rtds
   build-n-push-to-rtds:
     name: "Build and push artifacts to Readthedocs"
     runs-on: ubuntu-latest
-#    needs: tests
+    needs: tests
     steps:
       - uses: actions/checkout@v3
       - name: Build and push artifacts to Readthedocs
