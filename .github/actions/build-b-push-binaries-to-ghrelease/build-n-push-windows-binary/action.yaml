@@ -1,0 +1,32 @@
+name: Build and push Windows Binary
+
+description: "Build and push Windows binary"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v3
+      with:
+        python-version: "3.7"
+    - name: Install dependencies
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+    - name: Generate Binary
+      shell: bash
+      run: pyinstaller --distpath ./dist --log-level=DEBUG dvc.spec
+    - name: Smoke Test
+      shell: bash
+      run: |
+        echo "Now running simple smoke test to test generated binary"
+        dvc version
+    - name: zip windows artifact
+      shell: bash
+      run: |
+        powershell Compress-Archive ./dist windows.zip
+    - name: upload Windows artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: uploads
+        path: windows.zip

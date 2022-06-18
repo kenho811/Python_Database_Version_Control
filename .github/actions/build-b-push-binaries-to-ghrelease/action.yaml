@@ -1,0 +1,71 @@
+name: Build and push executables to Github releases
+
+description: "Build and push executables to Github Releases"
+inputs:
+  gh-release-tag-name:
+    required: true
+    description: "GitHub release tag name"
+  gh-release-release-name:
+    required: true
+    description: "Github release release name"
+  gh-token:
+    required: true
+    description: "Github Token"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create Github Release
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ inputs.gh-release-tag-name }}
+        release_name: Release ${{ inputs.gh-release-release-name }}
+        draft: false
+        prerelease: false
+    - name: download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: uploads
+        path: uploads
+    - name: Show files
+      shell: bash
+      run: |
+        ls -R
+    - name: upload macos artifact
+      id: upload-macos
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ inputs.gh-token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./uploads/macos.zip
+        asset_name: macos.zip
+        asset_content_type: application/zip
+    - name: upload linux
+      id: upload-linux
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ inputs.gh-token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./uploads/linux.zip
+        asset_name: linux.zip
+        asset_content_type: application/zip
+    - name: upload windows
+      id: upload-windows
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ inputs.gh-token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./uploads/windows.zip
+        asset_name: windows.zip
+        asset_content_type: application/zip
+    - name: echo upload details
+      shell: bash
+      run: |
+        echo url is ${{ steps.create_release.outputs.url }}
+        echo id is ${{ steps.create_release.outputs.id }}
+        echo upload_url is ${{ steps.create_release.outputs.upload_url }}
+        echo assets are ${{ steps.create_release.outputs.assets }}

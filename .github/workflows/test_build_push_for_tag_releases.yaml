@@ -68,136 +68,33 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
-        with:
-          python-version: "3.7"
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e ".[dev]"
-      - name: Generate Binary
-        run: pyinstaller --distpath ./dist --log-level=DEBUG dvc.spec
-      - name: Smoke Test
-        run: |
-          echo "Now running simple smoke test to test generated binary"
-          dvc version
-      - name: zip mac artifact
-        run: |
-          zip -r macos.zip ./dist
-      - name: upload macos artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: uploads
-          path: macos.zip
+      - name: Build and push Macos binaries as artifacts
+        uses: ./.github/actions/build-n-push-binaries-to-ghrelease/build-n-push-mac-binary
 
   build-linux-binary:
     needs: tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
-        with:
-          python-version: "3.7"
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e ".[dev]"
-      - name: Generate Binary
-        run: pyinstaller --distpath ./dist --log-level=DEBUG dvc.spec
-      - name: Smoke Test
-        run: |
-          echo "Now running simple smoke test to test generated binary"
-          dvc version
-      - name: zip linux artifact
-        run: |
-          zip -r linux.zip ./dist
-      - name: upload linux artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: uploads
-          path: linux.zip
+      - name: Build and push Linux binaries as artifacts
+        uses: ./.github/actions/build-n-push-binaries-to-ghrelease/build-n-push-linux-binary
 
   build-windows-binary:
     needs: tests
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
-        with:
-          python-version: "3.7"
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e ".[dev]"
-      - name: Generate Binary
-        run: pyinstaller --distpath ./dist --log-level=DEBUG dvc.spec
-      - name: Smoke Test
-        run: |
-          echo "Now running simple smoke test to test generated binary"
-          dvc version
-      - name: zip windows artifact
-        run: |
-          powershell Compress-Archive ./dist windows.zip
-      - name: upload Windows artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: uploads
-          path: windows.zip
+      - name: Build and push Windows binaries as artifacts
+        uses: ./.github/actions/build-n-push-binaries-to-ghrelease/build-n-push-windows-binary
 
   build-n-push-binaries-to-gh-release:
     needs: [build-mac-binary, build-linux-binary, build-windows-binary]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Create Github Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
+      - name: Build and push binaries to Github Release
+        uses: ./.github/actions/build-n-push-binaries-to-ghrelease
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-      - name: download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: uploads
-          path: uploads
-      - name: Show files
-        run: |
-          ls -R
-      - name: upload macos artifact
-        id: upload-macos
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./uploads/macos.zip
-          asset_name: macos.zip
-          asset_content_type: application/zip
-      - name: upload linux
-        id: upload-linux
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./uploads/linux.zip
-          asset_name: linux.zip
-          asset_content_type: application/zip
-      - name: upload windows
-        id: upload-windows
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./uploads/windows.zip
-          asset_name: windows.zip
-          asset_content_type: application/zip
-      - name: echo upload details
-        run: |
-          echo url is ${{ steps.create_release.outputs.url }}
-          echo id is ${{ steps.create_release.outputs.id }}
-          echo upload_url is ${{ steps.create_release.outputs.upload_url }}
-          echo assets are ${{ steps.create_release.outputs.assets }}
+          gh-release-tag-name: ${{ github.ref }}
+          gh-release-release-name: Release ${{ github.ref }}
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
