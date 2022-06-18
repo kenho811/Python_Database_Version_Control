@@ -106,15 +106,11 @@ PGPASSWORD=test psql -U test -d test -h localhost -p 5433
 # Check out docker-compose.yml file for usage as a microservice
 ```
 
-## Documentation
-### On Readthedocs (Latest)
+## More information
 
-https://python-database-version-control.readthedocs.io/en/latest
-
-## Video Demonstration
-### On Youtube
-
-- https://www.youtube.com/watch?v=9l3m7zBxN4Y
+GitHub                                                                                                     |                                                                                                                     Dockerhub    | Readthedocs                                                                                                                      | Youtube                                           |
+:---------------------------------------------------------------------------------------------------------:|---------------------------------------------------------------------------------------------------------------------------------:|----------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
+[![Github](docs/_static/img/github_logo.png)](https://github.com/kenho811/Python_Database_Version_Control) | [![Dockerhub](docs/_static/img/dockerhub_logo.png)](https://hub.docker.com/repository/docker/kenho811/database-version-control#) | [![Readthedocs](docs/_static/img/readthedocs_logo.png)](https://python-database-version-control.readthedocs.io/en/latest/) | [![Youtube](docs/_static/img/youtube_logo.png)](https://www.youtube.com/watch?v=9l3m7zBxN4Y) 
 
 
 
