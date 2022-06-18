@@ -1,0 +1,44 @@
+name: Build and Push to Readthedocs
+
+description: "Build and Push to Readthedocs"
+inputs:
+  rtds-webhook-url:
+    required: true
+    description: "Readthedocs Webhook URL"
+  rtds-webhook-token:
+    required: true
+    description: "Readthedocs Webhook Token"
+  commit-ref:
+    required: true
+    description: "Commit Ref for Readthedocs"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      shell: bash
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      shell: bash
+      run: |
+        python -m pip install -U pip
+        python -m pip install -r docs/requirements.txt
+        python -m pip install -e ".[dev]"
+    - name: Build pytest report
+      shell: bash
+      run: |
+        pytest --html=docs/_static/pytest/report.html -v
+    - name: upload pytest report
+      uses: actions/upload-artifact@v2
+      shell: bash
+      with:
+        name: report-for-${{ github.sha }}
+        path: docs/_static/pytest
+    - name: Trigger RTDs build
+      uses: dfm/rtds-action@v1
+      with:
+        webhook_url: ${{ secrets.RTDS_WEBHOOK_URL }}
+        webhook_token: ${{ secrets.RTDS_WEBHOOK_TOKEN }}
+        commit_ref: ${{ github.ref }}
