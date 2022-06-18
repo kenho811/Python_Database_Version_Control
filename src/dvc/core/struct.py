@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import datetime
 import logging
 from pathlib import Path
@@ -23,6 +25,23 @@ class DatabaseRevisionFile:
                  ):
         self.file_path = file_path
         self._validate_sql_file_name()
+
+    @classmethod
+    def get_dummy_revision_file(
+            cls,
+            revision_number: int,
+            operation_type: Operation,
+    ) -> DatabaseRevisionFile:
+        """
+        Return
+        :param revision_number:
+        :param operation_type:
+        :return:
+        """
+        dummy_file_path = Path(f"RV{revision_number}__dummy_file.{operation_type.value}.sql")
+        dummy_database_revision_file = cls(file_path=dummy_file_path)
+
+        return dummy_database_revision_file
 
     def _validate_sql_file_name(self):
         """
@@ -57,11 +76,53 @@ class DatabaseRevisionFile:
         else:
             return False
 
+    def __add__(self, other) -> Optional[int]:
+        """
+        Return the sum of  revision numbers if both DatabaseRevisionFiles are of same operation type.
+        Else, return None
+        :param other:
+        :return:
+        """
+        if self.operation_type != other.operation_type:
+            return None
+        else:
+            total_revision_number = self.revision_number + other.revision_number
+            return total_revision_number
+
+    def __sub__(self, other) -> Optional[int]:
+        """
+        Return the diff of revision numbers  if both DatabaseRevisionFiles are of same operation type.
+        Else, return None
+        :param other:
+        :return:
+        """
+        if self.operation_type != other.operation_type:
+            return None
+        else:
+            diff_revision_number = self.revision_number - other.revision_number
+            return diff_revision_number
+
     def __gt__(self, other) -> bool:
         if self.revision_number > other.revision_number and self.operation_type == other.operation_type:
             return True
         else:
             return False
+
+    @property
+    def ending(self) -> str:
+        """
+        Get the revision number
+        """
+        ending = self.file_path.name.split('.')[-1]
+        return ending
+
+    @property
+    def description(self) -> str:
+        """
+        Get the revision number
+        """
+        description = self.file_path.name.split('__')[1]
+        return description
 
     @property
     def revision_number(self) -> int:

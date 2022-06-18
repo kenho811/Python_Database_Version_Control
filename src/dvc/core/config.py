@@ -1,3 +1,4 @@
+import enum
 import re
 import traceback
 
@@ -13,6 +14,7 @@ from dvc.core.database import SupportedDatabaseFlavour
 from dvc.core.regex import get_matched_files_in_folder_by_regex
 from dvc.core.exception import RequestedDatabaseFlavourNotSupportedException, InvalidDatabaseRevisionFilesException, \
     EnvironmentVariableNotSetException, Operation
+from dvc.core.struct import DatabaseRevisionFile
 
 
 class ConfigDefault:
@@ -197,9 +199,42 @@ class DatabaseRevisionFilesManager:
             logging.info("Generating database revision folder")
             database_revision_sql_folder_path.mkdir(parents=True)
 
-    def get_database_revision_files_by_regex(self,
-                                             file_name_regex: str,
-                                             ) -> List[Path]:
+    # def get_target_database_revision_files(self,
+    #                                        reference_revision_number: int,
+    #                                        operation_type: Operation,
+    #                                        target_steps: int,
+    #                                        ) -> List[DatabaseRevisionFile]:
+    #     """
+    #     Loop recursively for all files in a given folder.
+    #     Return all DatabaseRevisionFiles if condition is satisfied
+    #
+    #     :return:
+    #     """
+    #     database_revision_files_folder = self.database_revision_files_folder
+    #
+    #     # Get dummy DatabaseRevisionFIle
+    #     reference_database_revision_file = DatabaseRevisionFile.get_dummy_revision_file(
+    #         revision_number=reference_revision_number,
+    #         operation_type=operation_type,
+    #         )
+    #
+    #     target_database_revision_files: List[DatabaseRevisionFile] = []
+    #
+    #     for file_or_dir in database_revision_files_folder.glob('**/*'):
+    #         file_or_dir: Path = file_or_dir
+    #         if file_or_dir.is_file():
+    #             candidate_file = file_or_dir
+    #             candidate_database_reviison_file = DatabaseRevisionFile(candidate_file)
+    #
+    #             actual_diff_steps = candidate_database_reviison_file - reference_database_revision_file
+    #             if actual_diff_steps is not None and actual_diff_steps == target_steps:
+    #                 target_database_revision_files.append(candidate_database_reviison_file)
+    #
+    #     return target_database_revision_files
+
+    def get_target_database_revision_files_by_regex(self,
+                                                    file_name_regex: str,
+                                                    ) -> List[DatabaseRevisionFile]:
         """
         Loop recursively for all files in a given folder.
         Return those files whose name satisfy the regex.
@@ -210,8 +245,7 @@ class DatabaseRevisionFilesManager:
             folder_path=database_revision_files_folder,
             file_name_regex=file_name_regex
         )
-        return files
-
+        return [DatabaseRevisionFile(file) for file in files]
 
 class DatabaseConnectionFactory:
     """

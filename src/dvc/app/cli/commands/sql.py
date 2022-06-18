@@ -32,7 +32,7 @@ def generate(from_sql_folder: str = typer.Option(..., help="Folder path with SQL
 
     # Step 3: Get latest RV
     existing_rv_file_name_regex = rf".*\.{Operation.Upgrade.value}\.sql"
-    existing_rv_files: List[Path] = db_rv_files_man.get_database_revision_files_by_regex(existing_rv_file_name_regex)
+    existing_rv_files: List[Path] = db_rv_files_man.get_target_database_revision_files_by_regex(existing_rv_file_name_regex)
 
     if len(existing_rv_files) == 0:
         latest_database_revision_number = 0

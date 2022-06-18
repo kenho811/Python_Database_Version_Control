@@ -10,7 +10,6 @@ import typer
 from dvc.core.struct import DatabaseRevisionFile, Operation, DatabaseVersion
 
 from dvc.app.cli.commands.database.backend import DatabaseInteractor
-from dvc.app.cli.commands.database.backend import get_target_database_revision_sql_files
 
 app = typer.Typer()
 
@@ -50,16 +49,16 @@ def upgrade(
     typer.echo(f"Current Database Version is {latest_database_version.current_version}")
     typer.echo(f"Next Upgrade Revision Version will be {latest_database_version.next_upgrade_revision_version}")
 
-    target_sql_files = db_interactor.get_target_revision_sql_files(operation_type=operation_type)
+    target_database_revision_files = db_interactor.get_target_database_revision_files(operation_type=operation_type)
 
     if confirm:
-        logging.info(f"Going to apply file {target_sql_files[0]} .....")
+        logging.info(f"Going to apply file {target_database_revision_files[0]} .....")
         resp = typer.confirm("You sure you want to continue ?")
         if not resp:
             raise typer.Abort()
 
     db_interactor.execute_sql_files(mark_only=mark_only,
-                                    sql_files_paths=target_sql_files)
+                                    database_revision_files=target_database_revision_files)
 
 
 
@@ -81,16 +80,16 @@ def downgrade(
     typer.echo(f"Current Database Version is {latest_database_version.current_version}")
     typer.echo(f"Next Downgrade Revision Version will be {latest_database_version.next_downgrade_revision_version}")
 
-    target_sql_files = db_interactor.get_target_revision_sql_files(operation_type=operation_type)
+    target_database_revision_files = db_interactor.get_target_database_revision_files(operation_type=operation_type)
 
     if confirm:
-        logging.info(f"Going to apply file {target_sql_files[0]} .....")
+        logging.info(f"Going to apply file {target_database_revision_files[0]} .....")
         resp = typer.confirm("You sure you want to continue ?")
         if not resp:
             raise typer.Abort()
 
     db_interactor.execute_sql_files(mark_only=mark_only,
-                                    sql_files_paths=target_sql_files)
+                                    database_revision_files=target_database_revision_files)
 
 
 @app.command()
