@@ -26,8 +26,7 @@ services:
       - DVC__DBNAME=test
       - DVC__DBFLAVOUR=postgres
     # Attach demo assets to the db-migration-tool and run scripts at start up
-    working_dir: /usr/src/app/demo_assets
+    working_dir: /usr/src/app/
     volumes:
-      - ./demo_assets:/usr/src/app/demo_assets
+      - .:/usr/src/app/
     entrypoint: /bin/bash
-    command: ./demo_script.sh

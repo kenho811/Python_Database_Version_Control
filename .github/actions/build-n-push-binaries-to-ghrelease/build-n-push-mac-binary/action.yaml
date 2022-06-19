@@ -1,10 +1,11 @@
-name: Build and push Macos Binary
+name: Build, test and push Macos Binary
 
-description: "Build and push Macos binary"
+description: "Build, test and push Macos binary"
 
 runs:
   using: "composite"
   steps:
+    # Step 1: Build
     - uses: actions/setup-python@v3
       with:
         python-version: "3.7"
@@ -15,12 +16,56 @@ runs:
         pip install -e ".[dev]"
     - name: Generate Binary
       shell: bash
-      run: pyinstaller --distpath ./dist --log-level=DEBUG dvc.spec
+      run: |
+        pyinstaller --distpath ./dist --log-level=DEBUG dvc.spec
+        cp ./dist/dvc .
+        sudo chmod 755 ./dvc
     - name: Smoke Test
       shell: bash
       run: |
         echo "Now running simple smoke test to test generated binary"
-        dvc version
+        ./dvc version
+    # Step 2: Test with Postgres
+    - name: Start PostgreSQL on MacOS
+      shell: bash
+      run: |
+        brew services start postgresql
+        echo "Check PostgreSQL service is running"
+        i=10
+        COMMAND='pg_isready'
+        while [ $i -gt 0 ]; do
+            echo "Check PostgreSQL service status"
+            eval $COMMAND && break
+            ((i--))
+            if [ $i == 0 ]; then
+                echo "PostgreSQL service not ready, all attempts exhausted"
+                exit 1
+            fi
+            echo "PostgreSQL service not ready, wait 10 more sec, attempts left: $i"
+            sleep 10
+        done
+    # Homebrew creates an account with the same name as the installing user, but no password
+    - name: Create test user
+      shell: bash
+      run: |
+        psql --command="CREATE USER test PASSWORD 'test'" --command="\du" postgres
+    - name: Create test database
+      shell: bash
+      run: |
+        createdb --owner=test test
+    - name: Run DVC
+      shell: bash
+      run: |
+        set -a
+        source ./.github/assets/.github.ci.env
+        echo "Now checking the env var.."
+        printenv
+        echo "Now running dvc....."
+        ./dvc db ping
+        ./dvc db init
+        ./dvc db current
+        ./dvc db upgrade --no-confirm
+    # Step 3: Zip and Upload artifact
     - name: zip mac artifact
       shell: bash
       run: |

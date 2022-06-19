@@ -1,10 +1,11 @@
-name: Build and push Linux Binary
+name: Build,test and push Linux Binary
 
-description: "Build and push Linux binary"
+description: "Build, test and push Linux binary"
 
 runs:
   using: "composite"
   steps:
+    # Step 1: Build
     - uses: actions/setup-python@v3
       with:
         python-version: "3.7"
@@ -15,12 +16,43 @@ runs:
         pip install -e ".[dev]"
     - name: Generate Binary
       shell: bash
-      run: pyinstaller --distpath ./dist --log-level=DEBUG dvc.spec
+      run: |
+        pyinstaller --distpath ./dist --log-level=DEBUG dvc.spec
+        cp ./dist/dvc .
     - name: Smoke Test
       shell: bash
       run: |
         echo "Now running simple smoke test to test generated binary"
-        dvc version
+        ./dvc version
+    # Step 2: Test with Postgres
+    - name: Start PostgreSQL on Ubuntu
+      shell: bash
+      run: |
+        sudo systemctl start postgresql.service
+        pg_isready
+    - name: Create test user
+      shell: bash
+      run: |
+        sudo -u postgres psql --command="CREATE USER test PASSWORD 'test'" --command="\du"
+    - name: Create test database
+      shell: bash
+      run: |
+        sudo -u postgres createdb --owner=test test
+        PGPASSWORD=test psql --username=test --host=localhost --list test
+    - name: Run DVC
+      shell: bash
+      run: |
+        set -a
+        source ./.github/assets/.github.ci.env
+        echo "Now checking the env var.."
+        printenv
+        echo "Now running dvc....."
+        ./dvc db ping
+        ./dvc db ping
+        ./dvc db init
+        ./dvc db current
+        ./dvc db upgrade --no-confirm
+    # Step 3: Zip and Upload artifact
     - name: zip linux artifact
       shell: bash
       run: |
