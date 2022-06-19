@@ -44,9 +44,6 @@ setup(
     author_email='kenho811@gmail.com',
     packages=(find_packages(where="src")),
     package_dir={"": "src"},
-    # Include SQL files (seen as data by setup tools)
-    package_data={'': ['*.sql']},
-    include_package_data=True,
     install_requires=[
         'psycopg2',
         'typer[all]',
