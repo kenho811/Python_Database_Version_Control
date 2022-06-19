@@ -78,17 +78,6 @@ class DatabaseInteractor:
             steps = steps,
         )
 
-        # Step 3: Raise Error if number of returned revision files are different from the number of steps specified
-        if len(target_database_revision_files) > abs(steps):
-            raise InvalidDatabaseRevisionFilesException(
-                file_path=self.config_file_path,
-                status=InvalidDatabaseRevisionFilesException.Status.MORE_REVISION_SQL_FILES_FOUND_THAN_REQUIRED_STEPS_SPECIFIED
-            )
-        elif len(target_database_revision_files) < abs(steps):
-            raise InvalidDatabaseRevisionFilesException(
-                file_path=self.config_file_path,
-                status=InvalidDatabaseRevisionFilesException.Status.FEWER_REVISION_SQL_FILES_FOUND_THAN_REQUIRED_STEPS_SPECIFIED
-            )
 
         return target_database_revision_files
 

@@ -47,8 +47,8 @@ def upgrade(
     db_interactor = DatabaseInteractor(config_file_path_str=config_file_path)
     latest_database_version: DatabaseVersion = db_interactor.latest_database_version
 
-    typer.echo(f"Current Database Version is {latest_database_version.current_version}")
-    typer.echo(f"Next Upgrade Revision Version will be {latest_database_version.next_downgrade_database_revision_file.revision_number}")
+    typer.echo(f"Current Database Version is {latest_database_version.version}")
+    typer.echo(f"Next Upgrade Revision Version will be {latest_database_version.next_upgrade_database_revision_file.revision_number}")
 
     target_database_revision_files = db_interactor.get_target_database_revision_files(steps=1)
 
@@ -78,7 +78,7 @@ def downgrade(
     db_interactor = DatabaseInteractor(config_file_path_str=config_file_path)
     latest_database_version: DatabaseVersion = db_interactor.latest_database_version
 
-    typer.echo(f"Current Database Version is {latest_database_version.current_version}")
+    typer.echo(f"Current Database Version is {latest_database_version.version}")
     typer.echo(f"Next Downgrade Revision Version will be {latest_database_version.next_downgrade_database_revision_file.revision_number}")
 
     target_database_revision_files = db_interactor.get_target_database_revision_files(steps=-1)
@@ -101,7 +101,7 @@ def current(config_file_path: Optional[str] = typer.Option(None, help="path to c
     """
     db_interactor = DatabaseInteractor(config_file_path)
     latest_database_version: DatabaseVersion = db_interactor.latest_database_version
-    typer.echo(f"Database Current Version: {latest_database_version.current_version}")
+    typer.echo(f"Database Current Version: {latest_database_version.version}")
 
 
 @app.command()

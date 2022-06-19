@@ -45,13 +45,13 @@ class PostgresSQLFileExecutor(SQLFileExecutorTemplate):
             if result is None:
                 # Nothing is in the table
                 latest_database_version: DatabaseVersion = DatabaseVersion(
-                    current_version="V0",
+                    version="V0",
                     created_at=None,
                 )
             else:
                 current_version, _, _, created_at = result
                 latest_database_version: DatabaseVersion = DatabaseVersion(
-                    current_version=current_version,
+                    version=current_version,
                     created_at=created_at
                 )
 

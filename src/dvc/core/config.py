@@ -209,22 +209,17 @@ class DatabaseRevisionFilesManager:
 
         :return:
         """
-        print(f"steps is {steps}")
-
 
         # Step 1: Get a list of dummy database revision files
-        current_database_version_number = current_database_version.current_version_number
-        target_database_version = DatabaseVersion(current_version=f"V{current_database_version_number + steps}")
-
-        print(target_database_version)
-
+        current_database_version_number = current_database_version.version_number
+        target_database_version = DatabaseVersion(version=f"V{current_database_version_number + steps}")
 
         dummy_revision_files: List[DatabaseRevisionFile] = target_database_version - current_database_version
         actual_revision_files: List[DatabaseRevisionFile] = []
 
         print(f"dummy_revision_files: {dummy_revision_files}")
 
-        # Step 2: Loop folder
+        # Step 2: Loop folder for actual files
         database_revision_files_folder = self.database_revision_files_folder
 
 
@@ -240,7 +235,21 @@ class DatabaseRevisionFilesManager:
 
         print(actual_revision_files)
 
-        return actual_revision_files
+        # Step 3: Raise error
+        # Step 3: Raise Error if number of returned revision files are different from the number of steps specified
+        if len(actual_revision_files) > abs(steps):
+            raise InvalidDatabaseRevisionFilesException(
+                config_file_path=self.database_revision_files_folder,
+                status=InvalidDatabaseRevisionFilesException.Status.MORE_REVISION_SQL_FILES_FOUND_THAN_REQUIRED_STEPS_SPECIFIED
+            )
+        elif len(actual_revision_files) < abs(steps):
+            raise InvalidDatabaseRevisionFilesException(
+                config_file_path=self.database_revision_files_folder,
+                status=InvalidDatabaseRevisionFilesException.Status.FEWER_REVISION_SQL_FILES_FOUND_THAN_REQUIRED_STEPS_SPECIFIED
+            )
+        else:
+            # All good
+            return actual_revision_files
 
 class DatabaseConnectionFactory:
     """

@@ -38,40 +38,62 @@ class TestDatabaseRevisionFile:
         with expectation:
             assert DatabaseRevisionFile(Path(sql_file_name)) is not None
 
+    @pytest.mark.parametrize("stuff,actual_files,expected_files",
+                             [
+                                 (1,[DatabaseRevisionFile.get_dummy_revision_file(revision="RV2",
+                                                                                operation_type=Operation.Upgrade),
+                                   DatabaseRevisionFile.get_dummy_revision_file(revision="RV1",
+                                                                                operation_type=Operation.Upgrade)
+                                   ],
+                                  [DatabaseRevisionFile.get_dummy_revision_file(revision="RV2",
+                                                                                operation_type=Operation.Upgrade),
+                                   DatabaseRevisionFile.get_dummy_revision_file(revision="RV1",
+                                                                                operation_type=Operation.Upgrade),
+                                   ]
+
+                                  ),
+                             ])
+    def test_database_revision_files_init_order(self,
+                                                stuff,
+                                                actual_files,
+                                                expected_files,
+                                                ):
+        assert actual_files == expected_files
+
 
 class TestDatabaseVersion:
 
     @pytest.mark.parametrize("target_database_version,current_database_version,expected_dummy_database_revision_files",
                              [
-                                 # When target version > Current, return upgrade files
-                                 (DatabaseVersion(current_version="V3"), DatabaseVersion(current_version="V1"), [
-                                         DatabaseRevisionFile.get_dummy_revision_file(revision=f"RV2",
-                                                                                      operation_type=Operation.Upgrade),
-                                         DatabaseRevisionFile.get_dummy_revision_file(revision=f"RV3",
-                                                                                      operation_type=Operation.Upgrade),
-                                 ]),
+                                 # When target version > Current, return upgrade files. Order from current to target
+                                 (DatabaseVersion(version="V3"),
+                                  DatabaseVersion(version="V1"),
+                                  [DatabaseRevisionFile.get_dummy_revision_file(revision=f"RV2",
+                                                                                operation_type=Operation.Upgrade),
+                                   DatabaseRevisionFile.get_dummy_revision_file(revision=f"RV3",
+                                                                                operation_type=Operation.Upgrade),
+                                   ]),
 
-                                 # When target version < Current, return downgrade files
-                                 (DatabaseVersion(current_version="V1"), DatabaseVersion(current_version="V3"), [
-                                     DatabaseRevisionFile.get_dummy_revision_file(revision=f"RV3",
-                                                                                  operation_type=Operation.Downgrade),
-                                     DatabaseRevisionFile.get_dummy_revision_file(revision=f"RV2",
-                                                                                  operation_type=Operation.Downgrade),
-                                 ]),
+                                 # When target version < Current, return downgrade files. Order from current to target
+                                 (DatabaseVersion(version="V11"),
+                                  DatabaseVersion(version="V13"),
+                                  [DatabaseRevisionFile.get_dummy_revision_file(revision=f"RV13",
+                                                                                operation_type=Operation.Downgrade),
+                                   DatabaseRevisionFile.get_dummy_revision_file(revision=f"RV12",
+                                                                                operation_type=Operation.Downgrade),
+                                   ]),
 
                                  # When target version = Current, return nothing
-                                 (DatabaseVersion(current_version="V1"), DatabaseVersion(current_version="V1"), [
+                                 (DatabaseVersion(version="V1"), DatabaseVersion(version="V1"), [
                                  ]),
-                             ]
+                             ], scope='function'
                              )
-    def test_valid_dummy_database_revision_files(
+    def test_valid_dummy_database_revision_files_with_order(
             self,
             target_database_version: DatabaseVersion,
             current_database_version: DatabaseVersion,
             expected_dummy_database_revision_files: List[DatabaseRevisionFile],
     ):
         actual_dummy_database_revision_files = target_database_version - current_database_version
-        actual_dummy_database_revision_files.sort(reverse=False)
-        expected_dummy_database_revision_files.sort(reverse=False)
 
         assert actual_dummy_database_revision_files == expected_dummy_database_revision_files

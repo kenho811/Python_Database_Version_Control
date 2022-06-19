@@ -30,15 +30,15 @@ class InvalidDatabaseRevisionFilesException(Exception):
 
     def __init__(self,
                  status: Status,
-                 file_path: Path
+                 config_file_path: Path
                  ):
         self.status = status
-        self.file_path = file_path
+        self.config_file_path = config_file_path
 
     def __str__(self):
         return f"""
         {self.status.name}
-        {self.file_path}
+        {self.config_file_path}
         """
 
 class InvalidDatabaseVersionExceptio(Exception):
