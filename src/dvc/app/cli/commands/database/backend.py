@@ -18,7 +18,6 @@ from dvc.core.exception import InvalidDatabaseRevisionFilesException, DatabaseCo
     OperationNotAccountedForException
 
 
-
 class DatabaseInteractor:
     """
     Exposes API to interact with Various Database flavours
@@ -41,13 +40,10 @@ class DatabaseInteractor:
         else:
             logging.info("Database connection looks good!")
 
-
-    def execute_sql_files(self,
-                          database_revision_files: List[DatabaseRevisionFile],
-                          mark_only: bool = False,
-                          ) -> None:
-
-        database_revision_file = database_revision_files[0]
+    def execute_single_sql_file(self,
+                                database_revision_file: DatabaseRevisionFile,
+                                mark_only: bool = False,
+                                ) -> None:
 
         if mark_only:
             logging.info(f"Now only marking {database_revision_file.file_path} to metadata table")
@@ -55,7 +51,6 @@ class DatabaseInteractor:
         else:
             logging.info(f"Now applying {database_revision_file.file_path} and marking to metadata table")
             self.sql_file_executor.execute_database_revision(database_revision_file=database_revision_file)
-
 
     def get_target_database_revision_files(self,
                                            steps: Optional[int]
@@ -75,9 +70,8 @@ class DatabaseInteractor:
 
         target_database_revision_files = self.database_revision_files_manager.get_target_database_revision_files_by_steps(
             current_database_version=self.latest_database_version,
-            steps = steps,
+            steps=steps,
         )
-
 
         return target_database_revision_files
 

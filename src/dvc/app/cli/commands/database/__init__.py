@@ -37,29 +37,32 @@ def upgrade(
         config_file_path: Optional[str] = typer.Option(None, help="path to config file"),
         mark_only: bool = typer.Option(False, help='Only mark the SQL file to metadata table without applying'),
         confirm: bool = typer.Option(True, help='Prompt user to confirm operation or not.'),
+        steps: int = typer.Option(1, help='Number of steps to upgrade.'),
 ):
     """
     Upgrade the Current Database Version by applying a corresponding Upgrade Revision Version
     """
     # Step 1: Check latest database version
-    steps = 1
-    operation_type = Operation.Upgrade
+    steps = abs(steps)
     db_interactor = DatabaseInteractor(config_file_path_str=config_file_path)
     latest_database_version: DatabaseVersion = db_interactor.latest_database_version
 
     typer.echo(f"Current Database Version is {latest_database_version.version}")
     typer.echo(f"Next Upgrade Revision Version will be {latest_database_version.next_upgrade_database_revision_file.revision_number}")
 
-    target_database_revision_files = db_interactor.get_target_database_revision_files(steps=1)
+    target_database_revision_files = db_interactor.get_target_database_revision_files(steps=steps)
 
-    if confirm:
-        logging.info(f"Going to apply file {target_database_revision_files[0]} .....")
-        resp = typer.confirm("You sure you want to continue ?")
-        if not resp:
-            raise typer.Abort()
+    for target_database_revision_file in target_database_revision_files:
+        logging.info(f"Going to apply file {target_database_revision_file} .....")
 
-    db_interactor.execute_sql_files(mark_only=mark_only,
-                                    database_revision_files=target_database_revision_files)
+        if confirm:
+            resp = typer.confirm("You sure you want to continue ?")
+            if not resp:
+                raise typer.Abort()
+
+        db_interactor.execute_single_sql_file(mark_only=mark_only,
+                                              database_revision_file=target_database_revision_file)
+
 
 
 
@@ -68,29 +71,32 @@ def downgrade(
         config_file_path: Optional[str] = typer.Option(None, help="path to config file"),
         mark_only: bool = typer.Option(False, help='Only mark the SQL file to metadata table without applying'),
         confirm: bool = typer.Option(True, help='Prompt user to confirm operation or not.'),
+        steps: int = typer.Option(1, help='Number of steps to downgrade'),
 ):
     """
     Downgrade the Current Database Version by applying a corresponding Downgrade Revision Version
     :return:
     """
     # Step 1: Check latest database version
-    steps = -1
+    steps = abs(steps) * (-1)
     db_interactor = DatabaseInteractor(config_file_path_str=config_file_path)
     latest_database_version: DatabaseVersion = db_interactor.latest_database_version
 
     typer.echo(f"Current Database Version is {latest_database_version.version}")
     typer.echo(f"Next Downgrade Revision Version will be {latest_database_version.next_downgrade_database_revision_file.revision_number}")
 
-    target_database_revision_files = db_interactor.get_target_database_revision_files(steps=-1)
+    target_database_revision_files = db_interactor.get_target_database_revision_files(steps=steps)
 
-    if confirm:
-        logging.info(f"Going to apply file {target_database_revision_files[0]} .....")
-        resp = typer.confirm("You sure you want to continue ?")
-        if not resp:
-            raise typer.Abort()
+    for target_database_revision_file in target_database_revision_files:
+        logging.info(f"Going to apply file {target_database_revision_file} .....")
 
-    db_interactor.execute_sql_files(mark_only=mark_only,
-                                    database_revision_files=target_database_revision_files)
+        if confirm:
+            resp = typer.confirm("You sure you want to continue ?")
+            if not resp:
+                raise typer.Abort()
+
+        db_interactor.execute_single_sql_file(mark_only=mark_only,
+                                              database_revision_file=target_database_revision_file)
 
 
 @app.command()
