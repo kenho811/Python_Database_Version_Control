@@ -30,5 +30,3 @@ services:
     volumes:
       - .:/usr/src/app/
     entrypoint: /bin/bash
-#    command: tail -F anything
-    command: ./demo_script.sh
