@@ -1,6 +1,14 @@
 Change Log
 =============
 
+0.3.3
+--------
+Added CI testing for binaries generated for 3 Oses. For Windows, Ubuntu Linux and Mac, run the below in the CI pipeline:
+
+- Build binary
+- Run postgres server. Run all DVC commands against it.
+- Push to Github release
+
 0.3.2
 --------
 - Included ./setup.cfg to Dockerfile. Fixed missing .sql files in Docker Image to Dockerhub
