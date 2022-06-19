@@ -42,14 +42,15 @@ def upgrade(
     Upgrade the Current Database Version by applying a corresponding Upgrade Revision Version
     """
     # Step 1: Check latest database version
+    steps = 1
     operation_type = Operation.Upgrade
     db_interactor = DatabaseInteractor(config_file_path_str=config_file_path)
-    latest_database_version: DatabaseVersion = db_interactor.get_latest_database_version()
+    latest_database_version: DatabaseVersion = db_interactor.latest_database_version
 
     typer.echo(f"Current Database Version is {latest_database_version.current_version}")
     typer.echo(f"Next Upgrade Revision Version will be {latest_database_version.next_downgrade_database_revision_file.revision_number}")
 
-    target_database_revision_files = db_interactor.get_target_database_revision_files(operation_type=operation_type)
+    target_database_revision_files = db_interactor.get_target_database_revision_files(steps=1)
 
     if confirm:
         logging.info(f"Going to apply file {target_database_revision_files[0]} .....")
@@ -73,14 +74,14 @@ def downgrade(
     :return:
     """
     # Step 1: Check latest database version
-    operation_type = Operation.Downgrade
+    steps = -1
     db_interactor = DatabaseInteractor(config_file_path_str=config_file_path)
-    latest_database_version: DatabaseVersion = db_interactor.get_latest_database_version()
+    latest_database_version: DatabaseVersion = db_interactor.latest_database_version
 
     typer.echo(f"Current Database Version is {latest_database_version.current_version}")
     typer.echo(f"Next Downgrade Revision Version will be {latest_database_version.next_downgrade_database_revision_file.revision_number}")
 
-    target_database_revision_files = db_interactor.get_target_database_revision_files(operation_type=operation_type)
+    target_database_revision_files = db_interactor.get_target_database_revision_files(steps=-1)
 
     if confirm:
         logging.info(f"Going to apply file {target_database_revision_files[0]} .....")
@@ -99,7 +100,7 @@ def current(config_file_path: Optional[str] = typer.Option(None, help="path to c
     :return:
     """
     db_interactor = DatabaseInteractor(config_file_path)
-    latest_database_version: DatabaseVersion = db_interactor.get_latest_database_version()
+    latest_database_version: DatabaseVersion = db_interactor.latest_database_version
     typer.echo(f"Database Current Version: {latest_database_version.current_version}")
 
 
