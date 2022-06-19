@@ -68,7 +68,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Build and push Macos binaries as artifacts
+      - name: Build, test and push Macos binaries as artifacts
         uses: ./.github/actions/build-n-push-binaries-to-ghrelease/build-n-push-mac-binary
 
   build-linux-binary:
@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Build and push Linux binaries as artifacts
+      - name: Build, test and push Linux binaries as artifacts
         uses: ./.github/actions/build-n-push-binaries-to-ghrelease/build-n-push-linux-binary
 
   build-windows-binary:
@@ -84,7 +84,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Build and push Windows binaries as artifacts
+      - name: Build, test and push Windows binaries as artifacts
         uses: ./.github/actions/build-n-push-binaries-to-ghrelease/build-n-push-windows-binary
 
   build-n-push-binaries-to-gh-release:
@@ -92,7 +92,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Build and push binaries to Github Release
+      - name: Build, test and push binaries to Github Release
         uses: ./.github/actions/build-n-push-binaries-to-ghrelease
         with:
           gh-release-tag-name: ${{ github.ref }}

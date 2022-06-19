@@ -1,6 +1,14 @@
 Change Log
 =============
 
+0.3.2
+--------
+- Included ./setup.cfg to Dockerfile. Fixed missing .sql files in Docker Image to Dockerhub
+
+0.3.1
+--------
+- Moved `package_data` to setup.cfg. Fixed missing .sql files in PyPI.
+
 0.3.0
 --------
 - Added --steps and --confirm flags to `dvc db upgrade` and `dvc db downgrade`

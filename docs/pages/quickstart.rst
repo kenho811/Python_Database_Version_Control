@@ -54,7 +54,7 @@ Run the below to see it in action.
     git clone -b release git@github.com:kenho811/Python_Database_Version_Control.git
 
     # cd to the repository
-    cd Python_Database_Version_Control
+    cd Python_Database_Version_Control/docker_compose_demo
 
     # Fnd the docker-compose.yml and run
     docker compose up
