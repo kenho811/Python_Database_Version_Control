@@ -29,4 +29,5 @@ services:
     working_dir: /usr/src/app/demo_assets
     volumes:
       - ./demo_assets:/usr/src/app/demo_assets
-    command: bash ./demo_script.sh
+    entrypoint: /bin/bash
+    command: ./demo_script.sh
