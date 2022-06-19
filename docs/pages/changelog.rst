@@ -11,6 +11,7 @@ Change Log
     - `DatabaseVersion - DatabaseVersion = [DatabaseRevisionFiles]`
     - `DatabaseVersion + DatabaseRevisionFile = DatabaseVersion`
 - Removed `dvc sql generate`, as that is Files System related.
+- Added diagram to illustrate DatabaseVersion and DatabaseRevisionFile
 
 
 0.2.1
