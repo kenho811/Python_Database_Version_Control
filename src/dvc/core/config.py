@@ -1,3 +1,4 @@
+import enum
 import re
 import traceback
 
@@ -12,7 +13,8 @@ import os
 from dvc.core.database import SupportedDatabaseFlavour
 from dvc.core.regex import get_matched_files_in_folder_by_regex
 from dvc.core.exception import RequestedDatabaseFlavourNotSupportedException, InvalidDatabaseRevisionFilesException, \
-    EnvironmentVariableNotSetException
+    EnvironmentVariableNotSetException, Operation
+from dvc.core.struct import DatabaseRevisionFile, DatabaseVersion
 
 
 class ConfigDefault:
@@ -174,7 +176,6 @@ class DatabaseRevisionFilesManager:
     """
     Manager all Database Revision Files
     """
-    STANDARD_RV_FILE_FORMAT = r'RV[0-9]*__.*\.(upgrade|downgrade)\.sql'
 
     def __init__(self,
                  config_file_reader: ConfigReader,
@@ -184,20 +185,6 @@ class DatabaseRevisionFilesManager:
     @property
     def database_revision_files_folder(self) -> Path:
         return Path(self.config_file_reader.user_config['database_revision_sql_files_folder'])
-
-    def validate_database_revision_sql_files(self):
-        # Step 1: Check revision file name
-        prog = re.compile(self.__class__.STANDARD_RV_FILE_FORMAT)
-
-        for file in self.database_revision_files_folder.glob('**/*'):
-            if file.is_file():
-                match = prog.match(file.name)
-                if not match:
-                    raise InvalidDatabaseRevisionFilesException(
-                        file_path=file,
-                        status=InvalidDatabaseRevisionFilesException.Status.NON_CONFORMANT_REVISION_FILE_NAME_EXISTS)
-
-        # Step 2: Check no duplicates
 
     def create_database_revision_files_folder(self):
         """
@@ -212,21 +199,50 @@ class DatabaseRevisionFilesManager:
             logging.info("Generating database revision folder")
             database_revision_sql_folder_path.mkdir(parents=True)
 
-    def get_database_revision_files_by_regex(self,
-                                             file_name_regex: str,
-                                             ) -> List[Path]:
+    def get_target_database_revision_files_by_steps(self,
+                                                    current_database_version: DatabaseVersion,
+                                                    steps: int,
+                                                    ) -> List[DatabaseRevisionFile]:
         """
-        Loop recursively for all files in a given folder.
-        Return those files whose name satisfy the regex.
+        Given current database version and number of steps, fetch the target database revision files in the folder.
+
         :return:
         """
-        database_revision_files_folder = self.database_revision_files_folder
-        files: List[Path] = get_matched_files_in_folder_by_regex(
-            folder_path=database_revision_files_folder,
-            file_name_regex=file_name_regex
-        )
-        return files
 
+        # Step 1: Get a list of dummy database revision files
+        current_database_version_number = current_database_version.version_number
+        target_database_version = DatabaseVersion(version=f"V{current_database_version_number + steps}")
+
+        dummy_revision_files: List[DatabaseRevisionFile] = target_database_version - current_database_version
+        actual_revision_files: List[DatabaseRevisionFile] = []
+
+        # Step 2: Loop folder for actual files
+        database_revision_files_folder = self.database_revision_files_folder
+
+
+        for dummy_revision_file in dummy_revision_files:
+            for file_or_dir in database_revision_files_folder.glob('**/*'):
+                file_or_dir: Path = file_or_dir
+                logging.info(file_or_dir)
+                if file_or_dir.is_file():
+                    candidate_database_revision_file = DatabaseRevisionFile(file_or_dir)
+                    if dummy_revision_file == candidate_database_revision_file:
+                        actual_revision_files.append(candidate_database_revision_file)
+
+        # Step 3: Raise Error if number of returned revision files are different from the number of steps specified
+        if len(actual_revision_files) > abs(steps):
+            raise InvalidDatabaseRevisionFilesException(
+                config_file_path=self.database_revision_files_folder,
+                status=InvalidDatabaseRevisionFilesException.Status.MORE_REVISION_SQL_FILES_FOUND_THAN_REQUIRED_STEPS_SPECIFIED
+            )
+        elif len(actual_revision_files) < abs(steps):
+            raise InvalidDatabaseRevisionFilesException(
+                config_file_path=self.database_revision_files_folder,
+                status=InvalidDatabaseRevisionFilesException.Status.FEWER_REVISION_SQL_FILES_FOUND_THAN_REQUIRED_STEPS_SPECIFIED
+            )
+        else:
+            # All good
+            return actual_revision_files
 
 class DatabaseConnectionFactory:
     """
@@ -276,10 +292,3 @@ class DatabaseConnectionFactory:
 
         conn = psycopg2.connect(dbname=dbname, user=user, password=password, port=port, host=host)
         return conn
-
-
-def get_revision_number_from_database_revision_file(database_revision_file_path: Path) -> int:
-    """
-    """
-    revision_number = int(database_revision_file_path.name.split('__')[0][2:])
-    return revision_number

@@ -11,23 +11,11 @@ from dvc.core.database.postgres import PostgresSQLFileExecutor
 from dvc.core.database.mysql import MySQLSQLFileExecutor
 from dvc.core.database.bigquery import BigQuerySQLFileExecutor
 
-from dvc.core.struct import Operation, DatabaseVersion, DatabaseRevision
+from dvc.core.struct import Operation, DatabaseVersion, DatabaseRevisionFile
 from dvc.core.config import ConfigDefault, DatabaseRevisionFilesManager, ConfigReader, DatabaseConnectionFactory
 from dvc.core.file import validate_file_exist
-from dvc.core.exception import InvalidDatabaseRevisionFilesException, DatabaseConnectionFailureException, OperationNotAccountedForException
-
-
-def get_target_database_revision_sql_files(
-        config_file_reader: ConfigReader,
-        operation_type: Operation,
-        target_revision_version: str,
-) -> List[Path]:
-    file_name_regex = rf"{target_revision_version}__.*\.{operation_type.value}\.sql"
-
-    # Get path of Database Revision SQL files
-    db_rv_files_man = DatabaseRevisionFilesManager(config_file_reader)
-    matched_paths = db_rv_files_man.get_database_revision_files_by_regex(file_name_regex=file_name_regex)
-    return matched_paths
+from dvc.core.exception import InvalidDatabaseRevisionFilesException, DatabaseConnectionFailureException, \
+    OperationNotAccountedForException
 
 
 class DatabaseInteractor:
@@ -52,75 +40,45 @@ class DatabaseInteractor:
         else:
             logging.info("Database connection looks good!")
 
-    def get_latest_database_version(self) -> DatabaseVersion:
-        latest_database_version: DatabaseVersion = self.sql_file_executor.get_latest_database_version()
-        return latest_database_version
-
-    def execute_sql_files(self,
-                          operation_type: Operation,
-                          sql_files_paths: List[Path],
-                          mark_only: bool = False,
-                          ) -> None:
-
-        sql_file_path = sql_files_paths[0]
+    def execute_single_sql_file(self,
+                                database_revision_file: DatabaseRevisionFile,
+                                mark_only: bool = False,
+                                ) -> None:
 
         if mark_only:
-            logging.info(f"Now only marking {sql_file_path} to metadata table")
-            database_revision = DatabaseRevision(
-                executed_sql_file_path_applied=sql_file_path,
-                operation=operation_type
-            )
-            self.sql_file_executor._write_database_revision_metadata(database_revision=database_revision)
+            logging.info(f"Now only marking {database_revision_file.file_path} to metadata table")
+            self.sql_file_executor._write_database_revision_metadata(database_revision_file=database_revision_file)
         else:
-            logging.info(f"Now applying {sql_file_path} and marking to metadata table")
-            database_revision = DatabaseRevision(
-                executed_sql_file_path_applied=sql_file_path,
-                operation=operation_type
-            )
-            self.sql_file_executor.execute_database_revision(database_revision=database_revision)
+            logging.info(f"Now applying {database_revision_file.file_path} and marking to metadata table")
+            self.sql_file_executor.execute_database_revision(database_revision_file=database_revision_file)
 
-    def get_target_revision_sql_files(self,
-                                      operation_type: Operation,
-                                      steps: int = 1
-                                      ) -> List[Path]:
+    def get_target_database_revision_files(self,
+                                           steps: Optional[int]
+                                           ) -> List[Optional[DatabaseRevisionFile]]:
         """
-        Helper to get target revision sql files
+        Helper to get target database revision file
+
+        Check number of returned revision files must be same as steps specified
 
         :param operation_type: Specify the operation type
-        :param steps: Specify how many steps ahead/ backwards.
+        :param steps: Specify how many steps ahead/ backwards.. When None, it goes to the very end in either direction
         :return:
         """
-        # Step 1: Get target revision files
-        if operation_type == Operation.Upgrade:
-            target_revision_version = self.get_latest_database_version().next_upgrade_revision_version
-        elif operation_type == Operation.Downgrade:
-            target_revision_version = self.get_latest_database_version().next_downgrade_revision_version
-        else:
-            raise OperationNotAccountedForException(operation_type=operation_type)
+        # Step 1:
+        if steps == 0:
+            return []
 
-        # Step 2: Get target revision files
-        if steps == 1:
-            target_revision_files: List[Path] = get_target_database_revision_sql_files(
-                config_file_reader=self.config_file_reader,
-                operation_type=operation_type,
-                target_revision_version=target_revision_version,
-            )
-        else:
-            raise NotImplementedError("Steps other than 1 not implemented!")
+        target_database_revision_files = self.database_revision_files_manager.get_target_database_revision_files_by_steps(
+            current_database_version=self.latest_database_version,
+            steps=steps,
+        )
 
-        # Step 3: Raise Error if number of returned revision files are different from the number of steps specified
-        if len(target_revision_files) > steps:
-            raise InvalidDatabaseRevisionFilesException(
-                file_path=self.config_file_path,
-                status=InvalidDatabaseRevisionFilesException.Status.MORE_REVISION_SQL_FILES_FOUND_THAN_REQUIRED_STEPS_SPECIFIED
-            )
-        elif len(target_revision_files) < steps:
-            raise InvalidDatabaseRevisionFilesException(
-                file_path=self.config_file_path,
-                status=InvalidDatabaseRevisionFilesException.Status.FEWER_REVISION_SQL_FILES_FOUND_THAN_REQUIRED_STEPS_SPECIFIED
-            )
+        return target_database_revision_files
 
-        return target_revision_files
+    @property
+    def latest_database_version(self) -> DatabaseVersion:
+        latest_database_version: DatabaseVersion = self.sql_file_executor.get_latest_database_version()
+        return latest_database_version
 
     @property
     def config_file_reader(self):
@@ -130,6 +88,11 @@ class DatabaseInteractor:
             validate_file_exist(self.config_file_path)
             config_file_reader = ConfigReader(self.config_file_path)
         return config_file_reader
+
+    @property
+    def database_revision_files_manager(self):
+        db_rv_files_man = DatabaseRevisionFilesManager(self.config_file_reader)
+        return db_rv_files_man
 
     @property
     def conn(self):

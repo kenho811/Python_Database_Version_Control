@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any
 
-from dvc.core.struct import DatabaseRevision, DatabaseVersion
+from dvc.core.struct import DatabaseRevisionFile, DatabaseVersion
 
 
 class SQLFileExecutorTemplate(ABC):
@@ -21,7 +21,7 @@ class SQLFileExecutorTemplate(ABC):
 
     @abstractmethod
     def execute_database_revision(self,
-                                  database_revision: DatabaseRevision
+                                  database_revision: DatabaseRevisionFile
                                   ):
         pass
 

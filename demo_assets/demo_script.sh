@@ -25,9 +25,9 @@ echo "Now initialising dvc configurations"
 # Retry several times for first command
 retry 10 dvc db init
 echo "Now upgrading db"
-dvc db upgrade
+dvc db upgrade --no-confirm
 echo "Now upgrading db"
-dvc db upgrade
+dvc db upgrade --no-confirm
 
 #############
 echo "From host machine, please use the below URL to check out the state of the postgres DB after the migration is run"

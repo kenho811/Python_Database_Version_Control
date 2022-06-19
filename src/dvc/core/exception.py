@@ -30,16 +30,26 @@ class InvalidDatabaseRevisionFilesException(Exception):
 
     def __init__(self,
                  status: Status,
-                 file_path: Path
+                 config_file_path: Path
                  ):
         self.status = status
-        self.file_path = file_path
+        self.config_file_path = config_file_path
 
     def __str__(self):
         return f"""
         {self.status.name}
-        {self.file_path}
+        {self.config_file_path}
         """
+
+class InvalidDatabaseVersionExceptio(Exception):
+
+    def __init__(self,
+                 database_version: str,
+                 ):
+        self.database_version = database_version
+
+    def __str__(self):
+        return self.database_version
 
 
 class DatabaseConnectionFailureException(Exception):

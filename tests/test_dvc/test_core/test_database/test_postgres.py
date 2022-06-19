@@ -5,7 +5,7 @@ import psycopg2
 from psycopg2._psycopg import connection
 
 from dvc.core.database.postgres import PostgresSQLFileExecutor
-from dvc.core.struct import DatabaseVersion, DatabaseRevision, Operation
+from dvc.core.struct import DatabaseVersion, DatabaseRevisionFile, Operation
 
 
 from requests.exceptions import ConnectionError
@@ -33,9 +33,7 @@ class TestSQLFileExecutor:
     ):
         # Assert
         dv = postgres_sql_file_executor.get_latest_database_version()
-        assert dv == DatabaseVersion(current_version='V0',
-                                     next_downgrade_revision_version=None,
-                                     next_upgrade_revision_version='RV1',
+        assert dv == DatabaseVersion(version='V0',
                                      created_at=None
                                      )
 
