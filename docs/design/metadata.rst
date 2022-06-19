@@ -1,5 +1,5 @@
-Metadata
-==========
+Database Metadata
+=========================
 
 Just like git which stores all the metadata in a dot git folder (.git), the tool also stores metadata in the database where SQL Revision Files are applied.
 

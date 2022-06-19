@@ -1,6 +1,18 @@
 Change Log
 =============
 
+0.3.0
+--------
+- Added --steps and --confirm flags to `dvc db upgrade` and `dvc db downgrade`
+- Added dunder methods for the below classes:
+    - __le__, __gr__, __eq__ for DatabaseRevisionFile
+    - __add__, __sub__, __eq__ for DatabaseVersion
+- Codified the below relationship with dunder methods:
+    - `DatabaseVersion - DatabaseVersion = [DatabaseRevisionFiles]`
+    - `DatabaseVersion + DatabaseRevisionFile = DatabaseVersion`
+- Removed `dvc sql generate`, as that is Files System related.
+
+
 0.2.1
 --------
 - Refactored Github workflows. Separated the below components from Github Workflows

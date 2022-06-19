@@ -204,8 +204,7 @@ class DatabaseRevisionFilesManager:
                                                     steps: int,
                                                     ) -> List[DatabaseRevisionFile]:
         """
-        Loop recursively for all files in a given folder.
-        Return all DatabaseRevisionFiles if condition is satisfied
+        Given current database version and number of steps, fetch the target database revision files in the folder.
 
         :return:
         """
@@ -217,8 +216,6 @@ class DatabaseRevisionFilesManager:
         dummy_revision_files: List[DatabaseRevisionFile] = target_database_version - current_database_version
         actual_revision_files: List[DatabaseRevisionFile] = []
 
-        print(f"dummy_revision_files: {dummy_revision_files}")
-
         # Step 2: Loop folder for actual files
         database_revision_files_folder = self.database_revision_files_folder
 
@@ -226,16 +223,12 @@ class DatabaseRevisionFilesManager:
         for dummy_revision_file in dummy_revision_files:
             for file_or_dir in database_revision_files_folder.glob('**/*'):
                 file_or_dir: Path = file_or_dir
-                print(file_or_dir)
                 logging.info(file_or_dir)
                 if file_or_dir.is_file():
                     candidate_database_revision_file = DatabaseRevisionFile(file_or_dir)
                     if dummy_revision_file == candidate_database_revision_file:
                         actual_revision_files.append(candidate_database_revision_file)
 
-        print(actual_revision_files)
-
-        # Step 3: Raise error
         # Step 3: Raise Error if number of returned revision files are different from the number of steps specified
         if len(actual_revision_files) > abs(steps):
             raise InvalidDatabaseRevisionFilesException(

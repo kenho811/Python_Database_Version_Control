@@ -44,6 +44,12 @@ def upgrade(
     """
     # Step 1: Check latest database version
     steps = abs(steps)
+
+    if steps == 0:
+        logging.error("Steps cannot be 0!")
+        raise typer.Abort("Steps cannot be 0!")
+
+    # Step 2: Output current database version
     db_interactor = DatabaseInteractor(config_file_path_str=config_file_path)
     latest_database_version: DatabaseVersion = db_interactor.latest_database_version
 
@@ -52,6 +58,7 @@ def upgrade(
 
     target_database_revision_files = db_interactor.get_target_database_revision_files(steps=steps)
 
+    # Step 3: Run
     for target_database_revision_file in target_database_revision_files:
         logging.info(f"Going to apply file {target_database_revision_file} .....")
 
@@ -77,14 +84,21 @@ def downgrade(
     Downgrade the Current Database Version by applying a corresponding Downgrade Revision Version
     :return:
     """
-    # Step 1: Check latest database version
+    # Step 1: Get the number of steps
     steps = abs(steps) * (-1)
+    if steps == 0:
+        logging.error("Steps cannot be 0!")
+        raise typer.Abort()
+
+
+    # Step 2: Output current database version
     db_interactor = DatabaseInteractor(config_file_path_str=config_file_path)
     latest_database_version: DatabaseVersion = db_interactor.latest_database_version
 
     typer.echo(f"Current Database Version is {latest_database_version.version}")
     typer.echo(f"Next Downgrade Revision Version will be {latest_database_version.next_downgrade_database_revision_file.revision_number}")
 
+    # Step 3: Run
     target_database_revision_files = db_interactor.get_target_database_revision_files(steps=steps)
 
     for target_database_revision_file in target_database_revision_files:
