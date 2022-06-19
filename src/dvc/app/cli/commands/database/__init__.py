@@ -47,7 +47,7 @@ def upgrade(
     latest_database_version: DatabaseVersion = db_interactor.get_latest_database_version()
 
     typer.echo(f"Current Database Version is {latest_database_version.current_version}")
-    typer.echo(f"Next Upgrade Revision Version will be {latest_database_version.next_upgrade_revision_version}")
+    typer.echo(f"Next Upgrade Revision Version will be {latest_database_version.next_downgrade_database_revision_file.revision_number}")
 
     target_database_revision_files = db_interactor.get_target_database_revision_files(operation_type=operation_type)
 
@@ -78,7 +78,7 @@ def downgrade(
     latest_database_version: DatabaseVersion = db_interactor.get_latest_database_version()
 
     typer.echo(f"Current Database Version is {latest_database_version.current_version}")
-    typer.echo(f"Next Downgrade Revision Version will be {latest_database_version.next_downgrade_revision_version}")
+    typer.echo(f"Next Downgrade Revision Version will be {latest_database_version.next_downgrade_database_revision_file.revision_number}")
 
     target_database_revision_files = db_interactor.get_target_database_revision_files(operation_type=operation_type)
 

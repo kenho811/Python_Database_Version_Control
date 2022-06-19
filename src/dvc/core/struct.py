@@ -5,7 +5,7 @@ import logging
 from pathlib import Path
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 import re
 
 
@@ -18,7 +18,7 @@ class DatabaseRevisionFile:
     """
     Raise error when File Path does not conform to standard
     """
-    STANDARD_RV_FILE_FORMAT_REGEX = r'RV[0-9]+__.*\.(upgrade|downgrade)\.sql'
+    STANDARD_RV_FILE_FORMAT_REGEX = r'^RV[0-9]+__.*\.(upgrade|downgrade)\.sql$'
 
     def __init__(self,
                  file_path: Path
@@ -76,32 +76,6 @@ class DatabaseRevisionFile:
         else:
             return False
 
-    def __add__(self, other) -> Optional[int]:
-        """
-        Return the sum of  revision numbers if both DatabaseRevisionFiles are of same operation type.
-        Else, return None
-        :param other:
-        :return:
-        """
-        if self.operation_type != other.operation_type:
-            return None
-        else:
-            total_revision_number = self.revision_number + other.revision_number
-            return total_revision_number
-
-    def __sub__(self, other) -> Optional[int]:
-        """
-        Return the diff of revision numbers  if both DatabaseRevisionFiles are of same operation type.
-        Else, return None
-        :param other:
-        :return:
-        """
-        if self.operation_type != other.operation_type:
-            return None
-        else:
-            diff_revision_number = self.revision_number - other.revision_number
-            return diff_revision_number
-
     def __gt__(self, other) -> bool:
         if self.revision_number > other.revision_number and self.operation_type == other.operation_type:
             return True
@@ -147,9 +121,116 @@ class DatabaseRevisionFile:
         return f"File Path: {self.file_path}"
 
 
-@dataclass
 class DatabaseVersion:
-    current_version: str
-    next_upgrade_revision_version: str
-    next_downgrade_revision_version: Optional[str] = None
-    created_at: Optional[datetime.datetime] = None
+    STANDARD_DATABASE_VERSION_FORMAT_REGEX = r'^V[0-9]+$'
+
+    def __init__(self,
+                 current_version: str,
+                 created_at: Optional[datetime.datetime] = None
+                 ):
+        self._current_version = current_version
+        self._created_at = created_at
+
+        self._validate_database_version()
+
+    def _validate_database_version(self):
+        """
+        Check if the name of a given file is a valid DatabaseRevisionFile
+        :param instance:
+        :return:
+        """
+        from dvc.core.exception import InvalidDatabaseVersionExceptio
+
+        prog = re.compile(self.__class__.STANDARD_DATABASE_VERSION_FORMAT_REGEX)
+        match = prog.match(self._current_version)
+        if not match:
+            raise InvalidDatabaseVersionExceptio(
+                database_version=self._current_version)
+
+    @property
+    def current_version(self):
+        return self._current_version
+
+    @property
+    def next_upgrade_database_revision_file(self) -> DatabaseRevisionFile:
+        file = DatabaseRevisionFile.get_dummy_revision_file(
+            revision_number=self.current_version_number + 1,
+            operation_type=Operation.Upgrade,
+        )
+        return file
+
+    @property
+    def next_downgrade_database_revision_file(self) -> DatabaseRevisionFile:
+        if self.current_version_number == 0:
+            # No downgrade for version is V0
+            return NotImplemented
+        else:
+            file = DatabaseRevisionFile.get_dummy_revision_file(
+                revision_number=self.current_version_number,
+                operation_type=Operation.Downgrade,
+            )
+        return file
+
+    @property
+    def created_at(self):
+        if self._created_at is None:
+            """
+            Not yet persisted
+            """
+            logging.error(f"The Database Version {self._current_version} is a dummy database version!")
+            return NotImplemented
+        else:
+            return self._created_at
+
+    @property
+    def current_version_number(self) -> int:
+        return int(self.current_version[1:])
+
+    def __add__(self, other) -> DatabaseVersion:
+        """
+        Apply DatabaseRevisionFile to DatabaseVersion
+        :param other:
+        :return:
+        """
+        if not isinstance(other, DatabaseRevisionFile):
+            return NotImplemented
+
+        current_version_number = self.current_version_number
+
+        if other == self.next_upgrade_database_revision_file:
+            return DatabaseVersion(current_version=f"V{self.current_version_number + 1}",
+                                   created_at=None)
+        elif other == self.next_downgrade_database_revision_file:
+            return DatabaseVersion(current_version=f"V{self.current_version_number - 1}",
+                                   created_at=None)
+        else:
+            raise ValueError(
+                f"The revision file {other} CANNOT be applied to the database version {self._current_version}")
+
+    def __sub__(self, other) -> List[DatabaseRevisionFile]:
+        if not isinstance(other, DatabaseVersion):
+            return NotImplemented
+
+        database_revision_files: List[DatabaseRevisionFile] = []
+
+        if self.current_version_number > other.current_version_number:
+            # return a list of upgrade files
+            for i in range(self.current_version_number, self.current_version_number - other.current_version_number):
+                database_revision_files.append(
+                    DatabaseRevisionFile.get_dummy_revision_file(revision_number=i,
+                                                                 operation_type=Operation.Upgrade,
+                                                                 )
+                )
+        elif self.current_version_number < other.current_version_number:
+            # return a list of downgrade files
+            for i in range(other.current_version_number, other.current_version_number - self.current_version_number):
+                database_revision_files.append(
+                    DatabaseRevisionFile.get_dummy_revision_file(revision_number=i,
+                                                                 operation_type=Operation.Downgrade,
+                                                                 )
+                )
+        else:
+            # Do nothing
+            pass
+
+        return database_revision_files

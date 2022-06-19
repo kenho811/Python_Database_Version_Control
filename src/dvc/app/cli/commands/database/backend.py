@@ -77,16 +77,16 @@ class DatabaseInteractor:
 
         # Step 1: Get target revision version
         if operation_type == Operation.Upgrade:
-            target_revision_version = self.get_latest_database_version().next_upgrade_revision_version
+            target_revision_version = self.get_latest_database_version().next_upgrade_database_revision_file.revision_number
         elif operation_type == Operation.Downgrade:
-            target_revision_version = self.get_latest_database_version().next_downgrade_revision_version
+            target_revision_version = self.get_latest_database_version().next_downgrade_database_revision_file.revision_number
         else:
             raise OperationNotAccountedForException(operation_type=operation_type)
 
         # Step 2: Get target revision files
         if steps == 1:
             # Use regex
-            file_name_regex = rf"{target_revision_version}__.*\.{operation_type.value}\.sql"
+            file_name_regex = rf"RV{target_revision_version}__.*\.{operation_type.value}\.sql"
             # Get path of Database Revision SQL files
             target_database_revision_files = self.database_revision_files_manager.get_target_database_revision_files_by_regex(
                 file_name_regex=file_name_regex)

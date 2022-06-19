@@ -46,16 +46,12 @@ class PostgresSQLFileExecutor(SQLFileExecutorTemplate):
                 # Nothing is in the table
                 latest_database_version: DatabaseVersion = DatabaseVersion(
                     current_version="V0",
-                    next_upgrade_revision_version="RV1",
-                    next_downgrade_revision_version=None,
                     created_at=None,
                 )
             else:
-                current_version, next_upgrade_revision_version, next_downgrade_revision_version, created_at = result
+                current_version, _, _, created_at = result
                 latest_database_version: DatabaseVersion = DatabaseVersion(
                     current_version=current_version,
-                    next_upgrade_revision_version=next_upgrade_revision_version,
-                    next_downgrade_revision_version=next_downgrade_revision_version,
                     created_at=created_at
                 )
 

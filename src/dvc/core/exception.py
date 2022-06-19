@@ -41,6 +41,16 @@ class InvalidDatabaseRevisionFilesException(Exception):
         {self.file_path}
         """
 
+class InvalidDatabaseVersionExceptio(Exception):
+
+    def __init__(self,
+                 database_version: str,
+                 ):
+        self.database_version = database_version
+
+    def __str__(self):
+        return self.database_version
+
 
 class DatabaseConnectionFailureException(Exception):
 
