@@ -59,6 +59,7 @@ html_theme_options = {
 # ones.
 extensions = ['sphinx.ext.graphviz',
               'sphinx.ext.autodoc',
+               'sphinx.ext.viewcode',
               ]
 
 
@@ -89,6 +90,13 @@ html_static_path = [
 html_css_files = [
     'css/custom.css',
 ]
+
+# -- Options for sphinx.ext.viewcode -------------------------------------------
+# See: https://www.sphinx-doc.org/es/master/usage/extensions/viewcode.html
+
+# If this is True, viewcode extension will emit viewcode-follow-imported event to resolve the name of
+# the module by other extensions. The default is True.
+viewcode_follow_imported_members = True
 
 ## Github Action - Readthedocs Integration
 # The name of your GitHub repository
