@@ -16,7 +16,11 @@ from distutils.util import strtobool
 import os
 import sys
 
+# For src/dvc folder
 sys.path.insert(0, os.path.abspath('../src'))
+
+# For tests/ folder
+sys.path.insert(1, os.path.abspath('..'))
 
 from dvc.version import __version__
 

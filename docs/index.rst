@@ -46,11 +46,10 @@ Welcome to Database Version Control's  documentation!
    pages/introduction
    pages/feature
    pages/quickstart
-   dynamic/apidoc/source/modules
    deployment/index
    design/index
-   tests/index
    contribution/index
+   source/index
    pages/changelog
 
 Summary

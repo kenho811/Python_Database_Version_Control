@@ -32,7 +32,8 @@ runs:
     - name: Build sphinx api doc
       shell: bash
       run: |
-        sphinx-apidoc -o docs/dynamic/apidoc/source src
+        sphinx-apidoc -o docs/dynamic/apidoc/source src -H "Src Package" --force
+        sphinx-apidoc -o docs/dynamic/apidoc/tests tests -H "Tests Package" --force
     - name: upload sphinx-apidoc .rst files
       uses: actions/upload-artifact@v2
       with:
