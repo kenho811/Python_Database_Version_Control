@@ -11,9 +11,11 @@ app = typer.Typer()
 
 
 @app.command()
-def init():
+def init() -> None:
     """
-    Generate configuration template
+    Generate configuration template. Idempotent.
+
+    :return:
     """
     # Step 1: Generate config file
     config_file_writer = ConfigFileWriter(config_file_path=ConfigDefault.VAL__FILE_PATH)

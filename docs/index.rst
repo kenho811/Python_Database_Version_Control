@@ -42,11 +42,11 @@ Welcome to Database Version Control's  documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-   :numbered:
 
    pages/introduction
    pages/feature
    pages/quickstart
+   dynamic/apidoc/source/modules
    deployment/index
    design/index
    tests/index

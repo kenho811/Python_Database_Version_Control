@@ -1,15 +1,34 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any
+from typing import Any, Union
 
 from dvc.core.struct import DatabaseRevisionFile, DatabaseVersion
 
+from psycopg2._psycopg import connection
+
+
+class SupportedDatabaseFlavour(Enum):
+    """
+    List of database flavours supported in the programme
+    """
+    Postgres = 'postgres'
+
+
+DBConnLike = Union[
+    # Postgres connection
+    connection
+]
+
 
 class SQLFileExecutorTemplate(ABC):
+    """
+    Abstract Base Class for all SQLFileExecutors for different datbaases
+    """
+
     def __init__(self,
-                 conn: Any
+                 db_conn: DBConnLike
                  ):
-        self.conn = conn
+        self.conn = db_conn
 
     @abstractmethod
     def set_up_database_revision_control_tables(self):
@@ -24,10 +43,3 @@ class SQLFileExecutorTemplate(ABC):
                                   database_revision: DatabaseRevisionFile
                                   ):
         pass
-
-
-class SupportedDatabaseFlavour(Enum):
-    """
-    List of database flavours supported in the programme
-    """
-    Postgres = 'postgres'

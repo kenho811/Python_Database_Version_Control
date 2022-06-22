@@ -28,10 +28,19 @@ class DatabaseInteractor:
 
     def __init__(self,
                  config_file_path_str: Optional[str],
-                 ):
+                 ) -> None:
+        """
+
+        :param config_file_path_str: String pointing to the path where configuration file is located
+        """
         self.config_file_path: Optional[Path] = None if config_file_path_str is None else Path(config_file_path_str)
 
-    def ping(self):
+    def ping(self) -> None:
+        """
+        Ping the database connection
+
+        :return:
+        """
         try:
             conn = self.conn
         except Exception as e:
@@ -44,6 +53,13 @@ class DatabaseInteractor:
                                 database_revision_file: DatabaseRevisionFile,
                                 mark_only: bool = False,
                                 ) -> None:
+        """
+        Execute DatabaseRevisionFile to the Database and optionally mark it as metadata
+
+        :param database_revision_file: Database Revision File to apply to the Database
+        :param mark_only: whether or not to mark the SQL file as being done as metadata, without actually executing the SQL file
+        :return:
+        """
 
         if mark_only:
             logging.info(f"Now only marking {database_revision_file.file_path} to metadata table")
@@ -54,15 +70,13 @@ class DatabaseInteractor:
 
     def get_target_database_revision_files(self,
                                            steps: Optional[int]
-                                           ) -> List[Optional[DatabaseRevisionFile]]:
+                                           ) -> List[DatabaseRevisionFile]:
         """
-        Helper to get target database revision file
-
+        Helper to get target database revision files
         Check number of returned revision files must be same as steps specified
 
-        :param operation_type: Specify the operation type
         :param steps: Specify how many steps ahead/ backwards.. When None, it goes to the very end in either direction
-        :return:
+        :return: List of DatabaseRevisionFiles, if any
         """
         # Step 1:
         if steps == 0:
@@ -77,11 +91,17 @@ class DatabaseInteractor:
 
     @property
     def latest_database_version(self) -> DatabaseVersion:
+        """
+        :return: latest Database Version
+        """
         latest_database_version: DatabaseVersion = self.sql_file_executor.get_latest_database_version()
         return latest_database_version
 
     @property
-    def config_file_reader(self):
+    def config_file_reader(self) -> ConfigReader:
+        """
+        :return: ConfigReader
+        """
         if self.config_file_path is None:
             config_file_reader = ConfigReader(ConfigDefault.VAL__FILE_PATH)
         else:
@@ -90,14 +110,22 @@ class DatabaseInteractor:
         return config_file_reader
 
     @property
-    def database_revision_files_manager(self):
+    def database_revision_files_manager(self) -> DatabaseRevisionFilesManager:
+        """
+
+        :return:  DatabaseRevisionFilesManager
+        """
         db_rv_files_man = DatabaseRevisionFilesManager(self.config_file_reader)
         return db_rv_files_man
 
     @property
     def conn(self):
+        """
+
+        :return:
+        """
         config_file_reader = self.config_file_reader
-        conn = DatabaseConnectionFactory(config_file_reader=config_file_reader).conn
+        conn = DatabaseConnectionFactory(config_reader=config_file_reader).conn
         return conn
 
     @property
@@ -105,6 +133,6 @@ class DatabaseInteractor:
         config_file_reader = self.config_file_reader
         conn = self.conn
         supported_db_flavour = DatabaseConnectionFactory(
-            config_file_reader=config_file_reader).validate_requested_database_flavour()
+            config_reader=config_file_reader).validate_requested_database_flavour()
         sql_file_executor = self.__class__.MAPPING[supported_db_flavour](conn)
         return sql_file_executor

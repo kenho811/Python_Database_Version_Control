@@ -28,12 +28,16 @@ runs:
     - name: Build pytest report
       shell: bash
       run: |
-        pytest --html=docs/_static/pytest/report.html -v
-    - name: upload pytest report
+        pytest --html=docs/dynamic/pytest/pytest_report.html -v
+    - name: Build sphinx api doc
+      shell: bash
+      run: |
+        sphinx-apidoc -o docs/dynamic/apidoc/source src
+    - name: upload sphinx-apidoc .rst files
       uses: actions/upload-artifact@v2
       with:
-        name: report-for-${{ github.sha }}
-        path: docs/_static/pytest
+        name: dynamic-asset-${{ github.sha }}
+        path: docs/dynamic
     - name: Wait for complete upload of artifacts
       shell: bash
       run: |

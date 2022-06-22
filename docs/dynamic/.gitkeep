@@ -1,0 +1,6 @@
+Hold dynamically generated files.
+Steps:
+
+- Genearte all artifacts (.rst or _static files) in dynamic folder
+- upload all of them
+- indicate in conf.py where the static_html content is located. Those will be copied to ./build/_static folder
