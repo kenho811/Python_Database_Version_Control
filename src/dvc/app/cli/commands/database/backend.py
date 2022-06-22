@@ -8,8 +8,6 @@ from psycopg2._psycopg import connection
 from dvc.core.database import SupportedDatabaseFlavour
 
 from dvc.core.database.postgres import PostgresSQLFileExecutor
-from dvc.core.database.mysql import MySQLSQLFileExecutor
-from dvc.core.database.bigquery import BigQuerySQLFileExecutor
 
 from dvc.core.struct import Operation, DatabaseVersion, DatabaseRevisionFile
 from dvc.core.config import ConfigDefault, DatabaseRevisionFilesManager, ConfigReader, DatabaseConnectionFactory
@@ -69,7 +67,8 @@ class DatabaseInteractor:
             self.sql_file_executor.execute_database_revision(database_revision_file=database_revision_file)
 
     def get_target_database_revision_files(self,
-                                           steps: Optional[int]
+                                           steps: int,
+                                           pointer: Optional[DatabaseRevisionFilesManager.Pointer] = None,
                                            ) -> List[DatabaseRevisionFile]:
         """
         Helper to get target database revision files
@@ -82,10 +81,24 @@ class DatabaseInteractor:
         if steps == 0:
             return []
 
-        target_database_revision_files = self.database_revision_files_manager.get_target_database_revision_files_by_steps(
-            current_database_version=self.latest_database_version,
-            steps=steps,
-        )
+        # Step 1: Get all database revision files
+        all_database_revision_files = self.database_revision_files_manager.all_database_revision_files
+
+        if pointer is not None:
+            # Use pointer
+            target_database_revision_files = self.database_revision_files_manager.get_target_database_revision_files_by_pointer(
+                current_database_version=self.latest_database_version,
+                pointer=pointer,
+                candidate_database_revision_files=all_database_revision_files,
+            )
+        else:
+        # Use steps
+            # Filter for target revision files
+            target_database_revision_files = self.database_revision_files_manager.get_target_database_revision_files_by_steps(
+                current_database_version=self.latest_database_version,
+                steps=steps,
+                candidate_database_revision_files=all_database_revision_files,
+            )
 
         return target_database_revision_files
 

@@ -71,6 +71,8 @@ class DatabaseRevisionFile:
         :param other:
         :return:
         """
+        if not isinstance(other, self.__class__):
+            return NotImplemented
 
         if self.revision_number == other.revision_number and self.operation_type == other.operation_type:
             return True
@@ -78,16 +80,54 @@ class DatabaseRevisionFile:
             return False
 
     def __le__(self, other) -> bool:
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+
+        if self.revision_number <= other.revision_number and self.operation_type == other.operation_type:
+            return True
+        else:
+            return False
+
+    def __lt__(self, other) -> bool:
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+
         if self.revision_number < other.revision_number and self.operation_type == other.operation_type:
             return True
         else:
             return False
 
+    def __ge__(self, other) ->bool:
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+
+        if self.revision_number >= other.revision_number and self.operation_type == other.operation_type:
+            return True
+        else:
+            return False
+
     def __gt__(self, other) -> bool:
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+
         if self.revision_number > other.revision_number and self.operation_type == other.operation_type:
             return True
         else:
             return False
+
+    def __sub__(self, other) -> Optional[int]:
+        """
+        Get the distance between two DatabaseRevisionFiles
+        :param other:
+        :return:
+        """
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+
+        if self.operation_type == other.operation_type:
+            return self.revision_number - other.revision_number
+        else:
+            return None
 
     @property
     def ending(self) -> str:
