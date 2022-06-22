@@ -38,27 +38,36 @@ class TestDatabaseRevisionFile:
         with expectation:
             assert DatabaseRevisionFile(Path(sql_file_name)) is not None
 
-    @pytest.mark.parametrize("stuff,actual_files,expected_files",
+    @pytest.mark.parametrize("file_1,file_2,predicate,expected",
                              [
-                                 (1,[DatabaseRevisionFile.get_dummy_revision_file(revision="RV2",
-                                                                                operation_type=Operation.Upgrade),
-                                   DatabaseRevisionFile.get_dummy_revision_file(revision="RV1",
-                                                                                operation_type=Operation.Upgrade)
-                                   ],
-                                  [DatabaseRevisionFile.get_dummy_revision_file(revision="RV2",
-                                                                                operation_type=Operation.Upgrade),
-                                   DatabaseRevisionFile.get_dummy_revision_file(revision="RV1",
-                                                                                operation_type=Operation.Upgrade),
-                                   ]
-
-                                  ),
+                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV2",
+                                                                               operation_type=Operation.Upgrade),
+                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV1",
+                                                                               operation_type=Operation.Upgrade),
+                                  'file_1 > file_2',
+                                  False),
+                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV2",
+                                                                               operation_type=Operation.Upgrade),
+                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV1",
+                                                                               operation_type=Operation.Downgrade),
+                                  'file_1 > file_2',
+                                  None),
+                                 (
+                                         DatabaseRevisionFile.get_dummy_revision_file(revision="RV2",
+                                                                                      operation_type=Operation.Downgrade),
+                                         DatabaseRevisionFile.get_dummy_revision_file(revision="RV1",
+                                                                                      operation_type=Operation.Downgrade),
+                                         'file_1 > file_2',
+                                         False
+                                 )
                              ])
-    def test_database_revision_files_init_order(self,
-                                                stuff,
-                                                actual_files,
-                                                expected_files,
+    def test_database_revision_files_comparison(self,
+                                                file_1,
+                                                file_2,
+                                                predicate,
+                                                expected,
                                                 ):
-        assert actual_files == expected_files
+        assert (lambda file_1, file_2: eval(predicate) == expected)
 
 
 class TestDatabaseVersion:
