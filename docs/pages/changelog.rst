@@ -1,13 +1,19 @@
 Change Log
 =============
 
+0.3.4
+--------
+- Added dynamic generation of src package and tests package documentation in docs with sphinx-apidoc.
+
+
+
 0.3.3
 --------
-Added CI testing for binaries generated for 3 Oses. For Windows, Ubuntu Linux and Mac, run the below in the CI pipeline:
+- Added CI testing for binaries generated for 3 Oses. For Windows, Ubuntu Linux and Mac, run the below in the CI pipeline:
 
-- Build binary
-- Run postgres server. Run all DVC commands against it.
-- Push to Github release
+    - Build binary
+    - Run postgres server. Run all DVC commands against it.
+    - Push to Github release
 
 0.3.2
 --------
