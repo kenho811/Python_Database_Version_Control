@@ -1,9 +1,10 @@
 Change Log
 =============
 
-0.3.4
+0.4.0
 --------
 - Added dynamic generation of src package and tests package documentation in docs with sphinx-apidoc.
+- Added --head to `dvc db upgrade` and --base `dvc db downgrade` respectively
 
 
 

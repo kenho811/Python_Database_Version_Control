@@ -1,8 +1,9 @@
 from enum import Enum
 from pathlib import Path
+from typing import List, Optional
 
 from dvc.core.database import SupportedDatabaseFlavour
-from dvc.core.struct import Operation
+from dvc.core.struct import Operation, DatabaseRevisionFile
 
 
 class RequestedDatabaseFlavourNotSupportedException(Exception):
@@ -35,18 +36,22 @@ class InvalidDatabaseRevisionFilesException(Exception):
         NON_CONFORMANT_REVISION_FILE_NAME_EXISTS = 101  # all files all follow 'RV{num}__{description}.{upgrade/downgrade}.sql' format
         MORE_REVISION_SQL_FILES_FOUND_THAN_REQUIRED_STEPS_SPECIFIED = 102  # Given specified number of steps, more targetrevision SQL Files are found
         FEWER_REVISION_SQL_FILES_FOUND_THAN_REQUIRED_STEPS_SPECIFIED = 103  # Given specified number of steps, fewer target revision SQL Files are found
+        NONCONSECUTIVE_REVISION_SQL_FILES_FOR_HEAD_OR_BASE_POINTER = 104 # Given head/base pointer, non-consecutive revision files are found
 
     def __init__(self,
                  status: Status,
-                 config_file_path: Path
+                 config_file_path: Optional[Path],
+                 database_revision_file_paths: List[Path],
                  ):
         self.status = status
         self.config_file_path = config_file_path
+        self.database_revision_file_paths = database_revision_file_paths
 
     def __str__(self):
         return f"""
-        {self.status.name}
-        {self.config_file_path}
+        Status: {self.status.name}
+        Config file path: {self.config_file_path}
+        Database Revision Files Paths Found: {self.database_revision_file_paths}
         """
 
 
