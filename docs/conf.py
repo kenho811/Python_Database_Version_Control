@@ -16,7 +16,11 @@ from distutils.util import strtobool
 import os
 import sys
 
+# For src/dvc folder
 sys.path.insert(0, os.path.abspath('../src'))
+
+# For tests/ folder
+sys.path.insert(1, os.path.abspath('..'))
 
 from dvc.version import __version__
 
@@ -76,7 +80,11 @@ html_theme = 'furo'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+# html_static_path = ['_static']
+html_static_path = [
+    # Copy everything in the below folders to the _static folder
+    '_static',
+    'dynamic/pytest']
 
 html_css_files = [
     'css/custom.css',
@@ -92,10 +100,10 @@ if not is_local:
 
     # The path where the artifact should be extracted
     # Note: this is relative to the conf.py file!
-    rtds_action_path = "_static/pytest"
+    rtds_action_path = "dynamic"
 
     # The "prefix" used in the `upload-artifact` step of the action
-    rtds_action_artifact_prefix = "report-for-"
+    rtds_action_artifact_prefix = "dynamic-asset-"
 
     # A GitHub personal access token is required, more info below
     rtds_action_github_token = os.environ["GITHUB_TOKEN"]

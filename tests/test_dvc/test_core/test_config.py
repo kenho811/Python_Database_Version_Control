@@ -143,7 +143,7 @@ class TestDatabaseConnectionFactory:
         THEN check psycopg2.connect is called once and with expected args
         """
         # Act
-        DatabaseConnectionFactory(config_file_reader=dummy_config_file_reader_with_supported_db_flavour).conn
+        DatabaseConnectionFactory(config_reader=dummy_config_file_reader_with_supported_db_flavour).conn
 
         # Assert
         expects_args = {

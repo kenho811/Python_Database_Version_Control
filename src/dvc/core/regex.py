@@ -10,6 +10,9 @@ def get_matched_files_in_folder_by_regex(folder_path: Path,
     """
     Loop recursively for all files in a given folder.
     Return those files whose name satisfy the regex.
+
+    :param folder_path: Path pointing tothe folder with files
+    :param file_name_regex: regex used to filter for files with the desired file name
     :return:
     """
     matched_files_paths: List[Path] = []

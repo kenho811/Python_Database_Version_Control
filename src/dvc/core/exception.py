@@ -6,8 +6,12 @@ from dvc.core.struct import Operation
 
 
 class RequestedDatabaseFlavourNotSupportedException(Exception):
+    """
+    Exception raised when requested database flavour is not supported
+    """
+
     def __init__(self,
-                 requested_database_flavour,
+                 requested_database_flavour: str,
                  ):
         self.requested_database_flavour = requested_database_flavour
 
@@ -20,6 +24,10 @@ class RequestedDatabaseFlavourNotSupportedException(Exception):
 
 
 class InvalidDatabaseRevisionFilesException(Exception):
+    """
+    Exception Raised when something is wrong with the DatabaseRevisionFiles
+    """
+
     class Status(Enum):
         """
         List of all reasons
@@ -41,7 +49,11 @@ class InvalidDatabaseRevisionFilesException(Exception):
         {self.config_file_path}
         """
 
-class InvalidDatabaseVersionExceptio(Exception):
+
+class InvalidDatabaseVersionException(Exception):
+    """
+    Exception raised when format of Database Version is wrong
+    """
 
     def __init__(self,
                  database_version: str,
@@ -53,6 +65,9 @@ class InvalidDatabaseVersionExceptio(Exception):
 
 
 class DatabaseConnectionFailureException(Exception):
+    """
+    Exception raised when connection to the database fails
+    """
 
     def __init__(self,
                  ):
@@ -61,20 +76,25 @@ class DatabaseConnectionFailureException(Exception):
     def __str__(self):
         return "Something is wrong with the database connection!"
 
+
 class OperationNotAccountedForException(Exception):
     """
-    Operation not accounted for
+    Exception raised when operation is requested but is not yet developed
     """
 
     def __init__(self,
-                 operation_type = Operation
+                 operation_type=Operation
                  ):
         self.operation_type = operation_type
 
     def __str__(self):
         return f"Your Operation {self.operation_type} is NOT one of {[e.value for e in Operation]}"
 
+
 class EnvironmentVariableNotSetException(Exception):
+    """
+    Exception raised when required environment variables are not found
+    """
 
     def __init__(self,
                  missing_env_var: str

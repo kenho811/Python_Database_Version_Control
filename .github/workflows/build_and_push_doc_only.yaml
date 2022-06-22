@@ -1,0 +1,20 @@
+name: Build Sphinx Doc only
+
+on:
+  push:
+    branches:
+      - feature/doc
+
+jobs:
+  # Push to rtds
+  build-n-push-to-rtds:
+    name: "Build and push artifacts to Readthedocs"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build and push artifacts to Readthedocs
+        uses: ./.github/actions/build-n-push-to-rtds
+        with:
+          rtds-webhook-url: ${{ secrets.RTDS_WEBHOOK_URL }}
+          rtds-webhook-token: ${{ secrets.RTDS_WEBHOOK_TOKEN }}
+          commit-ref: ${{ github.ref }}

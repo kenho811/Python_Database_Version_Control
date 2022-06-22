@@ -13,9 +13,9 @@ class PostgresSQLFileExecutor(SQLFileExecutorTemplate):
     FILE_HASHER = FileHasher()
 
     def __init__(self,
-                 conn: connection
+                 db_conn: connection
                  ):
-        self.conn = conn
+        super(PostgresSQLFileExecutor, self).__init__(db_conn)
         self.cur = self.conn.cursor()
 
     def set_up_database_revision_control_tables(self):

@@ -10,6 +10,9 @@ import re
 
 
 class Operation(Enum):
+    """
+    Database Operations Allowed
+    """
     Upgrade = "upgrade"
     Downgrade = "downgrade"
 
@@ -23,6 +26,9 @@ class DatabaseRevisionFile:
     def __init__(self,
                  file_path: Path
                  ):
+        """
+        :param file_path: Path pointing to the Database Revision File
+        """
         self.file_path = file_path
         self._validate_sql_file_name()
 
@@ -33,7 +39,8 @@ class DatabaseRevisionFile:
             operation_type: Operation,
     ) -> DatabaseRevisionFile:
         """
-        Return
+        Return a dummy revision file
+
         :param revision:
         :param operation_type:
         :return:
@@ -85,7 +92,9 @@ class DatabaseRevisionFile:
     @property
     def ending(self) -> str:
         """
-        Get the revision number
+        Get the file ending
+
+        :return:
         """
         ending = self.file_path.name.split('.')[-1]
         return ending
@@ -93,7 +102,9 @@ class DatabaseRevisionFile:
     @property
     def description(self) -> str:
         """
-        Get the revision number
+        Get the file description
+
+        :return:
         """
         description = self.file_path.name.split('__')[1]
         return description
@@ -102,6 +113,8 @@ class DatabaseRevisionFile:
     def revision_number(self) -> int:
         """
         Get the revision number
+
+        :return:
         """
         revision_number = int(self.file_path.name.split('__')[0][2:])
         return revision_number
@@ -110,6 +123,8 @@ class DatabaseRevisionFile:
     def operation_type(self) -> Operation:
         """
         Get the operation type
+
+        :return:
         """
         operation_type = self.file_path.name.split('.')[1]
         return Operation(operation_type)
@@ -139,12 +154,12 @@ class DatabaseVersion:
         :param instance:
         :return:
         """
-        from dvc.core.exception import InvalidDatabaseVersionExceptio
+        from dvc.core.exception import InvalidDatabaseVersionException
 
         prog = re.compile(self.__class__.STANDARD_DATABASE_VERSION_FORMAT_REGEX)
         match = prog.match(self._version)
         if not match:
-            raise InvalidDatabaseVersionExceptio(
+            raise InvalidDatabaseVersionException(
                 database_version=self._version)
 
     @property
@@ -152,6 +167,11 @@ class DatabaseVersion:
         return self._version
 
     def __eq__(self, other):
+        """
+        Return boolean if two database versions are the same
+        :param other:
+        :return:
+        """
         if not isinstance(other, DatabaseVersion):
             return NotImplemented
 
@@ -163,6 +183,10 @@ class DatabaseVersion:
 
     @property
     def next_upgrade_database_revision_file(self) -> DatabaseRevisionFile:
+        """
+        Get the database revision file for upgrade
+        :return:
+        """
         file = DatabaseRevisionFile.get_dummy_revision_file(
             revision=f"RV{self.version_number + 1}",
             operation_type=Operation.Upgrade,
@@ -171,6 +195,10 @@ class DatabaseVersion:
 
     @property
     def next_downgrade_database_revision_file(self) -> DatabaseRevisionFile:
+        """
+        Get the database revision file for downgrade
+        :return:
+        """
         if self.version_number == 0:
             # No downgrade for version is V0
             raise ValueError("Cannot downgrade with Version V0")
@@ -191,7 +219,7 @@ class DatabaseVersion:
 
     def __add__(self, other) -> DatabaseVersion:
         """
-        Apply DatabaseRevisionFile to DatabaseVersion
+        Get the theoretical new database version after applying a  DatabaseRevisionFile to given DatabaseVersion
         :param other:
         :return:
         """
@@ -210,6 +238,8 @@ class DatabaseVersion:
 
     def __sub__(self, other) -> List[DatabaseRevisionFile]:
         """
+        Get a list of Database Revision Files required to change from the Current Database Version to the  Target Database Version
+
         Usage:
         self: target database version
         other: current database version

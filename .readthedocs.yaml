@@ -24,3 +24,6 @@ sphinx:
 python:
    install:
    - requirements: docs/requirements.txt
+   - method: pip
+     path: ".[dev]"
+   system_packages: true

@@ -10,7 +10,7 @@ import logging
 from psycopg2._psycopg import connection
 import os
 
-from dvc.core.database import SupportedDatabaseFlavour
+from dvc.core.database import SupportedDatabaseFlavour, DBConnLike
 from dvc.core.regex import get_matched_files_in_folder_by_regex
 from dvc.core.exception import RequestedDatabaseFlavourNotSupportedException, InvalidDatabaseRevisionFilesException, \
     EnvironmentVariableNotSetException, Operation
@@ -253,27 +253,34 @@ class DatabaseConnectionFactory:
     }
 
     def __init__(self,
-                 config_file_reader: ConfigReader,
+                 config_reader: ConfigReader,
                  ):
-        self.config_file_reader = config_file_reader
+        """
+
+        :param config_reader: Config Reader
+        """
+        self.config_reader = config_reader
 
     def validate_requested_database_flavour(
             self) -> SupportedDatabaseFlavour:
         """
         Validate if requested database flavour is supported
+
+        :return:
         """
         try:
-            supported_user_db_flavour = SupportedDatabaseFlavour(self.config_file_reader.requested_db_flavour)
+            supported_user_db_flavour = SupportedDatabaseFlavour(self.config_reader.requested_db_flavour)
         except ValueError as e:
             logging.error(traceback.format_exc())
             raise RequestedDatabaseFlavourNotSupportedException(
-                requested_database_flavour=self.config_file_reader.requested_db_flavour)
+                requested_database_flavour=self.config_reader.requested_db_flavour)
         return supported_user_db_flavour
 
     @property
-    def conn(self) -> Any:
+    def conn(self) -> DBConnLike:
         """
-        Return the expected connection
+        Return the expected connection object for different database flavours
+        :return:
         """
         supported_db_flavour = self.validate_requested_database_flavour()
         # Map Supported database flavours to different connections
@@ -283,12 +290,14 @@ class DatabaseConnectionFactory:
     def pgconn(self) -> connection:
         """
         Return Postgres Database Connection
+
+        :return:
         """
-        dbname = self.config_file_reader.user_config['credentials']['dbname']
-        user = self.config_file_reader.user_config['credentials']['user']
-        password = self.config_file_reader.user_config['credentials']['password']
-        port = self.config_file_reader.user_config['credentials']['port']
-        host = self.config_file_reader.user_config['credentials']['host']
+        dbname = self.config_reader.user_config['credentials']['dbname']
+        user = self.config_reader.user_config['credentials']['user']
+        password = self.config_reader.user_config['credentials']['password']
+        port = self.config_reader.user_config['credentials']['port']
+        host = self.config_reader.user_config['credentials']['host']
 
         conn = psycopg2.connect(dbname=dbname, user=user, password=password, port=port, host=host)
         return conn

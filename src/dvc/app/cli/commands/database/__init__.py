@@ -17,9 +17,12 @@ app = typer.Typer()
 @app.command()
 def init(
         config_file_path: Optional[str] = typer.Option(None, help="path to config file"),
-):
+) -> None:
     """
     Generate configuration template & Initialise database
+
+    :param config_file_path: String pointing to the path where configuration file is located
+    :return:
     """
     # Step 2: Set up metadata schema and tables
     db_interactor = DatabaseInteractor(config_file_path)
@@ -38,9 +41,15 @@ def upgrade(
         mark_only: bool = typer.Option(False, help='Only mark the SQL file to metadata table without applying'),
         confirm: bool = typer.Option(True, help='Prompt user to confirm operation or not.'),
         steps: int = typer.Option(1, help='Number of steps to upgrade.'),
-):
+) -> None:
     """
     Upgrade the Current Database Version by applying a corresponding Upgrade Revision Version
+
+    :param config_file_path: String pointing to the path where configuration file is located
+    :param mark_only: whether or not to mark the SQL file as being done as metadata, without actually executing the SQL file
+    :param confirm: whether or not to prompt user for confirmation
+    :param steps: Number of steps requested to downgrade the database version
+    :return: None
     """
     # Step 1: Check latest database version
     steps = abs(steps)
@@ -54,7 +63,8 @@ def upgrade(
     latest_database_version: DatabaseVersion = db_interactor.latest_database_version
 
     typer.echo(f"Current Database Version is {latest_database_version.version}")
-    typer.echo(f"Next Upgrade Revision Version will be {latest_database_version.next_upgrade_database_revision_file.revision_number}")
+    typer.echo(
+        f"Next Upgrade Revision Version will be {latest_database_version.next_upgrade_database_revision_file.revision_number}")
 
     target_database_revision_files = db_interactor.get_target_database_revision_files(steps=steps)
 
@@ -69,8 +79,6 @@ def upgrade(
 
         db_interactor.execute_single_sql_file(mark_only=mark_only,
                                               database_revision_file=target_database_revision_file)
-
-
 
 
 @app.command()
@@ -79,9 +87,14 @@ def downgrade(
         mark_only: bool = typer.Option(False, help='Only mark the SQL file to metadata table without applying'),
         confirm: bool = typer.Option(True, help='Prompt user to confirm operation or not.'),
         steps: int = typer.Option(1, help='Number of steps to downgrade'),
-):
+) -> None:
     """
     Downgrade the Current Database Version by applying a corresponding Downgrade Revision Version
+
+    :param config_file_path: String pointing to the path where configuration file is located
+    :param mark_only: mark the SQL file as being done as metadata, without actually executing the SQL file
+    :param confirm: whether or not to prompt user for confirmation
+    :param steps: Number of steps requested to downgrade the database version
     :return:
     """
     # Step 1: Get the number of steps
@@ -90,13 +103,13 @@ def downgrade(
         logging.error("Steps cannot be 0!")
         raise typer.Abort()
 
-
     # Step 2: Output current database version
     db_interactor = DatabaseInteractor(config_file_path_str=config_file_path)
     latest_database_version: DatabaseVersion = db_interactor.latest_database_version
 
     typer.echo(f"Current Database Version is {latest_database_version.version}")
-    typer.echo(f"Next Downgrade Revision Version will be {latest_database_version.next_downgrade_database_revision_file.revision_number}")
+    typer.echo(
+        f"Next Downgrade Revision Version will be {latest_database_version.next_downgrade_database_revision_file.revision_number}")
 
     # Step 3: Run
     target_database_revision_files = db_interactor.get_target_database_revision_files(steps=steps)
@@ -114,9 +127,13 @@ def downgrade(
 
 
 @app.command()
-def current(config_file_path: Optional[str] = typer.Option(None, help="path to config file")):
+def current(
+        config_file_path: Optional[str] = typer.Option(None, help="path to config file")
+) -> None:
     """
     Check the current Database Version
+
+    :param config_file_path: String pointing to the path where configuration file is located
     :return:
     """
     db_interactor = DatabaseInteractor(config_file_path)
@@ -125,9 +142,14 @@ def current(config_file_path: Optional[str] = typer.Option(None, help="path to c
 
 
 @app.command()
-def ping(config_file_path: Optional[str] = typer.Option(None, help="path to config file")):
+def ping(
+        config_file_path: Optional[str] = typer.Option(None, help="path to config file")
+) -> None:
     """
     Ping the current database connection
+
+    :param config_file_path: String pointing to the path where configuration file is located
+    :return:
     """
     db_interactor = DatabaseInteractor(config_file_path)
     try:
