@@ -216,5 +216,3 @@ Support for other databases will be added soon....
           - `dvc db downgrade --mark-only` ---> Only mark to metadata tables 
         - `dvc db current` ---> Current Database Version
         - `dvc db ping` --> Ping database connection
-      - `dvc sql` --> SQL related commands
-        - `dvc sql generate --from-sql-folder` --> Generate RV files from all SQL files in a given folder
