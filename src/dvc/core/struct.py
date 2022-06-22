@@ -67,7 +67,7 @@ class DatabaseRevisionFile:
                 database_revision_file_paths=[self.file_path],
             )
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other) -> Optional[bool]:
         """
         Determine when 2 SQL Revision files are the same
         :param other:
@@ -76,46 +76,61 @@ class DatabaseRevisionFile:
         if not isinstance(other, self.__class__):
             return NotImplemented
 
-        if self.revision_number == other.revision_number and self.operation_type == other.operation_type:
-            return True
+        if self.operation_type != other.operation_type:
+            return None
         else:
-            return False
+            if self.revision_number == other.revision_number:
+                return True
+            else:
+                return False
 
-    def __le__(self, other) -> bool:
+    def __le__(self, other) -> Optional[bool]:
         if not isinstance(other, self.__class__):
             return NotImplemented
 
-        if self.revision_number <= other.revision_number and self.operation_type == other.operation_type:
-            return True
+        if self.operation_type != other.operation_type:
+            return None
         else:
-            return False
+            if self.revision_number <= other.revision_number:
+                return True
+            else:
+                return False
 
-    def __lt__(self, other) -> bool:
+    def __lt__(self, other) -> Optional[bool]:
         if not isinstance(other, self.__class__):
             return NotImplemented
 
-        if self.revision_number < other.revision_number and self.operation_type == other.operation_type:
-            return True
+        if self.operation_type != other.operation_type:
+            return None
         else:
-            return False
+            if self.revision_number < other.revision_number:
+                return True
+            else:
+                return False
 
-    def __ge__(self, other) ->bool:
+    def __ge__(self, other) -> Optional[bool]:
         if not isinstance(other, self.__class__):
             return NotImplemented
 
-        if self.revision_number >= other.revision_number and self.operation_type == other.operation_type:
-            return True
+        if self.operation_type != other.operation_type:
+            return None
         else:
-            return False
+            if self.revision_number >= other.revision_number:
+                return True
+            else:
+                return False
 
-    def __gt__(self, other) -> bool:
+    def __gt__(self, other) -> Optional[bool]:
         if not isinstance(other, self.__class__):
             return NotImplemented
 
-        if self.revision_number > other.revision_number and self.operation_type == other.operation_type:
-            return True
+        if self.operation_type != other.operation_type:
+            return None
         else:
-            return False
+            if self.revision_number > other.revision_number:
+                return True
+            else:
+                return False
 
     def __sub__(self, other) -> Optional[int]:
         """
@@ -222,7 +237,6 @@ class DatabaseVersion:
         else:
             return False
 
-
     @property
     def next_upgrade_database_revision_file(self) -> DatabaseRevisionFile:
         """
@@ -295,7 +309,6 @@ class DatabaseVersion:
         target_database_version = self
         current_database_version = other
 
-
         database_revision_files: List[DatabaseRevisionFile] = []
 
         if target_database_version.version_number > current_database_version.version_number:
@@ -327,4 +340,3 @@ class DatabaseVersion:
 
     def __repr__(self):
         return self.__str__()
-

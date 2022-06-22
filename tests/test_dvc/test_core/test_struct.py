@@ -40,26 +40,85 @@ class TestDatabaseRevisionFile:
 
     @pytest.mark.parametrize("file_1,file_2,predicate,expected",
                              [
-                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV2",
-                                                                               operation_type=Operation.Upgrade),
-                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV1",
-                                                                               operation_type=Operation.Upgrade),
+                                 # Same Operation
+                                 ## Upgrade Operation
+                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV1", operation_type=Operation.Upgrade),
+                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV10", operation_type=Operation.Upgrade),
                                   'file_1 > file_2',
                                   False),
-                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV2",
-                                                                               operation_type=Operation.Upgrade),
-                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV1",
-                                                                               operation_type=Operation.Downgrade),
+                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV1", operation_type=Operation.Upgrade),
+                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV10", operation_type=Operation.Upgrade),
+                                  'file_1 >= file_2',
+                                  False),
+                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV1", operation_type=Operation.Upgrade),
+                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV10", operation_type=Operation.Upgrade),
+                                  'file_1 < file_2',
+                                  True),
+                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV1", operation_type=Operation.Upgrade),
+                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV10", operation_type=Operation.Upgrade),
+                                  'file_1 <= file_2',
+                                  True),
+                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV1", operation_type=Operation.Upgrade),
+                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV10", operation_type=Operation.Upgrade),
+                                  'file_1 == file_2',
+                                  False),
+                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV1", operation_type=Operation.Upgrade),
+                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV1", operation_type=Operation.Upgrade),
+                                  'file_1 == file_2',
+                                  True),
+
+                                 ## Downgrade Operation
+                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV1", operation_type=Operation.Downgrade),
+                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV10", operation_type=Operation.Downgrade),
                                   'file_1 > file_2',
+                                  False),
+
+                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV1", operation_type=Operation.Downgrade),
+                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV10", operation_type=Operation.Downgrade),
+                                  'file_1 >= file_2',
+                                  False),
+
+                                 # Test greater or equal to than
+                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV1", operation_type=Operation.Downgrade),
+                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV10", operation_type=Operation.Downgrade),
+                                  'file_1 < file_2',
+                                  True),
+                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV1", operation_type=Operation.Downgrade),
+                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV10", operation_type=Operation.Downgrade),
+                                  'file_1 <= file_2',
+                                  True),
+                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV1", operation_type=Operation.Downgrade),
+                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV10", operation_type=Operation.Downgrade),
+                                  'file_1 == file_2',
+                                  False),
+                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV1", operation_type=Operation.Downgrade),
+                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV1", operation_type=Operation.Downgrade),
+                                  'file_1 == file_2',
+                                  True),
+
+                                 # Different Operations
+                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV1", operation_type=Operation.Upgrade),
+                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV10", operation_type=Operation.Downgrade),
+                                  'file_1 > file_2',
+                                  None ),
+                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV1", operation_type=Operation.Upgrade),
+                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV10", operation_type=Operation.Downgrade),
+                                  'file_1 >= file_2',
                                   None),
-                                 (
-                                         DatabaseRevisionFile.get_dummy_revision_file(revision="RV2",
-                                                                                      operation_type=Operation.Downgrade),
-                                         DatabaseRevisionFile.get_dummy_revision_file(revision="RV1",
-                                                                                      operation_type=Operation.Downgrade),
-                                         'file_1 > file_2',
-                                         False
-                                 )
+
+                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV1", operation_type=Operation.Upgrade),
+                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV10", operation_type=Operation.Downgrade),
+                                  'file_1 < file_2',
+                                  None),
+                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV1", operation_type=Operation.Upgrade),
+                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV10", operation_type=Operation.Downgrade),
+                                  'file_1 <= file_2',
+                                  None),
+                                 (DatabaseRevisionFile.get_dummy_revision_file(revision="RV1", operation_type=Operation.Upgrade),
+                                  DatabaseRevisionFile.get_dummy_revision_file(revision="RV10", operation_type=Operation.Downgrade),
+                                  'file_1 == file_2',
+                                  None),
+
                              ])
     def test_database_revision_files_comparison(self,
                                                 file_1,
@@ -67,7 +126,7 @@ class TestDatabaseRevisionFile:
                                                 predicate,
                                                 expected,
                                                 ):
-        assert (lambda file_1, file_2: eval(predicate) == expected)
+        assert  eval(predicate) == expected
 
 
 class TestDatabaseVersion:
