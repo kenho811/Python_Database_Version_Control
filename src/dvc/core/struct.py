@@ -62,8 +62,10 @@ class DatabaseRevisionFile:
         match = prog.match(self.file_path.name)
         if not match:
             raise InvalidDatabaseRevisionFilesException(
-                config_file_path=self.file_path,
-                status=InvalidDatabaseRevisionFilesException.Status.NON_CONFORMANT_REVISION_FILE_NAME_EXISTS)
+                config_file_path=None,
+                status=InvalidDatabaseRevisionFilesException.Status.NON_CONFORMANT_REVISION_FILE_NAME_EXISTS,
+                database_revision_file_paths=[self.file_path],
+            )
 
     def __eq__(self, other) -> bool:
         """

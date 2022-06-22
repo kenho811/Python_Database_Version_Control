@@ -1,6 +1,6 @@
 from enum import Enum
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from dvc.core.database import SupportedDatabaseFlavour
 from dvc.core.struct import Operation, DatabaseRevisionFile
@@ -40,19 +40,18 @@ class InvalidDatabaseRevisionFilesException(Exception):
 
     def __init__(self,
                  status: Status,
-                 config_file_path: Path,
-                 database_revision_files: List[DatabaseRevisionFile],
+                 config_file_path: Optional[Path],
+                 database_revision_file_paths: List[Path],
                  ):
         self.status = status
         self.config_file_path = config_file_path
-        self.database_revision_files = database_revision_files
+        self.database_revision_file_paths = database_revision_file_paths
 
     def __str__(self):
         return f"""
         Status: {self.status.name}
         Config file path: {self.config_file_path}
-        Database Revision Files Found: {self.database_revision_files}
-        
+        Database Revision Files Paths Found: {self.database_revision_file_paths}
         """
 
 

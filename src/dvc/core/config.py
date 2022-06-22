@@ -280,7 +280,7 @@ class DatabaseRevisionFilesManager:
                 raise InvalidDatabaseRevisionFilesException(
                     config_file_path=self.database_revision_files_folder,
                     status=InvalidDatabaseRevisionFilesException.Status.NONCONSECUTIVE_REVISION_SQL_FILES_FOR_HEAD_OR_BASE_POINTER,
-                    database_revision_files=[curr, next]
+                    database_revision_file_paths=[curr.file_path, next.file_path]
                 )
 
         return target_database_revision_files
@@ -314,13 +314,14 @@ class DatabaseRevisionFilesManager:
             raise InvalidDatabaseRevisionFilesException(
                 config_file_path=self.database_revision_files_folder,
                 status=InvalidDatabaseRevisionFilesException.Status.MORE_REVISION_SQL_FILES_FOUND_THAN_REQUIRED_STEPS_SPECIFIED,
-                database_revision_files= actual_revision_files,
+                database_revision_file_paths= [actual_revision_file.file_path for actual_revision_file in actual_revision_files],
             )
         elif len(actual_revision_files) < abs(steps):
             raise InvalidDatabaseRevisionFilesException(
                 config_file_path=self.database_revision_files_folder,
                 status=InvalidDatabaseRevisionFilesException.Status.FEWER_REVISION_SQL_FILES_FOUND_THAN_REQUIRED_STEPS_SPECIFIED,
-                database_revision_files=actual_revision_files,
+                database_revision_file_paths=[actual_revision_file.file_path for actual_revision_file in
+                                              actual_revision_files],
             )
         else:
             # All good
