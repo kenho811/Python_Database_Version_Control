@@ -36,7 +36,7 @@ class ConfigDefault:
     VAL__PORT = 5432
     VAL__DBNAME = ""
     VAL__DBFLAVOUR = "postgres"
-    VAL__LOGGING_LEVEL = logging.INFO
+    VAL__LOGGING_LEVEL = logging._levelToName[logging.INFO]
 
     # Default values for config file
     VAL__FilE_NAME: str = "config.yaml"
@@ -105,7 +105,7 @@ class ConfigFileWriter:
             port=ConfigDefault.VAL__PORT,
             dbname=ConfigDefault.VAL__DBNAME,
             dbflavour=ConfigDefault.VAL__DBFLAVOUR,
-            logging_level=logging._levelToName[ConfigDefault.VAL__LOGGING_LEVEL],
+            logging_level=logging._nameToLevel[ConfigDefault.VAL__LOGGING_LEVEL],
         )
         if not self.config_file_path.exists():
             logging.info(f"Now generating default config file {self.config_file_path}")
