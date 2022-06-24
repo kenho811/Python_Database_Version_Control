@@ -24,10 +24,12 @@ echo "Reading Config from environment variables"
 echo "Now initialising dvc configurations"
 # Retry several times for first command
 retry 10 dvc db init
-echo "Now upgrading db"
-dvc db upgrade --no-confirm
-echo "Now upgrading db"
-dvc db upgrade --no-confirm
+echo "Checking DVC version"
+dvc version
+echo "Now upgrading db to the head"
+dvc db upgrade --no-confirm --head
+echo "Database Version after all upgrades are done"
+dvc db current
 
 #############
 echo "From host machine, please use the below URL to check out the state of the postgres DB after the migration is run"
