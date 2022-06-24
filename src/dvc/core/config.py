@@ -137,8 +137,14 @@ class ConfigReader:
         # read user config
         self.user_config = self._read_user_config()
         self.requested_db_flavour = self._read_requested_db_flavour()
+        self.logging_level = self._read_logging_level()
 
-    def _read_requested_db_flavour(self):
+    def _read_logging_level(self) -> int:
+        user_config = self.user_config
+        logging_level: int = user_config['logging_level']
+        return logging_level
+
+    def _read_requested_db_flavour(self) -> str:
         user_config = self.user_config
         requested_db_flavour: str = user_config['credentials']['dbflavour']
         return requested_db_flavour

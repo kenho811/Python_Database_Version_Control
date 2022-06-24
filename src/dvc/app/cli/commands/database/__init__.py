@@ -8,16 +8,18 @@ from pathlib import Path
 import typer
 
 from dvc.core.struct import DatabaseRevisionFile, Operation, DatabaseVersion
-from dvc.core.config import DatabaseRevisionFilesManager
+from dvc.core.config import DatabaseRevisionFilesManager, ConfigDefault
 
 from dvc.app.cli.commands.database.backend import DatabaseInteractor
+from dvc.core.logger import SetRootLoggingLevel
 
 app = typer.Typer()
 
 
+@SetRootLoggingLevel
 @app.command()
 def init(
-        config_file_path: Optional[str] = typer.Option(None, help="path to config file"),
+        config_file_path: str = typer.Option(str(ConfigDefault.VAL__FILE_PATH), help="path to config file"),
 ) -> None:
     """
     Generate configuration template & Initialise database
@@ -36,9 +38,10 @@ def init(
     typer.echo(f"Host: {conn.info.host}")
 
 
+@SetRootLoggingLevel
 @app.command()
 def upgrade(
-        config_file_path: Optional[str] = typer.Option(None, help="path to config file"),
+        config_file_path: str = typer.Option(str(ConfigDefault.VAL__FILE_PATH), help="path to config file"),
         mark_only: bool = typer.Option(False, help='Only mark the SQL file to metadata table without applying'),
         confirm: bool = typer.Option(True, help='Prompt user to confirm operation or not.'),
         steps: int = typer.Option(1, help='Number of steps to upgrade.'),
@@ -91,9 +94,10 @@ def upgrade(
                                               database_revision_file=target_database_revision_file)
 
 
+@SetRootLoggingLevel
 @app.command()
 def downgrade(
-        config_file_path: Optional[str] = typer.Option(None, help="path to config file"),
+        config_file_path: str = typer.Option(str(ConfigDefault.VAL__FILE_PATH), help="path to config file"),
         mark_only: bool = typer.Option(False, help='Only mark the SQL file to metadata table without applying'),
         confirm: bool = typer.Option(True, help='Prompt user to confirm operation or not.'),
         steps: int = typer.Option(1, help='Number of steps to downgrade'),
@@ -145,9 +149,10 @@ def downgrade(
                                               database_revision_file=target_database_revision_file)
 
 
+@SetRootLoggingLevel
 @app.command()
 def current(
-        config_file_path: Optional[str] = typer.Option(None, help="path to config file")
+        config_file_path: str = typer.Option(str(ConfigDefault.VAL__FILE_PATH), help="path to config file"),
 ) -> None:
     """
     Check the current Database Version
@@ -160,9 +165,10 @@ def current(
     typer.echo(f"Database Current Version: {latest_database_version.version}")
 
 
+@SetRootLoggingLevel
 @app.command()
 def ping(
-        config_file_path: Optional[str] = typer.Option(None, help="path to config file")
+        config_file_path: str = typer.Option(str(ConfigDefault.VAL__FILE_PATH), help="path to config file"),
 ) -> None:
     """
     Ping the current database connection
