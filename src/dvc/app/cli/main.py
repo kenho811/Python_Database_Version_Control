@@ -10,8 +10,6 @@ import typer
 from dvc.version import __version__
 from dvc.app.cli.commands import config, database
 
-# Set default logging to INFO
-logging.root.setLevel(logging.INFO)
 
 DOCUMENTATION_URL = "https://python-database-version-control.readthedocs.io/en/latest/"
 EPILOG_TXT = f"Doc: {DOCUMENTATION_URL}"
@@ -35,4 +33,6 @@ def version():
 
 
 if __name__ == "__main__":
+    # Set default logging to INFO
+    logging.root.setLevel(logging.INFO)
     app()

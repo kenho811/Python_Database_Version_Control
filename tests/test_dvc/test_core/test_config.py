@@ -1,3 +1,4 @@
+import logging
 from unittest import mock
 from unittest.mock import Mock, MagicMock, PropertyMock
 import yaml
@@ -69,6 +70,7 @@ class TestConfigReader:
         monkeypatch.setenv(ConfigDefault.KEY__PORT, "5432")
         monkeypatch.setenv(ConfigDefault.KEY__DBNAME, "superman_db")
         monkeypatch.setenv(ConfigDefault.KEY__DBFLAVOUR, SupportedDatabaseFlavour.Postgres.value)
+        monkeypatch.setenv(ConfigDefault.KEY__LOGGING_LEVEL, logging._levelToName[logging.INFO])
 
         # Action
         user_config = ConfigReader(dummy_absent_config_file_path).user_config

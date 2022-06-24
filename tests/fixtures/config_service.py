@@ -8,6 +8,7 @@ from unittest import mock
 # Import dvc
 from dvc.core.config import ConfigReader, ConfigDefault
 from dvc.core.database import SupportedDatabaseFlavour
+import logging
 
 
 
@@ -17,6 +18,7 @@ def dummy_user_configuration_with_supported_db_flavour() -> Dict:
     Fixture of User Configruration
     """
     DUMMY_USER_CONFIG: Dict = {
+        "logging_level": logging.INFO,
         "database_revision_sql_files_folder": "sample_revision_sql_files",
         "credentials": {
             "user": "peter_parker",
@@ -36,6 +38,7 @@ def dummy_user_configuration_with_unsupported_db_flavour() -> Dict:
     Fixture of User Configruration
     """
     DUMMY_USER_CONFIG_FILE: Dict = {
+        "logging_level": logging.INFO,
         "database_revision_sql_files_folder": "sample_revision_sql_files",
         "credentials": {
             "user": "peter_parker",
