@@ -106,10 +106,12 @@ def dummy_config_file_reader_with_supported_db_flavour(
     Yield dummy config file reader with user_config property patched
     """
 
-    with mock.patch('dvc.core.config.ConfigReader.user_config',
-                    new_callable=mock.PropertyMock,
-                    return_value=dummy_user_configuration_with_supported_db_flavour) as mock_user_config:
-        yield ConfigReader()
+    with mock.patch('dvc.core.config.ConfigReader') as mock_cls:
+        mock_config_reader = mock_cls.return_value
+        mock_config_reader.user_config = dummy_user_configuration_with_supported_db_flavour
+        mock_config_reader.requested_db_flavour = dummy_user_configuration_with_supported_db_flavour['credentials']['dbflavour']
+
+        yield mock_config_reader
 
 
 @pytest.fixture()
@@ -120,7 +122,9 @@ def dummy_config_file_reader_with_unsupported_db_flavour(
     Yield dummy config file reader with user_config property patched
     """
 
-    with mock.patch('dvc.core.config.ConfigReader.user_config',
-                    new_callable=mock.PropertyMock,
-                    return_value=dummy_user_configuration_with_unsupported_db_flavour) as mock_user_config:
-        yield ConfigReader()
+    with mock.patch('dvc.core.config.ConfigReader') as mock_cls:
+        mock_config_reader = mock_cls.return_value
+        mock_config_reader.user_config = dummy_user_configuration_with_unsupported_db_flavour
+        mock_config_reader.requested_db_flavour = dummy_user_configuration_with_unsupported_db_flavour['credentials']['dbflavour']
+
+        yield mock_config_reader

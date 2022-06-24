@@ -108,29 +108,21 @@ class ConfigReader:
                  ):
         self.config_file_path = config_file_path
 
-    @property
-    def user_config(self) -> Dict:
-        """
-        Initialise user config
+        # read user config
+        self.user_config = self._read_user_config()
+        self.requested_db_flavour = self._read_requested_db_flavour()
 
-        Precedence in descending order
-        1. Config File
-        2. Environment Variable
-        """
+    def _read_requested_db_flavour(self):
+        user_config = self.user_config
+        requested_db_flavour: str = user_config['credentials']['dbflavour']
+        return requested_db_flavour
+
+    def _read_user_config(self) -> Dict:
         if self.config_file_path.is_file():
             user_config = self._read_from_yaml()
         else:
             user_config = self._read_from_environment()
         return user_config
-
-    @property
-    def requested_db_flavour(self) -> str:
-        """
-        Read requested_db_flavour from user_config
-        """
-        user_config = self.user_config
-        requested_db_flavour: str = user_config['credentials']['dbflavour']
-        return requested_db_flavour
 
     def _read_from_yaml(self) -> Dict:
         """
