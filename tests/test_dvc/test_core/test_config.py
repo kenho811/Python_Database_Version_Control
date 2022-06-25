@@ -34,7 +34,7 @@ class TestConfigFileWriter:
 @pytest.mark.unit
 class TestConfigReader:
 
-    def test__when_no_config_file_exists_nor_env_var__raise_environment_variables_not_set_exception(
+    def test__when_both_config_file_and_env_var_and_absent__raise_environment_variables_not_set_exception(
             self,
             dummy_absent_config_file_path,
     ):
@@ -47,7 +47,7 @@ class TestConfigReader:
         with pytest.raises(EnvironmentVariableNotSetException) as exc_info:
             user_config = ConfigReader(dummy_absent_config_file_path).user_config
 
-    def test__when_no_config_file_exists__return_expected_user_config_from_env_var(
+    def test__when_config_file_is_absent_but_env_var_present__return_expected_user_config_from_env_var(
             self,
             dummy_user_configuration_with_supported_db_flavour,
             dummy_absent_config_file_path_with_env_var,
@@ -64,7 +64,7 @@ class TestConfigReader:
         # Assert
         assert user_config == dummy_user_configuration_with_supported_db_flavour
 
-    def test__when_config_file_exists__return_expected_user_config_from_config_file(
+    def test__when_config_file_is_persent__return_expected_user_config_from_config_file(
             self,
             dummy_user_configuration_with_supported_db_flavour,
             dummy_existing_config_file_path,

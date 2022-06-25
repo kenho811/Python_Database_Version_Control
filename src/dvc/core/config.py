@@ -155,7 +155,14 @@ class ConfigReader:
         return requested_db_flavour
 
     def _read_user_config(self) -> Dict:
-        if self.config_file_path.is_file():
+        """
+        Check if config_file_path points to an existing file.
+        If yes, read config from the file.
+        If not, read config from env var.
+
+        :return:
+        """
+        if self.config_file_path.is_file() and self.config_file_path.exists():
             user_config = self._read_from_yaml()
         else:
             user_config = self._read_from_environment()
