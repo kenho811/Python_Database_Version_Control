@@ -1,4 +1,4 @@
-Features
+Overview
 ============
 
 Command Line Interface
@@ -63,16 +63,7 @@ Configuration File
 
 - The config.yaml file looks as follows:
 
-.. code-block:: rst
-
-   credentials:
-       dbflavour: postgres
-       dbname: 'test'
-       host: 'localhost'
-       password: 'test'
-       port: 5433
-       user: 'test'
-   database_revision_sql_files_folder: sample_revision_sql_files
+.. literalinclude:: ../_static/files/sample_config.yaml
 
 
 
@@ -94,14 +85,6 @@ Environment Variable
 
 - The environment variables look as follows:
 
-.. code-block:: rst
 
-   >>> printnev| grep DVC
-   DVC__DATABASE_REVISION_SQL_FILES_FOLDER=sample_revision_sql_files
-   DVC__USER=test
-   DVC__PASSWORD=test
-   DVC__HOST=postgres_db
-   DVC__PORT=5432
-   DVC__DBNAME=test
-   DVC__DBFLAVOUR=postgres
-
+.. literalinclude:: ../_static/files/sample_env_var.log
+   :language: bash

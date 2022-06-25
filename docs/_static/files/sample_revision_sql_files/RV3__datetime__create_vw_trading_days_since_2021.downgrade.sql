@@ -1,0 +1,1 @@
+drop view if exists datetime.vw_trading_days_since_2021;

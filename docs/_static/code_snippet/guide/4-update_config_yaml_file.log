@@ -1,0 +1,12 @@
+  /home/ken $ vim config.yamlA
+
+  1 credentials:¬
+  2 ··dbflavour:·postgres¬
+  3 ··dbname:·'my_test_db'¬
+  4 ··host:·'localhost'¬
+  5 ··password:·xxxxx
+  6 ··port:·5432¬
+  7 ··user:·'postgres'¬
+  8 database_revision_sql_files_folder:·sample_revision_sql_files¬
+  9 logging_level:·INFO¬
+~                         

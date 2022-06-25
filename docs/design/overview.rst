@@ -23,7 +23,7 @@ This section explains the client-facing side of the tool. The library is exposed
       rankdir="LR";
 
      dvc -> {cfg, db}
-     cfg -> init
+     cfg -> {init, show}
      db -> {ping, init, upgrade, downgrade}
 
 

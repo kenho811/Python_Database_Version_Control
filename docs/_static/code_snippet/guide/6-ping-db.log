@@ -1,0 +1,5 @@
+ /home/ken $ dvc db ping
+INFO:root:Reading config from file...
+Database connection looks good!
+Database: my_test_db
+Host: localhost

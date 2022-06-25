@@ -1,0 +1,23 @@
+ /home/ken $ psql -U postgres -d my_test_db
+psql (14.3)
+Type "help" for help.
+
+my_test_db=# select * from information_schema.tables where table_schema not in ('information_schema', 'pg_catalog');
+ table_catalog | table_schema |         table_name         | table_type | self_referencing_column_name | reference_generation | user_defined_type_cata
+log | user_defined_type_schema | user_defined_type_name | is_insertable_into | is_typed | commit_action
+---------------+--------------+----------------------------+------------+------------------------------+----------------------+-----------------------
+----+--------------------------+------------------------+--------------------+----------+---------------
+ my_test_db    | dvc          | database_revision_history  | BASE TABLE |                              |                      |
+    |                          |                        | YES                | NO       |
+ my_test_db    | dvc          | database_version_history   | BASE TABLE |                              |                      |
+    |                          |                        | YES                | NO       |
+ my_test_db    | fundamentals | source                     | BASE TABLE |                              |                      |
+    |                          |                        | YES                | NO       |
+ my_test_db    | fundamentals | price                      | BASE TABLE |                              |                      |
+    |                          |                        | YES                | NO       |
+ my_test_db    | datetime     | special_date               | BASE TABLE |                              |                      |
+    |                          |                        | YES                | NO       |
+ my_test_db    | datetime     | vw_trading_days_since_2021 | VIEW       |                              |                      |
+    |                          |                        | NO                 | NO       |
+(6 rows)
+

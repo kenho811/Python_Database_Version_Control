@@ -1,0 +1,9 @@
+credentials:
+  dbflavour: postgres
+  dbname: 'test'
+  host: 'localhost'
+  password: 'test'
+  port: 5433
+  user: 'test'
+database_revision_sql_files_folder: sample_revision_sql_files
+logging_level: DEBUG
