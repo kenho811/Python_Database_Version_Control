@@ -9,9 +9,8 @@ import typer
 
 from dvc.version import __version__
 from dvc.app.cli.commands import config, database
-
-# Set default logging to INFO
-logging.root.setLevel(logging.INFO)
+from dvc.core.logger import SetRootLoggingLevel
+from dvc.core.config import ConfigDefault
 
 DOCUMENTATION_URL = "https://python-database-version-control.readthedocs.io/en/latest/"
 EPILOG_TXT = f"Doc: {DOCUMENTATION_URL}"
@@ -27,7 +26,10 @@ app.add_typer(database.app, name='db', help="Database related subcommands")
 
 
 @app.command()
-def version():
+@SetRootLoggingLevel
+def version(
+        config_file_path: str = typer.Option(str(ConfigDefault.VAL__FILE_PATH), help="path to config file"),
+):
     """
     Show CLI version
     """

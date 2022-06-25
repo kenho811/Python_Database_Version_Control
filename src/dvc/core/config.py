@@ -5,7 +5,7 @@ import traceback
 import psycopg2
 import yaml
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Union
 import logging
 from psycopg2._psycopg import connection
 import os
@@ -26,6 +26,7 @@ class ConfigDefault:
     KEY__PORT = "DVC__PORT"
     KEY__DBNAME = "DVC__DBNAME"
     KEY__DBFLAVOUR = "DVC__DBFLAVOUR"
+    KEY__LOGGING_LEVEL = "DVC__LOGGING_LEVEL"
 
     # Default values for environment variables
     VAL__DATABASE_REVISION_SQL_FILES_FOLDER = "sample_revision_sql_files"
@@ -35,6 +36,7 @@ class ConfigDefault:
     VAL__PORT = 5432
     VAL__DBNAME = ""
     VAL__DBFLAVOUR = "postgres"
+    VAL__LOGGING_LEVEL: str = logging._levelToName[logging.INFO]
 
     # Default values for config file
     VAL__FilE_NAME: str = "config.yaml"
@@ -49,10 +51,25 @@ class ConfigDefault:
             host: str,
             port: int,
             dbname: str,
-            dbflavour: str
-
+            dbflavour: str,
+            logging_level: int,
+            as_file = False
     ):
+        """
+
+        :param database_revision_sql_files_folder:
+        :param user:
+        :param password:
+        :param host:
+        :param port:
+        :param dbname:
+        :param dbflavour:
+        :param logging_level: Assumed to be integer value
+        :param as_file: whether to dump the dict as file.
+        :return:
+        """
         CONFIG_DICT: Dict = {
+            "logging_level": logging_level if not as_file else logging._levelToName[logging_level],
             "database_revision_sql_files_folder": database_revision_sql_files_folder,
             "credentials": {
                 "user": user,
@@ -72,9 +89,15 @@ class ConfigFileWriter:
     """
 
     def __init__(self,
-                 config_file_path: Path = ConfigDefault.VAL__FILE_PATH,
+                 config_file_path: Union[Path, str] = ConfigDefault.VAL__FILE_PATH,
                  ):
-        self.config_file_path = config_file_path
+        if type(config_file_path) == str:
+            self.config_file_path = Path(config_file_path)
+        elif isinstance(config_file_path, Path):
+            self.config_file_path = config_file_path
+        else:
+            raise TypeError(
+                f"config file path must be of either type str or is instance of Path. Yours is {type(config_file_path)}")
 
     def write_to_yaml(self) -> None:
         default_config_dict: Dict = ConfigDefault.get_config_dict(
@@ -85,7 +108,11 @@ class ConfigFileWriter:
             port=ConfigDefault.VAL__PORT,
             dbname=ConfigDefault.VAL__DBNAME,
             dbflavour=ConfigDefault.VAL__DBFLAVOUR,
+            logging_level=logging._nameToLevel[ConfigDefault.VAL__LOGGING_LEVEL],
+            as_file=True
         )
+
+
         if not self.config_file_path.exists():
             logging.info(f"Now generating default config file {self.config_file_path}")
             with open(self.config_file_path, 'w') as default_config_file:
@@ -104,33 +131,36 @@ class ConfigReader:
     """
 
     def __init__(self,
-                 config_file_path: Path = ConfigDefault.VAL__FILE_PATH,
+                 config_file_path: Union[Path, str] = ConfigDefault.VAL__FILE_PATH,
                  ):
-        self.config_file_path = config_file_path
+        if type(config_file_path) == str:
+            self.config_file_path = Path(config_file_path)
+        elif isinstance(config_file_path, Path):
+            self.config_file_path = config_file_path
+        else:
+            raise TypeError(f"config file path must be of either type str or Path. Yours is {type(config_file_path)}")
 
-    @property
-    def user_config(self) -> Dict:
-        """
-        Initialise user config
+        # read user config
+        self.user_config = self._read_user_config()
+        self.requested_db_flavour = self._read_requested_db_flavour()
+        self.logging_level = self._read_logging_level()
 
-        Precedence in descending order
-        1. Config File
-        2. Environment Variable
-        """
+    def _read_logging_level(self) -> int:
+        user_config = self.user_config
+        logging_level: int = user_config['logging_level']
+        return logging_level
+
+    def _read_requested_db_flavour(self) -> str:
+        user_config = self.user_config
+        requested_db_flavour: str = user_config['credentials']['dbflavour']
+        return requested_db_flavour
+
+    def _read_user_config(self) -> Dict:
         if self.config_file_path.is_file():
             user_config = self._read_from_yaml()
         else:
             user_config = self._read_from_environment()
         return user_config
-
-    @property
-    def requested_db_flavour(self) -> str:
-        """
-        Read requested_db_flavour from user_config
-        """
-        user_config = self.user_config
-        requested_db_flavour: str = user_config['credentials']['dbflavour']
-        return requested_db_flavour
 
     def _read_from_yaml(self) -> Dict:
         """
@@ -139,6 +169,19 @@ class ConfigReader:
         logging.info(f"Reading config from file...")
         with open(self.config_file_path, 'r', encoding='utf-8') as config_file:
             user_config: Dict = yaml.load(config_file, Loader=yaml.FullLoader)
+
+        try:
+            # Assume is value
+            user_config['logging_level'] = int(user_config['logging_level'])
+        except ValueError as e:
+            try:
+                # Assume is string
+                user_config['logging_level'] = logging._nameToLevel[user_config['logging_level']]
+            except KeyError as e:
+                logging.error("logging_level must be one of the below:")
+                logging.error(logging._nameToLevel)
+                raise
+
         return user_config
 
     def _read_from_environment(self) -> Dict:
@@ -156,9 +199,23 @@ class ConfigReader:
             password = os.environ[ConfigDefault.KEY__PASSWORD]
             dbname = os.environ[ConfigDefault.KEY__DBNAME]
             dbflavour = os.environ[ConfigDefault.KEY__DBFLAVOUR]
+            logging_level = os.environ[ConfigDefault.KEY__LOGGING_LEVEL]
         except KeyError as err:
             missing_env_var = err.args[0]
             raise EnvironmentVariableNotSetException(missing_env_var)
+
+        # Convert logging_level
+        try:
+            # Assume is value
+            logging_level = int(logging_level)
+        except ValueError as e:
+            try:
+                # Assume is string
+                logging_level = logging._nameToLevel[logging_level]
+            except KeyError as e:
+                logging.error("logging_level must be one of the below:")
+                logging.error(logging._nameToLevel)
+                raise
 
         user_config = ConfigDefault.get_config_dict(
             database_revision_sql_files_folder=database_revision_sql_files_folder,
@@ -168,6 +225,7 @@ class ConfigReader:
             dbname=dbname,
             dbflavour=dbflavour,
             port=port,
+            logging_level=logging_level
         )
         return user_config
 
@@ -188,9 +246,33 @@ class DatabaseRevisionFilesManager:
                  config_file_reader: ConfigReader,
                  ):
         self.config_file_reader = config_file_reader
+        self.database_revision_files_folder = self._get_database_revision_files_folder()
+        self.all_database_revision_files = self._scan_database_revision_files()
 
-    @property
-    def database_revision_files_folder(self) -> Path:
+    def _scan_database_revision_files(self) -> List[DatabaseRevisionFile]:
+        """
+        Return all the available database revision files
+        :return:
+        """
+        candidate_database_revision_files: List[DatabaseRevisionFile] = []
+        database_revision_files_folder = self.database_revision_files_folder
+
+        logging.debug("---Scanning database revision files----")
+        for file_or_dir in database_revision_files_folder.glob('**/*'):
+            file_or_dir: Path = file_or_dir
+            logging.debug(file_or_dir)
+            if file_or_dir.is_file():
+                candidate_database_revision_file = DatabaseRevisionFile(file_or_dir)
+                candidate_database_revision_files.append(candidate_database_revision_file)
+        logging.debug("---/Scanning database revision files----")
+
+        return candidate_database_revision_files
+
+    def _get_database_revision_files_folder(self) -> Path:
+        """
+        Get database revision files folder
+        :return:
+        """
         return Path(self.config_file_reader.user_config['database_revision_sql_files_folder'])
 
     def create_database_revision_files_folder(self):
@@ -205,24 +287,6 @@ class DatabaseRevisionFilesManager:
         else:
             logging.info("Generating database revision folder")
             database_revision_sql_folder_path.mkdir(parents=True)
-
-    @property
-    def all_database_revision_files(self) -> List[DatabaseRevisionFile]:
-        """
-        Return all the available database revision files
-        :return:
-        """
-        candidate_database_revision_files: List[DatabaseRevisionFile] = []
-        database_revision_files_folder = self.database_revision_files_folder
-
-        for file_or_dir in database_revision_files_folder.glob('**/*'):
-            file_or_dir: Path = file_or_dir
-            logging.info(file_or_dir)
-            if file_or_dir.is_file():
-                candidate_database_revision_file = DatabaseRevisionFile(file_or_dir)
-                candidate_database_revision_files.append(candidate_database_revision_file)
-
-        return candidate_database_revision_files
 
     def get_target_database_revision_files_by_pointer(
             self,
@@ -265,11 +329,10 @@ class DatabaseRevisionFilesManager:
         else:
             raise ValueError(f"Unhandled Pointer {pointer}!")
 
-
         # validation. Ensure the distance of all files is ONE (therefore it's gradual)
-        for i in range(len(target_database_revision_files) -1):
+        for i in range(len(target_database_revision_files) - 1):
             curr = target_database_revision_files[i]
-            next = target_database_revision_files[i+1]
+            next = target_database_revision_files[i + 1]
 
             distance = abs(next - curr)
 
@@ -314,7 +377,8 @@ class DatabaseRevisionFilesManager:
             raise InvalidDatabaseRevisionFilesException(
                 config_file_path=self.database_revision_files_folder,
                 status=InvalidDatabaseRevisionFilesException.Status.MORE_REVISION_SQL_FILES_FOUND_THAN_REQUIRED_STEPS_SPECIFIED,
-                database_revision_file_paths= [actual_revision_file.file_path for actual_revision_file in actual_revision_files],
+                database_revision_file_paths=[actual_revision_file.file_path for actual_revision_file in
+                                              actual_revision_files],
             )
         elif len(actual_revision_files) < abs(steps):
             raise InvalidDatabaseRevisionFilesException(

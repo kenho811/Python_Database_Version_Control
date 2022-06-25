@@ -1,3 +1,4 @@
+import logging
 from unittest import mock
 from unittest.mock import Mock, MagicMock, PropertyMock
 import yaml
@@ -52,7 +53,7 @@ class TestConfigReader:
     def test__when_no_config_file_exists__return_expected_user_config_from_env_var(
             self,
             dummy_user_configuration_with_supported_db_flavour,
-            dummy_absent_config_file_path,
+            dummy_absent_config_file_path_with_env_var,
             monkeypatch,
     ):
         """
@@ -60,18 +61,8 @@ class TestConfigReader:
         WHEN ConfigFileReader.user_config is called
         THEN check dummy user configuration is returned
         """
-        # Arrange
-        # Set environment variables
-        monkeypatch.setenv(ConfigDefault.KEY__DATABASE_REVISION_SQL_FILES_FOLDER, "sample_revision_sql_files")
-        monkeypatch.setenv(ConfigDefault.KEY__USER, "peter_parker")
-        monkeypatch.setenv(ConfigDefault.KEY__PASSWORD, "1234")
-        monkeypatch.setenv(ConfigDefault.KEY__HOST, "localhost")
-        monkeypatch.setenv(ConfigDefault.KEY__PORT, "5432")
-        monkeypatch.setenv(ConfigDefault.KEY__DBNAME, "superman_db")
-        monkeypatch.setenv(ConfigDefault.KEY__DBFLAVOUR, SupportedDatabaseFlavour.Postgres.value)
-
         # Action
-        user_config = ConfigReader(dummy_absent_config_file_path).user_config
+        user_config = ConfigReader(dummy_absent_config_file_path_with_env_var).user_config
 
         # Assert
         assert user_config == dummy_user_configuration_with_supported_db_flavour

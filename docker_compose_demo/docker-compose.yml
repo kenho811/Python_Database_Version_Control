@@ -13,8 +13,9 @@ services:
     ports:
       - "5433:5432"
   db-migration-tool:
-    # Pull image from  public repository
+    # Pull image from  public repository. Always
     image: kenho811/database-version-control:latest
+    pull_policy: always
     depends_on:
       - postgres_db
     environment:
@@ -30,3 +31,4 @@ services:
     volumes:
       - .:/usr/src/app/
     entrypoint: /bin/bash
+    command: ./demo_script.sh
