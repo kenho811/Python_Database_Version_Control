@@ -25,13 +25,19 @@ class DatabaseInteractor:
     }
 
     def __init__(self,
-                 config_file_path_str: Optional[str],
+                 config_file_path_str: str,
                  ) -> None:
         """
 
         :param config_file_path_str: String pointing to the path where configuration file is located
         """
-        self.config_file_path: Optional[Path] = None if config_file_path_str is None else Path(config_file_path_str)
+        self.config_file_path: Path = Path(config_file_path_str)
+
+        if not (self.config_file_path.is_file() and self.config_file_path.exists()):
+            # Use default
+            self.config_file_reader = ConfigReader(ConfigDefault.VAL__FILE_PATH)
+        else:
+            self.config_file_reader = ConfigReader(self.config_file_path)
 
     def ping(self) -> None:
         """
@@ -109,18 +115,6 @@ class DatabaseInteractor:
         """
         latest_database_version: DatabaseVersion = self.sql_file_executor.get_latest_database_version()
         return latest_database_version
-
-    @property
-    def config_file_reader(self) -> ConfigReader:
-        """
-        :return: ConfigReader
-        """
-        if self.config_file_path is None:
-            config_file_reader = ConfigReader(ConfigDefault.VAL__FILE_PATH)
-        else:
-            validate_file_exist(self.config_file_path)
-            config_file_reader = ConfigReader(self.config_file_path)
-        return config_file_reader
 
     @property
     def database_revision_files_manager(self) -> DatabaseRevisionFilesManager:
