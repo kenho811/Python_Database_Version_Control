@@ -46,6 +46,7 @@ def upgrade(
         confirm: bool = typer.Option(True, help='Prompt user to confirm operation or not.'),
         steps: int = typer.Option(1, help='Number of steps to upgrade.'),
         head: bool = typer.Option(False, help='Whether to upgrade all the way to the latest Database Revision file found '),
+        dry_run: bool = typer.Option(False, help='if True, do not apply any SQL files to the database'),
 ) -> None:
     """
     Upgrade the Current Database Version by applying a corresponding Upgrade Revision Version
@@ -54,7 +55,9 @@ def upgrade(
     :param mark_only: whether or not to mark the SQL file as being done as metadata, without actually executing the SQL file
     :param confirm: whether or not to prompt user for confirmation
     :param steps: Number of steps requested to downgrade the database version
-    :return: None
+    :param head:
+    :param dry_run:
+    :return:
     """
     # Valid inpudt
     steps = abs(steps)
@@ -73,17 +76,25 @@ def upgrade(
     latest_database_version: DatabaseVersion = db_interactor.latest_database_version
 
     typer.echo(f"Current Database Version is {latest_database_version.version}")
-    typer.echo(
-        f"Next Upgrade Revision Version will be {latest_database_version.next_upgrade_database_revision_file.revision_number}")
+    typer.echo( f"Next Upgrade Revision Version will be {latest_database_version.next_upgrade_database_revision_file.revision_number}")
 
+    # Step 3: Get target revision files
     target_database_revision_files = db_interactor.get_target_database_revision_files(
         steps=steps,
         pointer=pointer
     )
 
-    # Step 3: Run
+    typer.echo("Below files will be applied:")
+    typer.echo(target_database_revision_files)
+
+    if dry_run:
+        logging.info("Dry run is complete")
+        raise typer.Abort()
+
+    # Step 4: Run
+
     for target_database_revision_file in target_database_revision_files:
-        logging.info(f"Going to apply file {target_database_revision_file} .....")
+        typer.echo(f"Going to apply file {target_database_revision_file} .....")
 
         if confirm:
             resp = typer.confirm("You sure you want to continue ?")
@@ -102,6 +113,7 @@ def downgrade(
         confirm: bool = typer.Option(True, help='Prompt user to confirm operation or not.'),
         steps: int = typer.Option(1, help='Number of steps to downgrade'),
         base: bool = typer.Option(False, help='Whether to downgrade all the way to the earliest Database Revision file found '),
+        dry_run: bool = typer.Option(False, help='if True, do not apply any SQL files to the database'),
 ) -> None:
     """
     Downgrade the Current Database Version by applying a corresponding Downgrade Revision Version
@@ -110,6 +122,8 @@ def downgrade(
     :param mark_only: mark the SQL file as being done as metadata, without actually executing the SQL file
     :param confirm: whether or not to prompt user for confirmation
     :param steps: Number of steps requested to downgrade the database version
+    :param base:
+    :param dry_run:
     :return:
     """
     # Step 1: Get the number of steps
@@ -131,14 +145,23 @@ def downgrade(
     typer.echo(
         f"Next Downgrade Revision Version will be {latest_database_version.next_downgrade_database_revision_file.revision_number}")
 
-    # Step 3: Run
+    # Step 3: Get target database revision files
     target_database_revision_files = db_interactor.get_target_database_revision_files(
         steps=steps,
         pointer=pointer,
     )
 
+    typer.echo("Below files will be applied:")
+    typer.echo(target_database_revision_files)
+
+    if dry_run:
+        logging.info("Dry run is complete")
+        raise typer.Abort()
+
+    # Step 4: Run
+
     for target_database_revision_file in target_database_revision_files:
-        logging.info(f"Going to apply file {target_database_revision_file} .....")
+        typer.echo(f"Going to apply file {target_database_revision_file} .....")
 
         if confirm:
             resp = typer.confirm("You sure you want to continue ?")

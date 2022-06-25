@@ -1,17 +1,14 @@
 import logging
 from unittest import mock
-from unittest.mock import Mock, MagicMock, PropertyMock
-import yaml
-from typing import Dict
 import pytest
-import psycopg2
-from pathlib import Path
+from contextlib import nullcontext as does_not_raise
 
 from dvc.core.database import SupportedDatabaseFlavour
 from dvc.core.config import DatabaseConnectionFactory, ConfigDefault, ConfigFileWriter, ConfigReader, \
     DatabaseRevisionFilesManager
 from dvc.core.exception import RequestedDatabaseFlavourNotSupportedException, InvalidDatabaseRevisionFilesException, \
-    EnvironmentVariableNotSetException
+    EnvironmentVariableNotSetException, InvalidDatabaseVersionException
+from dvc.core.struct import DatabaseVersion, DatabaseRevisionFile, Operation
 
 
 @pytest.mark.unit
@@ -87,21 +84,190 @@ class TestConfigReader:
 @pytest.mark.unit
 class TestDatabaseRevisionFilesManager:
 
-    @pytest.fixture()
-    def dummy_config_file_reader_with_patched_database_revision_files_folder(
-            self,
-            dummy_regex_files_folder_with_incorrect_files_names
-    ):
-        """
-        Yield a config file reader which points to a regex files folder with incorrect files names
-        """
-        # Arrange
-        with mock.patch('dvc.core.config.ConfigReader.user_config',
-                        new_callable=mock.PropertyMock,
-                        return_value={
-                            "database_revision_sql_files_folder": dummy_regex_files_folder_with_incorrect_files_names}) as mock_user_config:
-            yield ConfigReader()
+    @pytest.mark.parametrize(
+        'current_database_version,candidate_database_revision_files,pointer,expected_database_revision_files,expected_exception',
+        [
+            #
+            (DatabaseVersion(version='V0', created_at=None),
+             [
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV1', operation_type=Operation.Upgrade),
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV2', operation_type=Operation.Upgrade),
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV3', operation_type=Operation.Upgrade),
+             ],
+             DatabaseRevisionFilesManager.Pointer.HEAD,
+             [
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV1', operation_type=Operation.Upgrade),
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV2', operation_type=Operation.Upgrade),
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV3', operation_type=Operation.Upgrade),
+             ],
+             does_not_raise()
+             ),
 
+            #
+            (DatabaseVersion(version='V3', created_at=None),
+             [
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV1',
+                                                              operation_type=Operation.Downgrade),
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV2',
+                                                              operation_type=Operation.Downgrade),
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV3',
+                                                              operation_type=Operation.Downgrade),
+             ],
+             DatabaseRevisionFilesManager.Pointer.BASE,
+             [
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV3',
+                                                              operation_type=Operation.Downgrade),
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV2',
+                                                              operation_type=Operation.Downgrade),
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV1',
+                                                              operation_type=Operation.Downgrade),
+             ],
+             does_not_raise()
+             ),
+
+            #
+            (DatabaseVersion(version='V3', created_at=None),
+             [
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV1',
+                                                              operation_type=Operation.Downgrade),
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV3',
+                                                              operation_type=Operation.Downgrade),
+             ],
+             DatabaseRevisionFilesManager.Pointer.BASE,
+             [
+                 # Pass. Expected to raise exception
+             ],
+             pytest.raises(InvalidDatabaseRevisionFilesException)
+             ),
+
+            #
+            (DatabaseVersion(version='V0', created_at=None),
+             [
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV2',
+                                                              operation_type=Operation.Upgrade),
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV3',
+                                                              operation_type=Operation.Upgrade),
+             ],
+             DatabaseRevisionFilesManager.Pointer.HEAD,
+             [
+                 # Pass. Expected to raise exception
+             ],
+             pytest.raises(InvalidDatabaseRevisionFilesException)
+             ),
+
+        ]
+        )
+    def test__get_target_database_revision_files_by_pointer(
+            self,
+            dummy_config_file_reader_with_supported_db_flavour,
+            current_database_version,
+            candidate_database_revision_files,
+            pointer,
+            expected_database_revision_files,
+            expected_exception
+    ):
+        # Act
+        sut = DatabaseRevisionFilesManager(config_file_reader=dummy_config_file_reader_with_supported_db_flavour)
+        with expected_exception:
+            # May raise exception
+            actual_database_revision_files = sut.get_target_database_revision_files_by_pointer(
+                current_database_version=current_database_version,
+                candidate_database_revision_files=candidate_database_revision_files,
+                pointer=pointer)
+            # If not raise exception, assert the below
+            assert actual_database_revision_files == expected_database_revision_files
+
+    @pytest.mark.parametrize(
+        'current_database_version,candidate_database_revision_files,steps,expected_database_revision_files,expected_exception',
+        [
+            #
+            (DatabaseVersion(version='V0', created_at=None),
+             [
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV1', operation_type=Operation.Upgrade),
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV2', operation_type=Operation.Upgrade),
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV3', operation_type=Operation.Upgrade),
+             ],
+             2,
+             [
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV1', operation_type=Operation.Upgrade),
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV2', operation_type=Operation.Upgrade),
+             ],
+             does_not_raise()
+             ),
+
+            #
+            (DatabaseVersion(version='V3', created_at=None),
+             [
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV1',
+                                                              operation_type=Operation.Downgrade),
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV2',
+                                                              operation_type=Operation.Downgrade),
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV3',
+                                                              operation_type=Operation.Downgrade),
+             ],
+             -2,
+             [
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV3',
+                                                              operation_type=Operation.Downgrade),
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV2',
+                                                              operation_type=Operation.Downgrade),
+             ],
+             does_not_raise()
+             ),
+
+            #
+            (DatabaseVersion(version='V3', created_at=None),
+             [
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV1',
+                                                              operation_type=Operation.Downgrade),
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV3',
+                                                              operation_type=Operation.Downgrade),
+             ],
+             -1,
+             [
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV3',
+                                                              operation_type=Operation.Downgrade),
+             ],
+             does_not_raise()
+             ),
+
+            #
+            (DatabaseVersion(version='V0', created_at=None),
+             [
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV2',
+                                                              operation_type=Operation.Upgrade),
+                 DatabaseRevisionFile.get_dummy_revision_file(revision='RV3',
+                                                              operation_type=Operation.Upgrade),
+             ],
+             3,
+             [
+                 # Pass. Expected to raise exception
+             ],
+             pytest.raises(InvalidDatabaseRevisionFilesException)
+             ),
+
+        ]
+    )
+    def test__get_target_database_revision_files_by_pointer(
+            self,
+            dummy_config_file_reader_with_supported_db_flavour,
+            current_database_version,
+            candidate_database_revision_files,
+            steps,
+            expected_database_revision_files,
+            expected_exception
+    ):
+        # Act
+        sut = DatabaseRevisionFilesManager(config_file_reader=dummy_config_file_reader_with_supported_db_flavour)
+        with expected_exception:
+            # May raise exception
+            actual_database_revision_files = sut.get_target_database_revision_files_by_steps(
+                current_database_version=current_database_version,
+                candidate_database_revision_files=candidate_database_revision_files,
+                steps=steps,
+            )
+            # If not raise exception, assert the below
+            assert actual_database_revision_files == expected_database_revision_files
 
 
 @pytest.mark.unit
