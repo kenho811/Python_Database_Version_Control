@@ -47,11 +47,7 @@ runs:
         echo "Now checking the env var.."
         printenv
         echo "Now running dvc....."
-        ./dvc db ping
-        ./dvc db ping
-        ./dvc db init
-        ./dvc db current
-        ./dvc db upgrade --no-confirm
+        bash -c ./.github/assets/run_dvc.sh
     # Step 3: Zip and Upload artifact
     - name: zip linux artifact
       shell: bash
