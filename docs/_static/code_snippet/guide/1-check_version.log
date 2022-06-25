@@ -1,0 +1,3 @@
+/home/ken $ dvc version
+WARNING:root:Cannot find logging_level. Using default INFO
+0.4.0

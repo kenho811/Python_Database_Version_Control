@@ -1,0 +1,154 @@
+ /home/ken $ psql -U postgres -d my_test_db
+psql (14.3)
+Type "help" for help.
+
+my_test_db=# select * from information_schema.tables where table_schema not in ('information_schema', 'pg_catalog');
+ table_catalog | table_schema |        table_name         | table_type | self_referencing_column_name | reference_generation | user_defined_type_catal
+og | user_defined_type_schema | user_defined_type_name | is_insertable_into | is_typed | commit_action
+---------------+--------------+---------------------------+------------+------------------------------+----------------------+------------------------
+---+--------------------------+------------------------+--------------------+----------+---------------
+ my_test_db    | dvc          | database_revision_history | BASE TABLE |                              |                      |
+   |                          |                        | YES                | NO       |
+ my_test_db    | dvc          | database_version_history  | BASE TABLE |                              |                      |
+   |                          |                        | YES                | NO       |
+(2 rows)
+
+
+my_test_db=# \pset format wrapped
+Output format is wrapped.
+my_test_db=# select * from dvc.database_revision_history;
+ revision_id | executed_sql_file_folder |    executed_sql_file_name     | executed_sql_file_content_hash | executed_sql_file_content | operation | revision_applied |       created_at
+-------------+--------------------------+-------------------------------+--------------------------------+---------------------------+-----------+------------------+-------------------------
+           1 | sample_revision_sql_file.| RV1__create_scm_fundamentals_.| 0f76966869d3d4eb2d3511f1dcd6f6.| -- create schema         +| Upgrade   | RV1              | 2022-06-25 09:56:53.161.
+             |.s                        |.and_tbls.upgrade.sql          |.1d                             | CREATE SCHEMA IF NOT EXIS.|           |                  |.503
+             |                          |                               |                                |.TS fundamentals;         +|           |                  |
+             |                          |                               |                                | -- create table          +|           |                  |
+             |                          |                               |                                | CREATE TABLE IF NOT EXIST.|           |                  |
+             |                          |                               |                                |.S fundamentals.source    +|           |                  |
+             |                          |                               |                                |   (                      +|           |                  |
+             |                          |                               |                                |      source_id INTEGER PR.|           |                  |
+             |                          |                               |                                |.IMARY KEY,               +|           |                  |
+             |                          |                               |                                |      source VARCHAR(50) N.|           |                  |
+             |                          |                               |                                |.OT NULL UNIQUE,          +|           |                  |
+             |                          |                               |                                |      created_at TIMESTAMP.|           |                  |
+             |                          |                               |                                |. NOT NULL DEFAULT (now() .|           |                  |
+             |                          |                               |                                |.at time zone 'utc'),     +|           |                  |
+             |                          |                               |                                |      CONSTRAINT source_ux.|           |                  |
+             |                          |                               |                                |. UNIQUE (source)         +|           |                  |
+             |                          |                               |                                |   );                     +|           |                  |
+             |                          |                               |                                | -- Initialise with pre-se.|           |                  |
+             |                          |                               |                                |.t source                 +|           |                  |
+             |                          |                               |                                | INSERT INTO fundamentals..|           |                  |
+             |                          |                               |                                |.source (source_id, source.|           |                  |
+             |                          |                               |                                |.)                        +|           |                  |
+             |                          |                               |                                | VALUES (1, 'yahoo'), (2, .|           |                  |
+             |                          |                               |                                |.'investing_dot_com') on c.|           |                  |
+             |                          |                               |                                |.onflict do nothing;      +|           |                  |
+             |                          |                               |                                | -- create table          +|           |                  |
+             |                          |                               |                                | CREATE TABLE IF NOT EXIST.|           |                  |
+             |                          |                               |                                |.S fundamentals.price     +|           |                  |
+             |                          |                               |                                |   (                      +|           |                  |
+             |                          |                               |                                |      ticker VARCHAR(10) N.|           |                  |
+             |                          |                               |                                |.OT NULL,                 +|           |                  |
+             |                          |                               |                                |      date DATE NOT NULL, +|           |                  |
+             |                          |                               |                                |      open   NUMERIC(50,10.|           |                  |
+             |                          |                               |                                |.) NOT NULL CHECK (open >=.|           |                  |
+             |                          |                               |                                |.0),                      +|           |                  |
+             |                          |                               |                                |      high   NUMERIC(50,10.|           |                  |
+             |                          |                               |                                |.) NOT NULL CHECK (high >=.|           |                  |
+             |                          |                               |                                |.0),                      +|           |                  |
+             |                          |                               |                                |      low   NUMERIC(50,10).|           |                  |
+             |                          |                               |                                |. NOT NULL CHECK (low >=0).|           |                  |
+             |                          |                               |                                |.,                        +|           |                  |
+             |                          |                               |                                |      close   NUMERIC(50,1.|           |                  |
+             |                          |                               |                                |.0) NOT NULL CHECK (close .|           |                  |
+             |                          |                               |                                |.>=0),                    +|           |                  |
+             |                          |                               |                                |      adj_close   NUMERIC(.|           |                  |
+             |                          |                               |                                |.50,10) NOT NULL CHECK (ad.|           |                  |
+             |                          |                               |                                |.j_close >=0),            +|           |                  |
+             |                          |                               |                                |      volume   NUMERIC(50,.|           |                  |
+             |                          |                               |                                |.10) NOT NULL CHECK (volum.|           |                  |
+             |                          |                               |                                |.e >=0),                  +|           |                  |
+             |                          |                               |                                |      source_id  INTEGER, +|           |                  |
+             |                          |                               |                                |      created_at TIMESTAMP.|           |                  |
+             |                          |                               |                                |. NOT NULL DEFAULT (now() .|           |                  |
+             |                          |                               |                                |.at time zone 'utc'),     +|           |                  |
+             |                          |                               |                                |      updated_at TIMESTAMP.|           |                  |
+             |                          |                               |                                |. NOT NULL DEFAULT (now() .|           |                  |
+             |                          |                               |                                |.at time zone 'utc'),     +|           |                  |
+             |                          |                               |                                |      PRIMARY KEY (ticker,.|           |                  |
+             |                          |                               |                                |. date),                  +|           |                  |
+             |                          |                               |                                |      CONSTRAINT fk_source.|           |                  |
+             |                          |                               |                                |. FOREIGN KEY(source_id) R.|           |                  |
+             |                          |                               |                                |.EFERENCES fundamentals.so.|           |                  |
+             |                          |                               |                                |.urce(source_id) ON DELETE.|           |                  |
+             |                          |                               |                                |. CASCADE                 +|           |                  |
+             |                          |                               |                                |   );                     +|           |                  |
+             |                          |                               |                                |                           |           |                  |
+           2 | sample_revision_sql_file.| RV2__create_scm_datetime_and_.| 993c55319cdeec01775b868b94b7d6.| create schema if not exis.| Upgrade   | RV2              | 2022-06-25 09:59:01.019.
+             |.s                        |.tbls.upgrade.sql              |.2e                             |.ts datetime;             +|           |                  |.371
+             |                          |                               |                                | create table if not exist.|           |                  |
+             |                          |                               |                                |.s datetime.special_date( +|           |                  |
+             |                          |                               |                                |   date date primary key, +|           |                  |
+             |                          |                               |                                |   is_hk_public_holiday bo.|           |                  |
+             |                          |                               |                                |.olean default False,     +|           |                  |
+             |                          |                               |                                |   created_at TIMESTAMP NO.|           |                  |
+             |                          |                               |                                |.T NULL DEFAULT (now() at .|           |                  |
+             |                          |                               |                                |.time zone 'utc'),        +|           |                  |
+             |                          |                               |                                |   updated_at TIMESTAMP NO.|           |                  |
+             |                          |                               |                                |.T NULL DEFAULT (now() at .|           |                  |
+             |                          |                               |                                |.time zone 'utc')         +|           |                  |
+             |                          |                               |                                | );                        |           |                  |
+           3 | sample_revision_sql_file.| RV3__datetime__create_vw_trad.| ffe591a58e951e7bbe87b0c06b7d8c.| create or replace view da.| Upgrade   | RV3              | 2022-06-25 09:59:01.832.
+             |.s                        |.ing_days_since_2021.upgrade.s.|.fa                             |.tetime.vw_trading_days_si.|           |                  |.872
+             |                          |.ql                            |                                |.nce_2021 as with weekdays.|           |                  |
+             |                          |                               |                                |. (weekday) as (          +|           |                  |
+             |                          |                               |                                | select                   +|           |                  |
+             |                          |                               |                                |         dt               +|           |                  |
+             |                          |                               |                                | -- Set timezone of now() .|           |                  |
+             |                          |                               |                                |.to UTC                   +|           |                  |
+             |                          |                               |                                | from                     +|           |                  |
+             |                          |                               |                                |         generate_series('.|           |                  |
+             |                          |                               |                                |.2021-01-01':: date, now().|           |                  |
+             |                          |                               |                                |. at time zone 'utc', '1 d.|           |                  |
+             |                          |                               |                                |.ay':: interval) dt       +|           |                  |
+             |                          |                               |                                | where                    +|           |                  |
+             |                          |                               |                                |         extract(dow      +|           |                  |
+             |                          |                               |                                | from                     +|           |                  |
+             |                          |                               |                                |         dt) not in (6, 0)+|           |                  |
+             |                          |                               |                                |         ),               +|           |                  |
+             |                          |                               |                                |         hk_holidays (hk_h.|           |                  |
+             |                          |                               |                                |.oliday) as (             +|           |                  |
+             |                          |                               |                                | select                   +|           |                  |
+             |                          |                               |                                |         date             +|           |                  |
+             |                          |                               |                                | from                     +|           |                  |
+             |                          |                               |                                |         datetime.special_.|           |                  |
+             |                          |                               |                                |.date sd                  +|           |                  |
+             |                          |                               |                                | where                    +|           |                  |
+             |                          |                               |                                |         is_hk_public_holi.|           |                  |
+             |                          |                               |                                |.day = true               +|           |                  |
+             |                          |                               |                                |         ),               +|           |                  |
+             |                          |                               |                                | trading_days (trading_day.|           |                  |
+             |                          |                               |                                |.) as (                   +|           |                  |
+             |                          |                               |                                | select                   +|           |                  |
+             |                          |                               |                                |         weekday          +|           |                  |
+             |                          |                               |                                | from                     +|           |                  |
+             |                          |                               |                                |         weekdays         +|           |                  |
+             |                          |                               |                                | except                   +|           |                  |
+             |                          |                               |                                | select                   +|           |                  |
+             |                          |                               |                                |         hk_holiday       +|           |                  |
+             |                          |                               |                                | from                     +|           |                  |
+             |                          |                               |                                |         hk_holidays)     +|           |                  |
+             |                          |                               |                                | select                   +|           |                  |
+             |                          |                               |                                |         trading_day      +|           |                  |
+             |                          |                               |                                | from                     +|           |                  |
+             |                          |                               |                                |         trading_days     +|           |                  |
+             |                          |                               |                                | order by                 +|           |                  |
+             |                          |                               |                                |         trading_days ;    |           |                  |
+           4 | sample_revision_sql_file.| RV3__datetime__drop_vw_tradin.| b4fd8e1c50f3f17eab0ad8f05d2d50.| drop view if exists datet.| Downgrade | RV3              | 2022-06-25 10:09:41.442.
+             |.s                        |.g_days_since_2021.downgrade.s.|.b1                             |.ime.vw_trading_days_since.|           |                  |.939
+             |                          |.ql                            |                                |._2021;                    |           |                  |
+           5 | sample_revision_sql_file.| RV2__create_scm_datetime_and_.| d040183e1231b5e4e82f0c7e4133d0.| drop schema datetime casc.| Downgrade | RV2              | 2022-06-25 10:09:41.471.
+             |.s                        |.tbls.downgrade.sql            |.c6                             |.ade;                      |           |                  |.216
+           6 | sample_revision_sql_file.| RV1__create_scm_fundamentals_.| f28acbf63e26ece3c0324a9cd74dd2.| drop schema fundamentals .| Downgrade | RV1              | 2022-06-25 10:09:41.493.
+             |.s                        |.and_tbls.downgrade.sql        |.87                             |.cascade;                  |           |                  |.714

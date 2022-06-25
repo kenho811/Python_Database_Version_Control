@@ -1,0 +1,7 @@
+ /home/ken $ ls ./sample_revision_sql_files
+RV1__create_scm_fundamentals_and_tbls.downgrade.sql
+RV1__create_scm_fundamentals_and_tbls.upgrade.sql
+RV2__create_scm_datetime_and_tbls.downgrade.sql
+RV2__create_scm_datetime_and_tbls.upgrade.sql
+RV3__datetime__create_vw_trading_days_since_2021.upgrade.sql
+RV3__datetime__drop_vw_trading_days_since_2021.downgrade.sql

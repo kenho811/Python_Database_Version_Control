@@ -1,0 +1,5 @@
+/home/ken $ dvc cfg init
+WARNING:root:Cannot find logging_level. Using default INFO
+INFO:root:Now generating default config file config.yaml
+INFO:root:Reading config from file...
+INFO:root:Generating database revision folder

@@ -6,6 +6,7 @@ Change Log
 - Added --dry-run to both `dvc db upgrade` and `dvc db downgrade`. When set to True, the CLI will stop before the execution of SQL files
 - Added tests for DatabaseRevisionFilesManager for i. getting files by pointer and ii. getting files by steps.
 - Added option to change logging level in config file and env variables
+- Added demo files and step-by-step guide under in the `feature pages <../feature/guide.html>`_
 
 0.4.0
 --------

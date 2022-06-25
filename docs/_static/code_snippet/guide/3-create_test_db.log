@@ -1,0 +1,7 @@
+ /home/ken $ psql -U postgres
+psql (14.3)
+Type "help" for help.
+
+postgres=# create database my_test_db;
+CREATE DATABASE
+postgres=# exit

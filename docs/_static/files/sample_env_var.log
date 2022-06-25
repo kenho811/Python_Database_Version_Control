@@ -1,0 +1,10 @@
+ >>> printnev| grep DVC
+ DVC__DATABASE_REVISION_SQL_FILES_FOLDER=sample_revision_sql_files
+ DVC__USER=test
+ DVC__PASSWORD=test
+ DVC__HOST=postgres_db
+ DVC__PORT=5432
+ DVC__DBNAME=test
+ DVC__DBFLAVOUR=postgres
+ DEV__LOGGING_LEVEL: DEBUG
+

@@ -44,13 +44,14 @@ Welcome to Database Version Control's  documentation!
    :caption: Contents:
 
    pages/introduction
-   pages/feature
+   feature/index
    pages/quickstart
    deployment/index
    design/index
    contribution/index
    source/index
    pages/changelog
+   pages/author
 
 Summary
 ----------------
