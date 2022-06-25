@@ -1,6 +1,12 @@
 Change Log
 =============
 
+0.4.1
+--------
+- Added --dry-run to both `dvc db upgrade` and `dvc db downgrade`. When set to True, the CLI will stop before the execution of SQL files
+- Added tests for DatabaseRevisionFilesManager for i. getting files by pointer and ii. getting files by steps.
+- Added option to change logging level in config file and env variables
+
 0.4.0
 --------
 - Added dynamic generation of src package and tests package documentation in docs with sphinx-apidoc.

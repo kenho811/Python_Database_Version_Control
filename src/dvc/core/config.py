@@ -53,7 +53,7 @@ class ConfigDefault:
             dbname: str,
             dbflavour: str,
             logging_level: int,
-            as_file = False
+            as_file=False
     ):
         """
 
@@ -111,7 +111,6 @@ class ConfigFileWriter:
             logging_level=logging._nameToLevel[ConfigDefault.VAL__LOGGING_LEVEL],
             as_file=True
         )
-
 
         if not self.config_file_path.exists():
             logging.info(f"Now generating default config file {self.config_file_path}")
@@ -275,7 +274,7 @@ class DatabaseRevisionFilesManager:
         """
         return Path(self.config_file_reader.user_config['database_revision_sql_files_folder'])
 
-    def create_database_revision_files_folder(self):
+    def create_database_revision_files_folder(self) -> None:
         """
         Safely create the database revision files folder.
         """
@@ -288,12 +287,44 @@ class DatabaseRevisionFilesManager:
             logging.info("Generating database revision folder")
             database_revision_sql_folder_path.mkdir(parents=True)
 
+    def _raise_for_status(self,
+                          database_revision_files: List[DatabaseRevisionFile],
+                          steps: int,
+                          ) -> None:
+        """
+        Raise Exception when number of database revision files are not the same as number of steps
+        :param database_revision_files:
+        :param steps:
+        :return:
+        """
+        # Step 3: Raise Error if number of returned revision files are different from the number of steps specified
+        logging.debug(f"database revision files: {database_revision_files}")
+        logging.debug(f"steps: {steps}")
+
+        if len(database_revision_files) > abs(steps):
+            raise InvalidDatabaseRevisionFilesException(
+                config_file_path=self.database_revision_files_folder,
+                status=InvalidDatabaseRevisionFilesException.Status.MORE_REVISION_SQL_FILES_FOUND_THAN_REQUIRED_STEPS_SPECIFIED,
+                database_revision_file_paths=[actual_revision_file.file_path for actual_revision_file in
+                                              database_revision_files],
+            )
+        elif len(database_revision_files) < abs(steps):
+            raise InvalidDatabaseRevisionFilesException(
+                config_file_path=self.database_revision_files_folder,
+                status=InvalidDatabaseRevisionFilesException.Status.FEWER_REVISION_SQL_FILES_FOUND_THAN_REQUIRED_STEPS_SPECIFIED,
+                database_revision_file_paths=[actual_revision_file.file_path for actual_revision_file in
+                                              database_revision_files],
+            )
+        else:
+            # All good
+            pass
+
     def get_target_database_revision_files_by_pointer(
             self,
             current_database_version: DatabaseVersion,
             candidate_database_revision_files: List[DatabaseRevisionFile],
             pointer: Pointer,
-    ):
+    ) -> List[DatabaseRevisionFile]:
         """
         Given current database version and pointer, filter for target database revision files in the folder
 
@@ -301,6 +332,7 @@ class DatabaseRevisionFilesManager:
         :param candidate_database_revision_files:
         :return:
         """
+        # Step 1: Deduce the number of steps
         current_database_version_number = current_database_version.version_number
 
         # create a reference database revision file
@@ -308,14 +340,17 @@ class DatabaseRevisionFilesManager:
             reference_database_revision_file = DatabaseRevisionFile.get_dummy_revision_file(
                 revision=f'RV{current_database_version_number + 1}',
                 operation_type=Operation.Upgrade, )
-            print(reference_database_revision_file)
-            for file in candidate_database_revision_files:
-                print(file > reference_database_revision_file)
             target_database_revision_files = [file for file in candidate_database_revision_files if
                                               file >= reference_database_revision_file]
 
             # Closest to current db version. Ascending order
             target_database_revision_files.sort(reverse=False)
+
+            if len(target_database_revision_files) == 0:
+                deduced_steps = 0
+            else:
+                deduced_steps = target_database_revision_files[-1].revision_number - current_database_version_number
+
         elif pointer == self.Pointer.BASE:
             reference_database_revision_file = DatabaseRevisionFile.get_dummy_revision_file(
                 revision=f'RV{current_database_version_number}',
@@ -326,33 +361,28 @@ class DatabaseRevisionFilesManager:
                                               file <= reference_database_revision_file]
 
             target_database_revision_files.sort(reverse=True)
+
+            if len(target_database_revision_files) == 0:
+                deduced_steps = 0
+            else:
+                deduced_steps = current_database_version_number - target_database_revision_files[-1].revision_number + 1
+
         else:
             raise ValueError(f"Unhandled Pointer {pointer}!")
 
-        # validation. Ensure the distance of all files is ONE (therefore it's gradual)
-        for i in range(len(target_database_revision_files) - 1):
-            curr = target_database_revision_files[i]
-            next = target_database_revision_files[i + 1]
-
-            distance = abs(next - curr)
-
-            if distance != 1:
-                logging.error("Missing consecutive files between files below:")
-                logging.error(f"Current: {curr.file_path}")
-                logging.error(f"Next: {next.file_path}")
-                raise InvalidDatabaseRevisionFilesException(
-                    config_file_path=self.database_revision_files_folder,
-                    status=InvalidDatabaseRevisionFilesException.Status.NONCONSECUTIVE_REVISION_SQL_FILES_FOR_HEAD_OR_BASE_POINTER,
-                    database_revision_file_paths=[curr.file_path, next.file_path]
-                )
+        self._raise_for_status(database_revision_files=target_database_revision_files,
+                               steps=deduced_steps,
+                               )
 
         return target_database_revision_files
 
-    def get_target_database_revision_files_by_steps(self,
-                                                    current_database_version: DatabaseVersion,
-                                                    steps: int,
-                                                    candidate_database_revision_files: List[DatabaseRevisionFile],
-                                                    ) -> List[DatabaseRevisionFile]:
+
+    def get_target_database_revision_files_by_steps(
+            self,
+            current_database_version: DatabaseVersion,
+            steps: int,
+            candidate_database_revision_files: List[DatabaseRevisionFile],
+    ) -> List[DatabaseRevisionFile]:
         """
         Given current database version and number of steps, filter for target database revision files in the folder.
 
@@ -368,28 +398,15 @@ class DatabaseRevisionFilesManager:
 
         # Step 2: Loop folder for actual files
         for dummy_revision_file in dummy_revision_files:
+            logging.debug(f"Looking for Revision File with revision number {dummy_revision_file.revision_number}.....")
             for candidate_database_revision_file in candidate_database_revision_files:
                 if dummy_revision_file == candidate_database_revision_file:
                     actual_revision_files.append(candidate_database_revision_file)
 
-        # Step 3: Raise Error if number of returned revision files are different from the number of steps specified
-        if len(actual_revision_files) > abs(steps):
-            raise InvalidDatabaseRevisionFilesException(
-                config_file_path=self.database_revision_files_folder,
-                status=InvalidDatabaseRevisionFilesException.Status.MORE_REVISION_SQL_FILES_FOUND_THAN_REQUIRED_STEPS_SPECIFIED,
-                database_revision_file_paths=[actual_revision_file.file_path for actual_revision_file in
-                                              actual_revision_files],
-            )
-        elif len(actual_revision_files) < abs(steps):
-            raise InvalidDatabaseRevisionFilesException(
-                config_file_path=self.database_revision_files_folder,
-                status=InvalidDatabaseRevisionFilesException.Status.FEWER_REVISION_SQL_FILES_FOUND_THAN_REQUIRED_STEPS_SPECIFIED,
-                database_revision_file_paths=[actual_revision_file.file_path for actual_revision_file in
-                                              actual_revision_files],
-            )
-        else:
-            # All good
-            return actual_revision_files
+        self._raise_for_status(database_revision_files=actual_revision_files,
+                               steps=steps,
+                               )
+        return actual_revision_files
 
 
 class DatabaseConnectionFactory:
