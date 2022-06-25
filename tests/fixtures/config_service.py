@@ -74,6 +74,7 @@ def dummy_existing_config_file_path(
     dummy_existing_config_file_path.unlink()
 
 
+
 @pytest.fixture
 def dummy_absent_config_file_path(
         tmp_path,
