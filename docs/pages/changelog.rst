@@ -1,6 +1,11 @@
 Change Log
 =============
 
+0.5.1
+--------
+- Removed bugs which throw errors when config.yaml is absent without fallback on environment variables.
+- Fixed wrong regex for testing SemVer pattern.
+
 0.5.0
 --------
 - Added --dry-run to both `dvc db upgrade` and `dvc db downgrade`. When set to True, the CLI will stop before the execution of SQL files

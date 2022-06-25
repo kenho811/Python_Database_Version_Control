@@ -16,7 +16,7 @@ def test__version__only_contain_semver():
     assert result_1.exit_code == 0
 
     version = result_1.output
-    semver_regex = r"[0-9]+\.[0-9]+\.[0.9]+"
+    semver_regex = r"[0-9]+\.[0-9]+\.[0-9]+"
     match = re.search(semver_regex, version)
 
-    assert match is not None
+    assert match is not None, version

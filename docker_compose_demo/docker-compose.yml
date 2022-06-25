@@ -26,6 +26,7 @@ services:
       - DVC__PORT=5432
       - DVC__DBNAME=test
       - DVC__DBFLAVOUR=postgres
+      - DVC__LOGGING_LEVEL=DEBUG
     # Attach demo assets to the db-migration-tool and run scripts at start up
     working_dir: /usr/src/app/
     volumes:
