@@ -4,6 +4,7 @@ Change Log
 0.5.1
 --------
 - Removed bugs which throw errors when config.yaml is absent without fallback on environment variables.
+- Fixed wrong regex for testing SemVer pattern.
 
 0.5.0
 --------
