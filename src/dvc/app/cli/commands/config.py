@@ -7,13 +7,15 @@ import typer
 from typing import Optional
 
 from dvc.core.config import ConfigDefault, DatabaseRevisionFilesManager, ConfigFileWriter, ConfigReader
+from dvc.core.logger import SetRootLoggingLevel
 
 app = typer.Typer()
 
 
 @app.command()
+@SetRootLoggingLevel
 def init(
-        config_file_path: Optional[str] = typer.Option(str(ConfigDefault.VAL__FILE_PATH), help="path to config file"),
+        config_file_path: str = typer.Option(str(ConfigDefault.VAL__FILE_PATH), help="path to config file"),
 ) -> None:
     """
     Generate configuration template. Idempotent.

@@ -16,8 +16,8 @@ from dvc.core.logger import SetRootLoggingLevel
 app = typer.Typer()
 
 
-@SetRootLoggingLevel
 @app.command()
+@SetRootLoggingLevel
 def init(
         config_file_path: str = typer.Option(str(ConfigDefault.VAL__FILE_PATH), help="path to config file"),
 ) -> None:
@@ -38,8 +38,8 @@ def init(
     typer.echo(f"Host: {conn.info.host}")
 
 
-@SetRootLoggingLevel
 @app.command()
+@SetRootLoggingLevel
 def upgrade(
         config_file_path: str = typer.Option(str(ConfigDefault.VAL__FILE_PATH), help="path to config file"),
         mark_only: bool = typer.Option(False, help='Only mark the SQL file to metadata table without applying'),
@@ -94,8 +94,8 @@ def upgrade(
                                               database_revision_file=target_database_revision_file)
 
 
-@SetRootLoggingLevel
 @app.command()
+@SetRootLoggingLevel
 def downgrade(
         config_file_path: str = typer.Option(str(ConfigDefault.VAL__FILE_PATH), help="path to config file"),
         mark_only: bool = typer.Option(False, help='Only mark the SQL file to metadata table without applying'),
@@ -149,8 +149,8 @@ def downgrade(
                                               database_revision_file=target_database_revision_file)
 
 
-@SetRootLoggingLevel
 @app.command()
+@SetRootLoggingLevel
 def current(
         config_file_path: str = typer.Option(str(ConfigDefault.VAL__FILE_PATH), help="path to config file"),
 ) -> None:
@@ -165,8 +165,8 @@ def current(
     typer.echo(f"Database Current Version: {latest_database_version.version}")
 
 
-@SetRootLoggingLevel
 @app.command()
+@SetRootLoggingLevel
 def ping(
         config_file_path: str = typer.Option(str(ConfigDefault.VAL__FILE_PATH), help="path to config file"),
 ) -> None:
