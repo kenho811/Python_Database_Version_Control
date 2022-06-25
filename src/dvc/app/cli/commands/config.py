@@ -30,3 +30,19 @@ def init(
     config_file_reader = ConfigReader(config_file_path)
     db_rv_files_man = DatabaseRevisionFilesManager(config_file_reader)
     db_rv_files_man.create_database_revision_files_folder()
+
+
+@app.command()
+@SetRootLoggingLevel
+def show(
+        config_file_path: str = typer.Option(str(ConfigDefault.VAL__FILE_PATH), help="path to config file"),
+) -> None:
+    """
+    Print configurations.
+
+    :return:
+    """
+    # Step 2: Generate Datababase Revision SQL folder
+    config_file_reader = ConfigReader(config_file_path)
+    logging.info(f"Logging Level: {logging._levelToName[config_file_reader.logging_level]}")
+    logging.info(f"Requested DB flavourr: {config_file_reader.requested_db_flavour}")

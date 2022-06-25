@@ -33,7 +33,6 @@ def version(
     """
     Show CLI version
     """
-    print(logging._levelToName[logging.root.level])
     typer.echo(__version__)
 
 

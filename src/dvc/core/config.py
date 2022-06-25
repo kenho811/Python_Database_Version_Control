@@ -36,7 +36,7 @@ class ConfigDefault:
     VAL__PORT = 5432
     VAL__DBNAME = ""
     VAL__DBFLAVOUR = "postgres"
-    VAL__LOGGING_LEVEL = logging._levelToName[logging.INFO]
+    VAL__LOGGING_LEVEL: str = logging._levelToName[logging.INFO]
 
     # Default values for config file
     VAL__FilE_NAME: str = "config.yaml"
@@ -53,6 +53,7 @@ class ConfigDefault:
             dbname: str,
             dbflavour: str,
             logging_level: int,
+            as_file = False
     ):
         """
 
@@ -64,10 +65,11 @@ class ConfigDefault:
         :param dbname:
         :param dbflavour:
         :param logging_level: Assumed to be integer value
+        :param as_file: whether to dump the dict as file.
         :return:
         """
         CONFIG_DICT: Dict = {
-            "logging_level": logging_level,
+            "logging_level": logging_level if not as_file else logging._levelToName[logging_level],
             "database_revision_sql_files_folder": database_revision_sql_files_folder,
             "credentials": {
                 "user": user,
@@ -87,14 +89,15 @@ class ConfigFileWriter:
     """
 
     def __init__(self,
-                 config_file_path: Union[Path,str] = ConfigDefault.VAL__FILE_PATH,
+                 config_file_path: Union[Path, str] = ConfigDefault.VAL__FILE_PATH,
                  ):
         if type(config_file_path) == str:
             self.config_file_path = Path(config_file_path)
         elif isinstance(config_file_path, Path):
             self.config_file_path = config_file_path
         else:
-            raise TypeError(f"config file path must be of either type str or is instance of Path. Yours is {type(config_file_path)}")
+            raise TypeError(
+                f"config file path must be of either type str or is instance of Path. Yours is {type(config_file_path)}")
 
     def write_to_yaml(self) -> None:
         default_config_dict: Dict = ConfigDefault.get_config_dict(
@@ -106,7 +109,10 @@ class ConfigFileWriter:
             dbname=ConfigDefault.VAL__DBNAME,
             dbflavour=ConfigDefault.VAL__DBFLAVOUR,
             logging_level=logging._nameToLevel[ConfigDefault.VAL__LOGGING_LEVEL],
+            as_file=True
         )
+
+
         if not self.config_file_path.exists():
             logging.info(f"Now generating default config file {self.config_file_path}")
             with open(self.config_file_path, 'w') as default_config_file:
@@ -125,7 +131,7 @@ class ConfigReader:
     """
 
     def __init__(self,
-                 config_file_path: Union[Path,str] = ConfigDefault.VAL__FILE_PATH,
+                 config_file_path: Union[Path, str] = ConfigDefault.VAL__FILE_PATH,
                  ):
         if type(config_file_path) == str:
             self.config_file_path = Path(config_file_path)
@@ -219,7 +225,7 @@ class ConfigReader:
             dbname=dbname,
             dbflavour=dbflavour,
             port=port,
-            logging_level = logging_level
+            logging_level=logging_level
         )
         return user_config
 

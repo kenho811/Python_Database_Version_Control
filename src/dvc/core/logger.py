@@ -16,21 +16,32 @@ class SetRootLoggingLevel:
         functools.update_wrapper(self, func)
         self.func = func
 
+    def set_logging_level(self,
+                          logging_level:int ):
+        logging.info(f"Setting root logging level to {logging._levelToName[logging_level]} ")
+        logging.root.setLevel(logging_level)
+
+
     def __call__(self,
                  *args,
                  **kwargs):
-        print(f"Get current logging level: {logging._levelToName[logging.getLogger().getEffectiveLevel()]}")
-        config_file_path = kwargs.get('config_file_path')
-        # print(config_file_path)
+        """
+        If no custom logging level is found, then use default logging level (INFO)
 
-        if config_file_path is None:
-            logging.warning("Cannot find logging_level. Using INFO")
-            logging_level = logging.INFO
-        else:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+
+        try:
+            config_file_path = kwargs['config_file_path']
             config_reader = ConfigReader(config_file_path)
             logging_level = config_reader.logging_level
-            logging.info(f"Logging Level found. Setting level to {logging._levelToName[logging_level]} ")
-
-        logging.root.setLevel(logging_level)
+        except Exception as e:
+            logging_level = ConfigDefault.VAL__LOGGING_LEVEL
+            logging.warning(f"Cannot find logging_level. Using default {logging_level}")
+            logging_level = logging._nameToLevel[logging_level]
+        finally:
+            self.set_logging_level(logging_level=logging_level)
 
         return self.func(*args, **kwargs)
