@@ -37,7 +37,7 @@ class TestSetRootLoggingLevel:
 
         :param any_func:
         :param dummy_user_configuration_with_supported_db_flavour:
-        :param dummy_absent_config_file_path
+        :param dummy_absent_config_file_path:
         :return:
         """
 
@@ -60,7 +60,7 @@ class TestSetRootLoggingLevel:
 
         :param any_func:
         :param dummy_user_configuration_with_supported_db_flavour:
-        :param dummy_absent_config_file_path_with_env_var
+        :param dummy_absent_config_file_path_with_env_var:
         :return:
         """
 

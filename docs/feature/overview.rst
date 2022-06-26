@@ -86,5 +86,5 @@ Environment Variable
 - The environment variables look as follows:
 
 
-.. literalinclude:: ../_static/files/sample_env_var.log
+.. literalinclude:: ../_static/code_snippet/sample_env_var.log
    :language: bash
