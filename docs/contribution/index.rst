@@ -7,5 +7,5 @@ This page explains how to contribute to the codebase.
    :caption: Contents:
    :numbered:
 
-   development
+   workflow
    ci

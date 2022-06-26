@@ -8,7 +8,7 @@ Welcome to Database Version Control's  documentation!
 
 
 
-.. image:: _static/img/app_logo_black.png
+.. image:: _static/img/logo/app_logo_black.png
    :class: center
 
 .. rst-class:: center
@@ -86,18 +86,18 @@ More information
 -------------------
 .. list-table::
 
-    * - .. figure:: _static/img/github_logo.png
+    * - .. figure:: _static/img/logo/github_logo.png
 
             `Code on GitHub <https://github.com/kenho811/Python_Database_Version_Control>`_
-      - .. figure:: _static/img/dockerhub_logo.png
+      - .. figure:: _static/img/logo/dockerhub_logo.png
 
             `Docker Image on Dockerhub <https://hub.docker.com/repository/docker/kenho811/database-version-control#>`_
 
-      - .. figure:: _static/img/readthedocs_logo.png
+      - .. figure:: _static/img/logo/readthedocs_logo.png
 
             `Documentation on Readthedocs (latest) <https://python-database-version-control.readthedocs.io/en/latest>`_
 
-      - .. figure:: _static/img/youtube_logo.png
+      - .. figure:: _static/img/logo/youtube_logo.png
 
             `Demo on Youtube <https://www.youtube.com/watch?v=9l3m7zBxN4Y>`_
 
@@ -107,7 +107,7 @@ Supported Databases
 
 .. list-table::
 
-    * - .. figure:: _static/img/postgresql_logo.png
+    * - .. figure:: _static/img/logo/postgresql_logo.png
 
             `Postgresql <https://www.postgresql.org/>`_
 

@@ -1,7 +1,7 @@
 # DVC
 
 <p align="center">
-  <img src="docs/_static/img/app_logo_black.png"  alt="Version Control Your Database Now!"/>
+  <img src="docs/_static/img/logo/app_logo_black.png"  alt="Version Control Your Database Now!"/>
 </p>
 
 <p align="center">
@@ -23,7 +23,7 @@ A Database Version Control (DVC) tool written in Python.
 
 GitHub                                                                                                     |  DockerHub                                                                                                                       | Readthedocs                                                                                                                      | Youtube                                           |
 :---------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
-[![Github](docs/_static/img/github_logo.png)](https://github.com/kenho811/Python_Database_Version_Control) | [![Dockerhub](docs/_static/img/dockerhub_logo.png)](https://hub.docker.com/repository/docker/kenho811/database-version-control#) | [![Readthedocs](docs/_static/img/readthedocs_logo.png)](https://python-database-version-control.readthedocs.io/en/latest/) | [![Youtube](docs/_static/img/youtube_logo.png)](https://www.youtube.com/watch?v=9l3m7zBxN4Y)
+[![Github](docs/_static/img/logo/github_logo.png)](https://github.com/kenho811/Python_Database_Version_Control) | [![Dockerhub](docs/_static/img/logo/dockerhub_logo.png)](https://hub.docker.com/repository/docker/kenho811/database-version-control#) | [![Readthedocs](docs/_static/img/logo/readthedocs_logo.png)](https://python-database-version-control.readthedocs.io/en/latest/) | [![Youtube](docs/_static/img/logo/youtube_logo.png)](https://www.youtube.com/watch?v=9l3m7zBxN4Y)
 
 
 ## Key Features
@@ -168,7 +168,7 @@ release/{major.minor.patch} | release-{major.minor.patch} | No | {major.minor.pa
 
 Postgres                   |
 :-------------------------:|
-![Postgres](docs/_static/img/postgresql_logo.png)  | 
+![Postgres](docs/_static/img/logo/postgresql_logo.png)  | 
 
 Support for other databases will be added soon....
 

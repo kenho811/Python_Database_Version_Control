@@ -2,7 +2,7 @@ Author
 =============
 
 
-.. image:: ../_static/img/ken_ho.jpeg
+.. image:: ../_static/img/people/ken_ho.jpeg
    :class: center
    :alt: Author
 

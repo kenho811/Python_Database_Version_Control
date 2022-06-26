@@ -38,7 +38,7 @@ author = 'Ken Ho'
 # The full version, including alpha/beta/rc tags
 release = __version__
 
-html_logo = "_static/img/app_logo_black.png"
+html_logo = "_static/img/logo/app_logo_black.png"
 
 html_theme_options = {
     "sidebar_hide_name": True,
