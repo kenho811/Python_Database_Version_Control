@@ -28,7 +28,6 @@ KEY__ISLOCAL = "ISLOCAL"
 is_local = bool(os.getenv(KEY__ISLOCAL))
 print(f"***********Running conf.py locally: {is_local}***************************")
 
-
 # -- Project information -----------------------------------------------------
 
 project = 'Database Version Control'
@@ -57,11 +56,16 @@ html_theme_options = {
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.graphviz',
-              'sphinx.ext.autodoc',
-               'sphinx.ext.viewcode',
-              ]
+extensions = [
+    # Create diagrams with graph-viz
+    'sphinx.ext.graphviz',
 
+    # create .rst files for source documnetation
+    'sphinx.ext.autodoc',
+
+    # Create [source] for method signature
+    'sphinx.ext.viewcode',
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
