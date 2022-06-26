@@ -1,7 +1,9 @@
+## Demo with Docker Compose
+
 - Run the below to see it in action
 ```commandline
 # Clone the repo and checkout release branch
-git clone -b release git@github.com:kenho811/Python_Database_Version_Control.git 
+git clone git@github.com:kenho811/Python_Database_Version_Control.git 
 
 # cd to the repository
 cd Python_Database_Version_Control/docker_compose_demo
