@@ -1,7 +1,7 @@
--- create dvc schema
-create schema if not exists dvc;
+-- create {target_schema} schema
+create schema if not exists {target_schema};
 -- create database_revision_history table
-create table if not exists dvc.database_revision_history(
+create table if not exists {target_schema}.database_revision_history(
 	revision_id serial primary key,
 	executed_sql_file_folder varchar(255) not null,
 	-- SQL File Name must follow a certain pattern
@@ -15,22 +15,22 @@ create table if not exists dvc.database_revision_history(
     created_at TIMESTAMP not null default (now() at time zone 'utc')
 );
 -- create database_version_history table
-create table if not exists dvc.database_version_history(
+create table if not exists {target_schema}.database_version_history(
 	version_id serial primary key,
 	current_version_number varchar(255),
 	revision_id_applied integer not null,
     created_at TIMESTAMP not null default (now() at time zone 'utc'),
-    CONSTRAINT fk_database_revision_history FOREIGN KEY(revision_id_applied) REFERENCES dvc.database_revision_history(revision_id) ON DELETE RESTRICT
+    CONSTRAINT fk_database_revision_history FOREIGN KEY(revision_id_applied) REFERENCES {target_schema}.database_revision_history(revision_id) ON DELETE RESTRICT
 );
 -- create trigger function for auto-insertion
 create or replace
-function dvc.fn_database_version_history_insert_trigger()
+function {target_schema}.fn_database_version_history_insert_trigger()
 returns trigger as
 $$
 begin
     insert
 	into
-	dvc.database_version_history (
+	{target_schema}.database_version_history (
 	"current_version_number",
 	"revision_id_applied" ,
 	"created_at"
@@ -44,9 +44,9 @@ end;
 $$
 language 'plpgsql';
 -- Postgresql <= 13 cannot create or replace trigger
-drop trigger if exists "database_version_history_insert_trigger" ON dvc."database_revision_history";
+drop trigger if exists "database_version_history_insert_trigger" ON {target_schema}."database_revision_history";
 CREATE trigger "database_version_history_insert_trigger"
 AFTER INSERT
-ON dvc."database_revision_history"
+ON {target_schema}."database_revision_history"
 FOR EACH ROW
-EXECUTE PROCEDURE dvc.fn_database_version_history_insert_trigger();
+EXECUTE PROCEDURE {target_schema}.fn_database_version_history_insert_trigger();

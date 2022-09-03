@@ -20,6 +20,7 @@ services:
       - postgres_db
     environment:
       - DVC__DATABASE_REVISION_SQL_FILES_FOLDER=sample_revision_sql_files
+      - DVC__TARGET_SCHEMA=dvc
       - DVC__USER=test
       - DVC__PASSWORD=test
       - DVC__HOST=postgres_db

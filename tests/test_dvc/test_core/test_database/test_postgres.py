@@ -22,7 +22,7 @@ class TestSQLFileExecutor:
                                    real_pgconn
                                    ):
         # Arrange
-        postgres_sql_file_executor = PostgresSQLFileExecutor(real_pgconn)
+        postgres_sql_file_executor = PostgresSQLFileExecutor(real_pgconn, target_schema='dvc')
         postgres_sql_file_executor.set_up_database_revision_control_tables()
         return postgres_sql_file_executor
 

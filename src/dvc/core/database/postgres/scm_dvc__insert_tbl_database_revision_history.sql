@@ -1,4 +1,4 @@
-insert into dvc.database_revision_history
+insert into {target_schema}.database_revision_history
   (
 	executed_sql_file_folder,
 	executed_sql_file_name,

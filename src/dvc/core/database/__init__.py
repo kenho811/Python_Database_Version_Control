@@ -26,9 +26,11 @@ class SQLFileExecutorTemplate(ABC):
     """
 
     def __init__(self,
-                 db_conn: DBConnLike
+                 db_conn: DBConnLike,
+                 target_schema: str,
                  ):
         self.conn = db_conn
+        self.target_schema = target_schema
 
     @abstractmethod
     def set_up_database_revision_control_tables(self):
