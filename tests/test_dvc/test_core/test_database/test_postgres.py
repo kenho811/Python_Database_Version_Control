@@ -1,4 +1,3 @@
-import docker
 import pytest
 import requests
 import psycopg2
