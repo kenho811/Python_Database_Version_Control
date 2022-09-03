@@ -114,6 +114,7 @@ def dummy_absent_config_file_path_with_env_var(
     """
     # Set environment variables
     monkeypatch.setenv(ConfigDefault.KEY__DATABASE_REVISION_SQL_FILES_FOLDER, dummy_user_configuration_with_supported_db_flavour['database_revision_sql_files_folder'])
+    monkeypatch.setenv(ConfigDefault.KEY__TARGET_SCHEMA, dummy_user_configuration_with_supported_db_flavour['target_schema'])
     monkeypatch.setenv(ConfigDefault.KEY__USER, dummy_user_configuration_with_supported_db_flavour['credentials']['user'])
     monkeypatch.setenv(ConfigDefault.KEY__PASSWORD, dummy_user_configuration_with_supported_db_flavour['credentials']['password'])
     monkeypatch.setenv(ConfigDefault.KEY__HOST, dummy_user_configuration_with_supported_db_flavour['credentials']['host'])
