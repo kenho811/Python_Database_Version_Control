@@ -20,6 +20,7 @@ def dummy_user_configuration_with_supported_db_flavour(request) -> Dict:
     """
     DUMMY_USER_CONFIG: Dict = {
         "logging_level": request.param,
+        "target_schema": 'dvc',
         "database_revision_sql_files_folder": "sample_revision_sql_files",
         "credentials": {
             "user": "peter_parker",
@@ -40,6 +41,7 @@ def dummy_user_configuration_with_unsupported_db_flavour() -> Dict:
     """
     DUMMY_USER_CONFIG_FILE: Dict = {
         "logging_level": logging.INFO,
+        "target_schema": 'dvc',
         "database_revision_sql_files_folder": "sample_revision_sql_files",
         "credentials": {
             "user": "peter_parker",
