@@ -13,10 +13,12 @@ class PostgresSQLFileExecutor(SQLFileExecutorTemplate):
     FILE_HASHER = FileHasher()
 
     def __init__(self,
-                 db_conn: connection
+                 db_conn: connection,
+                 target_schema: str,
                  ):
-        super(PostgresSQLFileExecutor, self).__init__(db_conn)
+        super(PostgresSQLFileExecutor, self).__init__(db_conn, target_schema)
         self.cur = self.conn.cursor()
+        self.target_schema = target_schema
 
     def set_up_database_revision_control_tables(self):
         """
@@ -25,7 +27,7 @@ class PostgresSQLFileExecutor(SQLFileExecutorTemplate):
         """
         with open(self.__class__.METADATA_SQL_FOLDER_PATH.joinpath("scm_dvc__create_scm_and_tbls.sql"), 'r',
                   encoding='utf-8') as create_sql_file:
-            create_sql = create_sql_file.read()
+            create_sql = create_sql_file.read().format(target_schema=self.target_schema)
             self.cur.execute(query=create_sql)
             self.conn.commit()
 
@@ -36,7 +38,8 @@ class PostgresSQLFileExecutor(SQLFileExecutorTemplate):
         """
         sql_file_path = self.__class__.METADATA_SQL_FOLDER_PATH.joinpath("scm_dvc__select_latest_database_version.sql")
         with open(sql_file_path, 'r', encoding='utf-8') as select_latest_database_version_sql_file:
-            select_latest_database_version_sql = select_latest_database_version_sql_file.read()
+            select_latest_database_version_sql = select_latest_database_version_sql_file.read().format(
+                target_schema=self.target_schema)
 
             self.cur.execute(query=select_latest_database_version_sql)
 
@@ -88,7 +91,7 @@ class PostgresSQLFileExecutor(SQLFileExecutorTemplate):
 
         with open(self.__class__.METADATA_SQL_FOLDER_PATH.joinpath("scm_dvc__insert_tbl_database_revision_history.sql"),
                   'r', encoding='utf-8') as insert_sql_file:
-            insert_sql = insert_sql_file.read()
+            insert_sql = insert_sql_file.read().format(target_schema=self.target_schema)
 
             self.cur.execute(query=insert_sql,
                              vars=(executed_sql_file_folder,

@@ -1,6 +1,10 @@
 Change Log
 =============
 
+0.6.0
+--------
+- Added flexibility to place schema-tracking tables in a user-defined schema.
+
 0.5.1
 --------
 - Removed bugs which throw errors when config.yaml is absent without fallback on environment variables.

@@ -20,6 +20,7 @@ from dvc.core.struct import DatabaseRevisionFile, DatabaseVersion
 class ConfigDefault:
     # Default keys for Environment variable
     KEY__DATABASE_REVISION_SQL_FILES_FOLDER = "DVC__DATABASE_REVISION_SQL_FILES_FOLDER"
+    KEY__TARGET_SCHEMA = "DVC__TARGET_SCHEMA"
     KEY__USER = "DVC__USER"
     KEY__PASSWORD = "DVC__PASSWORD"
     KEY__HOST = "DVC__HOST"
@@ -30,6 +31,7 @@ class ConfigDefault:
 
     # Default values for environment variables
     VAL__DATABASE_REVISION_SQL_FILES_FOLDER = "sample_revision_sql_files"
+    VAL__TARGET_SCHEMA = "dvc"
     VAL__USER = ""
     VAL__PASSWORD = ""
     VAL__HOST = ""
@@ -46,6 +48,7 @@ class ConfigDefault:
     def get_config_dict(
             cls,
             database_revision_sql_files_folder: str,
+            target_schema: str,
             user: str,
             password: str,
             host: str,
@@ -71,6 +74,7 @@ class ConfigDefault:
         CONFIG_DICT: Dict = {
             "logging_level": logging_level if not as_file else logging._levelToName[logging_level],
             "database_revision_sql_files_folder": database_revision_sql_files_folder,
+            "target_schema": target_schema,
             "credentials": {
                 "user": user,
                 "password": password,
@@ -102,6 +106,7 @@ class ConfigFileWriter:
     def write_to_yaml(self) -> None:
         default_config_dict: Dict = ConfigDefault.get_config_dict(
             database_revision_sql_files_folder=ConfigDefault.VAL__DATABASE_REVISION_SQL_FILES_FOLDER,
+            target_schema=ConfigDefault.VAL__TARGET_SCHEMA,
             user=ConfigDefault.VAL__USER,
             password=ConfigDefault.VAL__PASSWORD,
             host=ConfigDefault.VAL__HOST,
@@ -199,6 +204,7 @@ class ConfigReader:
         # Raise Key error if the environment variable is not set
         try:
             database_revision_sql_files_folder = os.environ[ConfigDefault.KEY__DATABASE_REVISION_SQL_FILES_FOLDER]
+            target_schema = os.environ[ConfigDefault.KEY__TARGET_SCHEMA]
             host = os.environ[ConfigDefault.KEY__HOST]
             port = int(os.environ[ConfigDefault.KEY__PORT])
             user = os.environ[ConfigDefault.KEY__USER]
@@ -225,6 +231,7 @@ class ConfigReader:
 
         user_config = ConfigDefault.get_config_dict(
             database_revision_sql_files_folder=database_revision_sql_files_folder,
+            target_schema=target_schema,
             host=host,
             user=user,
             password=password,

@@ -21,7 +21,7 @@ class DatabaseInteractor:
     Exposes API to interact with Various Database flavours
     """
     MAPPING = {
-        SupportedDatabaseFlavour.Postgres: lambda conn: PostgresSQLFileExecutor(conn)
+        SupportedDatabaseFlavour.Postgres: lambda conn, target_schema: PostgresSQLFileExecutor(conn, target_schema=target_schema)
     }
 
     def __init__(self,
@@ -136,10 +136,20 @@ class DatabaseInteractor:
         return conn
 
     @property
+    def target_schema(self):
+        """
+
+        :return:
+        """
+        config_file_reader = self.config_file_reader
+        target_schema = config_file_reader.user_config['target_schema']
+        return target_schema
+
+    @property
     def sql_file_executor(self):
         config_file_reader = self.config_file_reader
         conn = self.conn
-        supported_db_flavour = DatabaseConnectionFactory(
-            config_reader=config_file_reader).validate_requested_database_flavour()
-        sql_file_executor = self.__class__.MAPPING[supported_db_flavour](conn)
+        target_schema = self.target_schema
+        supported_db_flavour = DatabaseConnectionFactory(config_reader=config_file_reader).validate_requested_database_flavour()
+        sql_file_executor = self.__class__.MAPPING[supported_db_flavour](conn, target_schema)
         return sql_file_executor
